@@ -1,0 +1,62 @@
+.inventory-container {
+  display: flex;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+thead {
+  background-color: #4CAF50;
+  color: white;
+}
+
+tbody tr {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+}
+
+button.update {
+  background-color: #af4c9d;
+  color: white;
+  margin-right: 10px;
+}
+
+button.update:hover {
+  background-color: #45a049;
+}
+
+button.delete {
+  background-color: #f44336;
+  color: white;
+}
+
+button.delete:hover {
+  background-color: #e53935;
+}
+
+td button:focus {
+  outline: none;
+}

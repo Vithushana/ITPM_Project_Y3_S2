@@ -1,0 +1,71 @@
+.inventory-container {
+    display: flex;
+    font-family: Arial, sans-serif;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #ff0033;
+    color: white;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  button {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  button:hover {
+    opacity: 0.8;
+  }
+  
+  .update-btn {
+    background-color: #28a745;
+    color: white;
+    margin-right: 10px;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  input[type="file"] {
+    margin-top: 5px;
+  }
+  
+  .preview-image {
+    margin-top: 10px;
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
