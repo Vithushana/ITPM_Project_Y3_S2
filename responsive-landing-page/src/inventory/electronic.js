@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import "../styles/electronic.css"; // Import the CSS file
+import "../styles/electronic.css"; // Updated CSS for box layout
 
 const ElectronicsPage = () => {
   const [electronicsItems, setElectronicsItems] = useState([
@@ -29,44 +29,30 @@ const ElectronicsPage = () => {
       <Sidebar />
       <div className="content">
         <h1>Electronics List</h1>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Quantity</th>
-              <th>Category</th>
-              <th>Expiration Date</th>
-              <th>Image</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {electronicsItems.length === 0 ? (
-              <tr>
-                <td colSpan="6">No electronics found.</td>
-              </tr>
-            ) : (
-              electronicsItems.map(item => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.category}</td>
-                  <td>{item.expirationDate}</td>
-                  <td>
-                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(item.id, e)} />
-                    {item.image && <img src={item.image} alt={item.name} className="preview-image" />}
-                  </td>
-                  <td>
-                    <Link to={`/update-electronic/${item.id}`}>
-                      <button className="update-btn">Update</button>
-                    </Link>
-                    <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div className="electronics-grid">
+          {electronicsItems.length === 0 ? (
+            <p>No electronics found.</p>
+          ) : (
+            electronicsItems.map(item => (
+              <div key={item.id} className="electronics-card">
+                <h3>{item.name}</h3>
+                <p><strong>Quantity:</strong> {item.quantity}</p>
+                <p><strong>Category:</strong> {item.category}</p>
+                <p><strong>Expiration Date:</strong> {item.expirationDate}</p>
+                <div className="image-container">
+                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(item.id, e)} />
+                  {item.image && <img src={item.image} alt={item.name} className="preview-image" />}
+                </div>
+                <div className="button-group">
+                  <Link to={`/update-electronic/${item.id}`}>
+                    <button className="update-btn">Update</button>
+                  </Link>
+                  <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

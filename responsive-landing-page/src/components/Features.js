@@ -33,64 +33,6 @@ const Section = styled.section`
   }
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-  }
-`;
-
-const SignUpButton = styled.a`
-  padding: 11px 20px;
-  text-align: center;
-  background-color:rgb(43, 83, 141);
-  color: #fff;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-  display: inline-block;
-  transition: transform 0.3s ease-in-out, padding-right 0.3s ease-in-out;
-
-  &:hover {
-    transform: translateX(-10px);
-    padding-right: 30px; /* Adjust padding to make space for the arrow */
-  }
-
-  &:hover::after {
-    content: '→';
-    display: inline-block;
-    margin-left: 10px;
-    transition: margin-left 0.3s ease-in-out;
-  }
-
-  &::after {
-    content: '';
-    display: inline-block;
-    margin-left: 0;
-    transition: margin-left 0.3s ease-in-out;
-  }
-`;
-
-const SignUpButton1 = styled.a`
-  padding: 10px 20px;
-  text-align: center;
-  background-color: white;
-  color: black;
-  border: 2px solid #dadadd;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-
-  &:hover {
-    background-color: #e5e5e7;
-  }
-`;
-
 const Heading = styled.h1`
   font-size: 62px;
   margin-bottom: 20px;
@@ -222,10 +164,6 @@ const HomeStock = () => {
         Keep Track of Your Household Essentials <br /> with Easy to Maintain 
       </Heading>
       <br />
-      <ButtonContainer>
-        <SignUpButton href="#sign-up">Start Tracking Now</SignUpButton>
-        <SignUpButton1 href="#demo">Request a Demo</SignUpButton1>
-      </ButtonContainer>
       <SearchBarContainer>
         <SearchBar>
           <FaSearch className="search-icon" />

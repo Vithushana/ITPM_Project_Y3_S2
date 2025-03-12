@@ -1,71 +1,126 @@
 .inventory-container {
-    display: flex;
-    font-family: Arial, sans-serif;
+  display: flex;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.electronics-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.electronics-card {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  flex: 1 1 calc(33% - 20px);
+  box-sizing: border-box;
+  min-width: 250px;
+  max-width: 300px;
+  opacity: 0;
+  animation: fadeInCard 0.8s ease-in-out forwards; /* Fade-in animation for cards */
+}
+
+.electronics-card h3 {
+  margin-bottom: 10px;
+  color: #ff0033;
+}
+
+.electronics-card p {
+  margin: 5px 0;
+}
+
+.image-container {
+  margin-top: 10px;
+}
+
+input[type="file"] {
+  display: block;
+  margin: 5px auto;
+  opacity: 0;
+  animation: fadeIn 1s ease-in-out 0.5s forwards; 
+}
+
+.preview-image {
+  margin-top: 10px;
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  opacity: 0;
+  animation: fadeIn 1s ease-in-out 1s forwards; /* Fade-in animation for preview image */
+}
+
+.button-group {
+  margin-top: 10px;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  opacity: 0.8;
+  transform: scale(1.05); /* Slight scaling effect on hover */
+}
+
+.update-btn {
+  background-color: #28a745;
+  color: white;
+  margin-right: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.update-btn:hover {
+  background-color: #218838; /* Darker green when hovered */
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c82333; /* Darker red when hovered */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .content {
-    flex: 1;
-    padding: 20px;
+  to {
+    opacity: 1;
   }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(10px); 
   }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+  to {
+    opacity: 1;
+    transform: translateY(0); 
   }
-  
-  th, td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #ff0033;
-    color: white;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  button {
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s ease;
-  }
-  
-  button:hover {
-    opacity: 0.8;
-  }
-  
-  .update-btn {
-    background-color: #28a745;
-    color: white;
-    margin-right: 10px;
-  }
-  
-  .delete-btn {
-    background-color: #dc3545;
-    color: white;
-  }
-  
-  input[type="file"] {
-    margin-top: 5px;
-  }
-  
-  .preview-image {
-    margin-top: 10px;
-    max-width: 80px;
-    max-height: 80px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-  }
-  
+}

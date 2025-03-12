@@ -12,12 +12,12 @@ const Logo = styled.img`
 `;
 
 const Sidebar = () => {
-  const [active, setActive] = useState("Groceries");
+  const [active, setActive] = useState("");
   const navigate = useNavigate();
 
-  const handleNavigation = (page) => {
+  const handleNavigation = (page, route) => {
     setActive(page);
-    navigate(`/${page.toLowerCase()}`);
+    navigate(route);
   };
 
   const handleLogout = () => {
@@ -31,25 +31,25 @@ const Sidebar = () => {
       <div className="menu">
         <div 
           className={`menu-item ${active === "Groceries" ? "active" : ""}`} 
-          onClick={() => handleNavigation("inventory")}
+          onClick={() => handleNavigation("Groceries", "/inventory")}
         >
           <FaAppleAlt className="icon" /> Groceries
         </div>
         <div 
           className={`menu-item ${active === "Electronics" ? "active" : ""}`} 
-          onClick={() => handleNavigation("Electronics")}
+          onClick={() => handleNavigation("Electronics", "/electronics")}
         >
           <FaLaptop className="icon" /> Electronics
         </div>
         <div 
           className={`menu-item ${active === "Medicines" ? "active" : ""}`} 
-          onClick={() => handleNavigation("medicine")}
+          onClick={() => handleNavigation("Medicines", "/medicine")}
         >
           <FaPills className="icon" /> Medicines
         </div>
         <div 
           className={`menu-item ${active === "Budgets" ? "active" : ""}`} 
-          onClick={() => handleNavigation("budget")}
+          onClick={() => handleNavigation("Budgets", "/budget")}
         >
           <FaChartPie className="icon" /> Budgets
         </div>

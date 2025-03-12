@@ -1,48 +1,94 @@
+.chart-container {
+  width: 100%;
+  max-width: 250px;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
 .inventory-container {
-    display: flex;
-  }
-  
-  .content {
-    flex: 1;
-    padding: 20px;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .update-btn {
-    padding: 5px 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  .delete-btn {
-    padding: 5px 10px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.content {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.inventory-box {
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.inventory-item {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 250px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.inventory-item:hover {
+  transform: translateY(-5px);
+}
+
+.inventory-item h2 {
+  color: #4CAF50;
+  margin-bottom: 10px;
+}
+
+.inventory-item p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+button {
+  padding: 8px 12px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+button.update {
+  background-color: #af4c9d;
+  color: white;
+  margin-right: 10px;
+}
+
+button.update:hover {
+  background-color: #7e3375;
+}
+
+button.delete {
+  background-color: #f44336;
+  color: white;
+}
+
+button.delete:hover {
+  background-color: #e53935;
+}
+
+.no-items {
+  font-size: 18px;
+  color: #777;
+}

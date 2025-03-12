@@ -1,5 +1,15 @@
 .inventory-container {
   display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -7,35 +17,48 @@ h1 {
   margin-bottom: 20px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
+.inventory-box {
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
 
-th, td {
-  padding: 10px;
+.inventory-item {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 250px;
   text-align: center;
-  border: 1px solid #ddd;
+  transition: 0.3s;
 }
 
-thead {
-  background-color: #4CAF50;
-  color: white;
+.inventory-item:hover {
+  transform: translateY(-5px);
 }
 
-tbody tr {
-  background-color: #f9f9f9;
+.inventory-item h2 {
+  color: #4CAF50;
+  margin-bottom: 10px;
 }
 
-tbody tr:hover {
-  background-color: #f1f1f1;
+.inventory-item p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.actions {
+  margin-top: 10px;
 }
 
 button {
-  padding: 5px 10px;
+  padding: 8px 12px;
   cursor: pointer;
   border: none;
+  font-size: 14px;
+  border-radius: 5px;
 }
 
 button.update {
@@ -45,7 +68,7 @@ button.update {
 }
 
 button.update:hover {
-  background-color: #45a049;
+  background-color: #7e3375;
 }
 
 button.delete {
@@ -57,6 +80,7 @@ button.delete:hover {
   background-color: #e53935;
 }
 
-td button:focus {
-  outline: none;
+.no-items {
+  font-size: 18px;
+  color: #777;
 }

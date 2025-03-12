@@ -7,6 +7,8 @@ const MedicinePage = () => {
   const medicineItems = [
     { id: 1, name: "Paracetamol", quantity: 50, category: "Pain Relief", expirationDate: "2026-05-10" },
     { id: 2, name: "Amoxicillin", quantity: 30, category: "Antibiotic", expirationDate: "2025-12-15" },
+    { id: 2, name: "Amoxicillin", quantity: 30, category: "Antibiotic", expirationDate: "2025-12-15" },
+    { id: 2, name: "Amoxicillin", quantity: 30, category: "Antibiotic", expirationDate: "2025-12-15" },
   ];
 
   const handleDelete = (id) => {
@@ -18,39 +20,28 @@ const MedicinePage = () => {
       <Sidebar />
       <div className="content">
         <h1 className="title">Medicine List</h1>
-        <table className="medicine-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Quantity</th>
-              <th>Category</th>
-              <th>Expiration Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {medicineItems.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="no-data">No medicines found.</td>
-              </tr>
-            ) : (
-              medicineItems.map(medicine => (
-                <tr key={medicine.id}>
-                  <td>{medicine.name}</td>
-                  <td>{medicine.quantity}</td>
-                  <td>{medicine.category}</td>
-                  <td>{medicine.expirationDate}</td>
-                  <td>
-                    <Link to={`/update-medicine/${medicine.id}`}>
-                      <button className="update-btn">Update</button>
-                    </Link>
-                    <button className="delete-btn" onClick={() => handleDelete(medicine.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div className="medicine-container">
+          {medicineItems.length === 0 ? (
+            <div className="no-data">No medicines found.</div>
+          ) : (
+            medicineItems.map(medicine => (
+              <div className="medicine-box" key={medicine.id}>
+                <div className="medicine-info">
+                  <p><strong>Name:</strong> {medicine.name}</p>
+                  <p><strong>Quantity:</strong> {medicine.quantity}</p>
+                  <p><strong>Category:</strong> {medicine.category}</p>
+                  <p><strong>Expiration Date:</strong> {medicine.expirationDate}</p>
+                </div>
+                <div className="medicine-actions">
+                  <Link to={`/update-medicine/${medicine.id}`}>
+                    <button className="update-btn">Update</button>
+                  </Link>
+                  <button className="delete-btn" onClick={() => handleDelete(medicine.id)}>Delete</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
