@@ -1,18 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import "../styles/medicine.css"; // Import the CSS file
+import "../styles/medicine.css";
 
 const MedicinePage = () => {
-  const medicineItems = [
-    { id: 1, name: "Paracetamol", quantity: 50, category: "Pain Relief", expirationDate: "2026-05-10" },
-    { id: 2, name: "Amoxicillin", quantity: 30, category: "Antibiotic", expirationDate: "2025-12-15" },
-    { id: 2, name: "Amoxicillin", quantity: 30, category: "Antibiotic", expirationDate: "2025-12-15" },
-    { id: 2, name: "Amoxicillin", quantity: 30, category: "Antibiotic", expirationDate: "2025-12-15" },
-  ];
+  const [medicineItems, setMedicineItems] = useState([]);
+  const [showPopup, setShowPopup] = useState(false); // For showing the popup
+  const [newMedicine, setNewMedicine] = useState({
+    name: "",
+    quantity: "",
+    category: "",
+    expirationDate: "",
+  });
 
+  // Fetch medicines from API
+  useEffect(() => {
+    fetch("http://localhost:8080/api/medicine")
+      .then((response) => response.json())
+      .then((data) => setMedicineItems(data))
+      .catch((error) => console.error("Error fetching medicines:", error));
+  }, []);
+
+  // Handle delete medicine
   const handleDelete = (id) => {
-    console.log(`Medicine with id ${id} deleted`);
+    fetch(`http://localhost:8080/api/medicine/${id}`, { method: "DELETE" })
+      .then(() => setMedicineItems(medicineItems.filter((item) => item.id !== id)))
+      .catch((error) => console.error("Error deleting medicine:", error));
+  };
+
+  // Handle adding new medicine
+  const handleAddNewMedicine = () => {
+    fetch("http://localhost:8080/api/medicine", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newMedicine),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setMedicineItems([...medicineItems, data]);
+        setShowPopup(false); // Close the popup after adding
+        setNewMedicine({
+          name: "",
+          quantity: "",
+          category: "",
+          expirationDate: "",
+        }); // Reset form
+      })
+      .catch((error) => console.error("Error adding medicine:", error));
   };
 
   return (
@@ -24,7 +58,7 @@ const MedicinePage = () => {
           {medicineItems.length === 0 ? (
             <div className="no-data">No medicines found.</div>
           ) : (
-            medicineItems.map(medicine => (
+            medicineItems.map((medicine) => (
               <div className="medicine-box" key={medicine.id}>
                 <div className="medicine-info">
                   <p><strong>Name:</strong> {medicine.name}</p>
@@ -42,6 +76,44 @@ const MedicinePage = () => {
             ))
           )}
         </div>
+
+        {/* Add New Medicine Button */}
+        <button className="add-button" onClick={() => setShowPopup(true)}>+</button>
+
+        {/* Popup Form for Adding New Medicine */}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h2>Add New Medicine</h2>
+              <input
+                type="text"
+                placeholder="Name"
+                value={newMedicine.name}
+                onChange={(e) => setNewMedicine({ ...newMedicine, name: e.target.value })}
+              />
+              <input
+                type="number"
+                placeholder="Quantity"
+                value={newMedicine.quantity}
+                onChange={(e) => setNewMedicine({ ...newMedicine, quantity: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Category"
+                value={newMedicine.category}
+                onChange={(e) => setNewMedicine({ ...newMedicine, category: e.target.value })}
+              />
+              <input
+                type="date"
+                placeholder="Expiration Date"
+                value={newMedicine.expirationDate}
+                onChange={(e) => setNewMedicine({ ...newMedicine, expirationDate: e.target.value })}
+              />
+              <button onClick={handleAddNewMedicine}>Add</button>
+              <button className="close-btn" onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,31 +1,44 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import axios from 'axios';
 import "../styles/budget.css";
 
-// Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const BudgetPage = () => {
-  const [budgetItems, setBudgetItems] = useState([
-    { id: 1, category: "Groceries", amount: 200 },
-    { id: 2, category: "Electronics", amount: 500 },
-  ]);
+  const [budgetItems, setBudgetItems] = useState([]);
 
-  const handleDelete = (id) => {
-    setBudgetItems(budgetItems.filter((item) => item.id !== id));
+  useEffect(() => {
+    const fetchBudgetItems = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/budget'); 
+        setBudgetItems(response.data);
+      } catch (error) {
+        console.error("Error fetching budget items:", error);
+      }
+    };
+
+    fetchBudgetItems();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/budget/${id}`); 
+      setBudgetItems(budgetItems.filter((item) => item.id !== id)); 
+    } catch (error) {
+      console.error("Error deleting budget item:", error);
+    }
   };
 
-  // Prepare data for the pie chart
   const chartData = {
     labels: budgetItems.map((item) => item.category),
     datasets: [
       {
         data: budgetItems.map((item) => item.amount),
-        backgroundColor: ["#FF6384", "#36A2EB"], // Customize colors
-        hoverBackgroundColor: ["#FF4384", "#36A2BC"], // Hover colors
+        backgroundColor: ["#FF6384", "#36A2EB"], 
+        hoverBackgroundColor: ["#FF4384", "#36A2BC"], 
       },
     ],
   };
@@ -50,9 +63,6 @@ const BudgetPage = () => {
                 <h2>{item.category}</h2>
                 <p>Amount: ${item.amount}</p>
                 <div className="actions">
-                  <Link to={`/update-budget/${item.id}`}>
-                    <button className="update">Update</button>
-                  </Link>
                   <button
                     className="delete"
                     onClick={() => handleDelete(item.id)}
