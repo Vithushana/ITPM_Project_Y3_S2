@@ -152,6 +152,7 @@ const LoginPage = ({ setIsLoggedIn }) => {
 
       if (response.ok) {
         setIsLoggedIn(true);
+        localStorage.setItem('loggedIn', 'true');
         navigate('/home');
       } else {
         const errorData = await response.json();

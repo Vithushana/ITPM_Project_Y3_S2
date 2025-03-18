@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from './components/Header';
@@ -13,6 +13,8 @@ import Inventory from './inventory/Inventory';
 import MedicinePage from './inventory/medicine';
 import ElectronicsPage from './inventory/electronic';
 import BudgetPage from './inventory/budget';
+import AlertPage from "./exp_date/alert";
+import AddItemModal from "./inventory/AddItemModal";
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -27,7 +29,13 @@ const Section = styled.section`
 `;
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('loggedIn'));
+
+  useEffect(() => {
+    const storedLoginStatus = localStorage.getItem('loggedIn');
+    setIsLoggedIn(storedLoginStatus);
+    
+  }, [localStorage.getItem('loggedIn')]);
 
   return (
     <Router>
@@ -35,6 +43,7 @@ const App = () => {
         {/* Render header based on the current path */}
         <HeaderBasedOnLocation />
         <Routes>
+          <Route path="/" element={isLoggedIn ? <Navigate to="/home" /> : <Navigate to="/login" />} />
           <Route path="/home" element={isLoggedIn ? <HomeStock /> : <Navigate to="/login" />} />
           <Route path="/reset" element={<ResetPasswordPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -42,7 +51,9 @@ const App = () => {
           <Route path="/inventory" element={isLoggedIn ? <Inventory /> : <Navigate to="/login" replace />} />
           <Route path="/medicine" element={isLoggedIn ? <MedicinePage /> : <Navigate to="/login" replace />} />
           <Route path="/electronics" element={isLoggedIn ? <ElectronicsPage /> : <Navigate to="/login" replace />} />
-          <Route path="/budget" element={isLoggedIn ? <BudgetPage /> : <Navigate to="/login" replace />} /> 
+          <Route path="/budget" element={isLoggedIn ? <BudgetPage /> : <Navigate to="/login" replace />} />
+          <Route path="/AlertPage" element={isLoggedIn ? <AlertPage /> : <Navigate to="/login" replace />} />
+          <Route path="/AddItemModal" element={isLoggedIn ? <AddItemModal /> : <Navigate to="/login" replace />} />
         </Routes>
         <LocationBasedContent isLoggedIn={isLoggedIn} />
       </AppContainer>
@@ -52,14 +63,14 @@ const App = () => {
 
 const HeaderBasedOnLocation = () => {
   const location = useLocation();
-  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && <Header />;
+  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' && <Header />;
 };
 
 const LocationBasedContent = ({ isLoggedIn }) => {
   const location = useLocation();
   if (!isLoggedIn) return null;
 
-  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' &&  (
+  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' &&  (
     <>
       <Section id="faqSection">
         <FaqSection />

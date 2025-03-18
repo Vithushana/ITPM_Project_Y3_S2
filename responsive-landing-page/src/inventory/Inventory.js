@@ -1,26 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
+import AddItemModal from "../inventory/AddItemModal"; 
 import "../styles/Groceries.css";
 
 const InventoryPage = () => {
-  const inventoryItems = [
-    { id: 1, name: "Milk", quantity: 10, category: "Dairy", expirationDate: "2025-03-01" },
-    { id: 2, name: "Eggs", quantity: 20, category: "Dairy", expirationDate: "2025-04-01" },
-    { id: 1, name: "Milk", quantity: 10, category: "Dairy", expirationDate: "2025-03-01" },
-    { id: 1, name: "Milk", quantity: 10, category: "Dairy", expirationDate: "2025-03-01" },
-    { id: 1, name: "Milk", quantity: 10, category: "Dairy", expirationDate: "2025-03-01" },
-    { id: 1, name: "Milk", quantity: 10, category: "Dairy", expirationDate: "2025-03-01" },
-  ];
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [showModal, setShowModal] = useState(false);  // State to control the modal visibility
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/api/inventory")
+      .then((response) => {
+        setInventoryItems(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching inventory items:", error);
+      });
+  }, []);
 
   const handleDelete = (id) => {
-    console.log(`Item with id ${id} deleted`);
+    axios
+      .delete(`http://localhost:8080/api/inventory/${id}`)
+      .then(() => {
+        setInventoryItems(inventoryItems.filter((item) => item.id !== id));
+        console.log(`Item with id ${id} deleted`);
+      })
+      .catch((error) => {
+        console.error("Error deleting item:", error);
+      });
   };
 
   return (
     <div className="inventory-container">
       <Sidebar />
-
       <div className="content">
         <h1>Groceries List</h1>
         <div className="inventory-box">
@@ -46,6 +60,9 @@ const InventoryPage = () => {
           )}
         </div>
       </div>
+      <button className="add-item-btn" onClick={() => setShowModal(true)}>+</button>
+
+      {showModal && <AddItemModal showModal={showModal} closeModal={() => setShowModal(false)} />}
     </div>
   );
 };

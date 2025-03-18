@@ -179,7 +179,7 @@ const HomeStock = () => {
             <p>Easily track your groceries, household essentials, and daily supplies in real-time.</p>
           </div>
         </div>
-        <div className="feasto-section">
+        <div className="feasto-section" onClick={() => navigate('/AlertPage')}>
           <img src={ResponseLogo} alt="Reminder Logo" />
           <div>
             <h2>Expiration Date Reminders</h2>
