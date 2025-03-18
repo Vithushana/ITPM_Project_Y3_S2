@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
 import AddItemModal from "../inventory/AddItemModal"; 
+import UpdateItemModal from "../inventory/UpdateItemModal";
 import "../styles/Groceries.css";
 
 const InventoryPage = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
-  const [showModal, setShowModal] = useState(false);  // State to control the modal visibility
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     axios
@@ -48,9 +50,15 @@ const InventoryPage = () => {
                 <p><strong>Category:</strong> {item.category}</p>
                 <p><strong>Expiration Date:</strong> {item.expirationDate}</p>
                 <div className="actions">
-                  <Link to={`/update-item/${item.id}`}>
-                    <button className="update">Update</button>
-                  </Link>
+                  <button
+                    className="update"
+                    onClick={() => {
+                      setSelectedItem(item);
+                      setShowUpdateModal(true);
+                    }}
+                  >
+                    Update
+                  </button>
                   <button onClick={() => handleDelete(item.id)} className="delete">
                     Delete
                   </button>
@@ -60,9 +68,18 @@ const InventoryPage = () => {
           )}
         </div>
       </div>
-      <button className="add-item-btn" onClick={() => setShowModal(true)}>+</button>
+      <button className="add-item-btn" onClick={() => setShowAddModal(true)}>+</button>
 
-      {showModal && <AddItemModal showModal={showModal} closeModal={() => setShowModal(false)} />}
+      {showAddModal && <AddItemModal showModal={showAddModal} closeModal={() => setShowAddModal(false)} />}
+
+      {showUpdateModal && selectedItem && (
+        <UpdateItemModal 
+          showModal={showUpdateModal} 
+          closeModal={() => setShowUpdateModal(false)} 
+          item={selectedItem} 
+          setInventoryItems={setInventoryItems} 
+        />
+      )}
     </div>
   );
 };

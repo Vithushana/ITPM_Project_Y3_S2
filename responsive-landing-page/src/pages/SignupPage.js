@@ -57,6 +57,7 @@ const SignupContainer = styled.section`
 
 const SignupForm = styled.div`
   background: white;
+  margin-top: 100px;
   border-radius: 12px;
   padding: 40px 30px;
   width: 100%;
@@ -80,7 +81,7 @@ const SignupForm = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
   }
 `;
 

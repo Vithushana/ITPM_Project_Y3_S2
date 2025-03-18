@@ -38,8 +38,8 @@ public class InventoryController {
         inventoryService.deleteItem(id);
     }
 
-    @PutMapping("/{id}")
-    public InventoryItem updateItem(@PathVariable String id, @RequestBody InventoryItem item) {
-        return inventoryService.updateItem(id, item);
+    @PutMapping("/update")
+    public InventoryItem updateItem(@RequestBody InventoryItem updatedItem) {
+        return inventoryService.updateItem(updatedItem);
     }
 }

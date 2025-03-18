@@ -14,23 +14,17 @@ public class InventoryService {
     @Autowired
     private InventoryRepository inventoryRepository;
 
-    // Get all inventory items
     public List<InventoryItem> getAllItems() {
         return inventoryRepository.findAll();
     }
 
-    // Delete an item by id
     public void deleteItem(String id) {
         inventoryRepository.deleteById(id);
     }
 
-    // Update an inventory item
-    public InventoryItem updateItem(String id, InventoryItem item) {
-        if (inventoryRepository.existsById(id)) {
-            item.setId(id);
-            return inventoryRepository.save(item);
-        }
-        return null;
+    public InventoryItem updateItem(InventoryItem updatedItem) {
+        return inventoryRepository.save(updatedItem);
+
     }
 
     public InventoryItem createItem(InventoryItem newItem) {

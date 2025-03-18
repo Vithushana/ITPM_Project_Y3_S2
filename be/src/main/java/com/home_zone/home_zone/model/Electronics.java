@@ -3,35 +3,30 @@ package com.home_zone.home_zone.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "inventoryitems")
-public class InventoryItem {
-    @Id 
-    
+@Document(collection = "electronics")
+public class Electronics {
+    @Id
     private String id;
     private String name;
     private int quantity;
     private String category;
     private String expirationDate;
-
-    public InventoryItem() {}
-
-    public InventoryItem(String name, int quantity, String category, String expirationDate) {
-        this.name = name;
-        this.quantity = quantity;
-        this.category = category;
-        this.expirationDate = expirationDate;
-    }
+    private String imageUrl;
 
     public String getId() {
         return id;
     }
 
-    public String getName() {
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getname() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setname(String name) {
+        this.id = name;
     }
 
     public int getQuantity() {
@@ -58,20 +53,23 @@ public class InventoryItem {
         this.expirationDate = expirationDate;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
     @Override
     public String toString() {
-        return "InventoryItem{" +
-                "id=" + id +
+        return "Electronics{" +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", quantity=" + quantity +
                 ", category='" + category + '\'' +
-                ", expirationDate=" + expirationDate +
+                ", expirationDate='" + expirationDate + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
-
-    public void setId(String id2) {
-        throw new UnsupportedOperationException("Unimplemented method 'setId'");
-    }
-
 
 }
