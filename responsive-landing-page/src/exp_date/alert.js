@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa"; // Import the back icon
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 import "../styles/alert.css";
 
 const ReminderContainer = ({ category, className }) => {
@@ -8,7 +10,8 @@ const ReminderContainer = ({ category, className }) => {
   const [reminders, setReminders] = useState([]);
   const [sentEmails, setSentEmails] = useState([]);
 
-  const handleAddReminder = () => {
+  // Asynchronous function to handle adding a reminder and making a POST request
+  const handleAddReminder = async () => {
     if (!name || (category === "Electronics" && !purchasingDate) || (category !== "Electronics" && !reminderDate)) {
       alert("Please enter all required details before adding a reminder.");
       return;
@@ -22,10 +25,28 @@ const ReminderContainer = ({ category, className }) => {
       newReminder.reminderDate = reminderDate;
     }
 
-    setReminders([...reminders, newReminder]);
-    setName("");
-    setPurchasingDate("");
-    setReminderDate("");
+    // Sending the reminder data to the backend API
+    const response = await fetch('http://localhost:8080/api/reminders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: newReminder.name,
+        purchasingDate: newReminder.purchasingDate,
+        reminderDate: newReminder.reminderDate,
+        emailSent: newReminder.emailSent,
+      }),
+    });
+
+    if (response.ok) {
+      console.log("Reminder added successfully");
+      // After successful POST request, add the reminder to the state
+      setReminders([...reminders, newReminder]);
+      setName("");
+      setPurchasingDate("");
+      setReminderDate("");
+    } else {
+      alert("Failed to add reminder.");
+    }
   };
 
   const handleSendEmail = () => {
@@ -109,6 +130,12 @@ const ReminderContainer = ({ category, className }) => {
 };
 
 const AlertPage = () => {
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate("/home"); 
+  };
+
   return (
     <div className="alert-reminder-page">
       <h2>Alert Reminder Page</h2>
@@ -117,6 +144,18 @@ const AlertPage = () => {
         <ReminderContainer category="Medicine" className="medicine" />
         <ReminderContainer category="Groceries" className="groceries" />
         <ReminderContainer category="Status" className="status" />
+      </div>
+      {/* Back Icon at Top Left */}
+      <div
+        style={{
+          position: "fixed",
+          top: "20px",
+          left: "20px",
+          cursor: "pointer",
+        }}
+        onClick={handleGoBack}
+      >
+        <FaArrowLeft size={32} color="#000" /> {/* Back Icon */}
       </div>
     </div>
   );
