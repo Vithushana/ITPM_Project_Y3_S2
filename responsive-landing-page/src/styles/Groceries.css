@@ -15,6 +15,8 @@
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  color: #2949b3;
+  font-size: 28px;
 }
 
 .inventory-box {
@@ -32,52 +34,63 @@ h1 {
   padding: 20px;
   width: 250px;
   text-align: center;
-  transition: 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .inventory-item:hover {
   transform: translateY(-5px);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .inventory-item h2 {
-  color: #4CAF50;
+  color: #2949b3;
   margin-bottom: 10px;
+  font-size: 20px;
 }
 
 .inventory-item p {
   font-size: 16px;
   margin: 5px 0;
+  color: #555;
 }
 
 .actions {
-  margin-top: 10px;
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
-button {
+.actions button {
   padding: 8px 12px;
-  cursor: pointer;
   border: none;
-  font-size: 14px;
   border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button.update {
-  background-color: #528ce9;
+.actions button.update {
+  background-color: #4a78e4;
   color: white;
-  margin-right: 10px;
 }
 
-button.update:hover {
-  background-color: #5a86e5;
+.actions button.update:hover {
+  background-color: #3a68d4;
+  transform: scale(1.05);
 }
 
-button.delete {
+.actions button.delete {
   background-color: #f44336;
   color: white;
 }
 
-button.delete:hover {
+.actions button.delete:hover {
   background-color: #e53935;
+  transform: scale(1.05);
 }
 
 .no-items {
@@ -114,6 +127,18 @@ button.delete:hover {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
   position: relative;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-content h2 {
@@ -139,27 +164,29 @@ button.delete:hover {
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .modal-content button:first-of-type {
   background: #06993c;
   color: white;
-  border: rgb(130, 129, 129) solid;
+  border: 1px solid rgb(130, 129, 129);
 }
 
 .modal-content button:first-of-type:hover {
-  background: #0056b3;
+  background: #058830;
+  transform: scale(1.05);
 }
 
 .modal-content button:last-of-type {
   background: #999;
   color: black;
-  border: black solid;
+  border: 1px solid black;
 }
 
 .modal-content button:last-of-type:hover {
   background: #ccc;
-  border: black solid;
+  transform: scale(1.05);
 }
 
 .add-item-btn {
@@ -183,14 +210,10 @@ button.delete:hover {
 }
 
 .add-item-btn:hover {
-  background: #06993c;
+  background: #3a68d4;
   transform: scale(1.1);
 }
 
 .add-item-btn:active {
   transform: scale(1);
-}
-
-.update{
-  background-color: #4a78e4;
 }

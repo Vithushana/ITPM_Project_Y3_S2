@@ -89,7 +89,7 @@ const ElectronicsPage = () => {
                 <p><strong>Expiration Date:</strong> {item.expirationDate}</p>
                 {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="electronics-image" />}
                 <div className="button-group">
-                  <button className="edit-btn" onClick={() => handleEditItem(item.id)}>Edit</button>
+                  <button className="edit-btn" onClick={() => handleEditItem(item.id)}>Update</button>
                   <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
                 </div>
               </div>

@@ -56,12 +56,9 @@ const InventoryPage = () => {
                       setSelectedItem(item);
                       setShowUpdateModal(true);
                     }}
-                  >
-                    Update
-                  </button>
+                  >Update</button>
                   <button onClick={() => handleDelete(item.id)} className="delete">
-                    Delete
-                  </button>
+                    Delete</button>
                 </div>
               </div>
             ))
