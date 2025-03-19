@@ -55,7 +55,7 @@ const Sidebar = () => {
         </div>
       </div>
       <div className="logout" onClick={handleLogout}>
-        <FaSignOutAlt className="icon" /> Logout
+        <FaSignOutAlt className="icon" /> Back To Home
       </div>
     </div>
   );
