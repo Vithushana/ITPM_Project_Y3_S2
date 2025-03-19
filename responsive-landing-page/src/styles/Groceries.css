@@ -62,13 +62,13 @@ button {
 }
 
 button.update {
-  background-color: #af4c9d;
+  background-color: #528ce9;
   color: white;
   margin-right: 10px;
 }
 
 button.update:hover {
-  background-color: #7e3375;
+  background-color: #5a86e5;
 }
 
 button.delete {
@@ -168,7 +168,7 @@ button.delete:hover {
   right: 20px;
   width: 50px;
   height: 50px;
-  background: #06993c;
+  background: #4a78e4;
   color: white;
   border: none;
   border-radius: 50%;
@@ -189,4 +189,8 @@ button.delete:hover {
 
 .add-item-btn:active {
   transform: scale(1);
+}
+
+.update{
+  background-color: #4a78e4;
 }

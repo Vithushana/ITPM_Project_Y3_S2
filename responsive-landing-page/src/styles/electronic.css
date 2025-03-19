@@ -80,11 +80,11 @@ button {
 
 button:hover {
   opacity: 0.8;
-  transform: scale(1.05); /* Slight scaling effect on hover */
+  transform: scale(1.05); 
 }
 
 .update-btn {
-  background-color: #28a745;
+  background-color: #4a78e4;
   color: white;
   margin-right: 5px;
   transition: background-color 0.3s ease;
@@ -129,7 +129,7 @@ button:hover {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #28a745;
+  background-color: #4a78e4;
   color: white;
   font-size: 24px;
   border: none;
@@ -178,4 +178,8 @@ button:hover {
 .popup-content .close-btn {
   background: red;
   color: white;
+}
+
+.edit-btn{
+  background-color: #4a78e4;
 }

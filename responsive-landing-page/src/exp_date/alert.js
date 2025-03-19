@@ -1,148 +1,122 @@
 import React, { useState } from "react";
 import "../styles/alert.css";
 
-// Renamed alertPage to AlertPage (React component naming convention)
-const AlertPage = () => {
-  const [neverExpire, setNeverExpire] = useState(false);
-  const [sendReminders, setSendReminders] = useState(true);
-  const [firstReminder, setFirstReminder] = useState(0);
-  const [secondReminder, setSecondReminder] = useState(0);
-  const [thirdReminder, setThirdReminder] = useState(0);
-  const [condition, setCondition] = useState("Always");
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [status] = useState("Approved");
-  const [expirationDate, setExpirationDate] = useState("");
+const ReminderContainer = ({ category, className }) => {
+  const [name, setName] = useState("");
+  const [purchasingDate, setPurchasingDate] = useState("");
+  const [reminderDate, setReminderDate] = useState("");
+  const [reminders, setReminders] = useState([]);
+  const [sentEmails, setSentEmails] = useState([]);
 
-  const handleDateSelect = (day) => {
-    setSelectedDate(day);
-    setExpirationDate(`2023-07-${String(day).padStart(2, "0")} 09:35`);
+  const handleAddReminder = () => {
+    if (!name || (category === "Electronics" && !purchasingDate) || (category !== "Electronics" && !reminderDate)) {
+      alert("Please enter all required details before adding a reminder.");
+      return;
+    }
+
+    const newReminder = { name, emailSent: false };
+    
+    if (category === "Electronics") {
+      newReminder.purchasingDate = purchasingDate;
+    } else {
+      newReminder.reminderDate = reminderDate;
+    }
+
+    setReminders([...reminders, newReminder]);
+    setName("");
+    setPurchasingDate("");
+    setReminderDate("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log({
-      neverExpire,
-      sendReminders,
-      firstReminder,
-      secondReminder,
-      thirdReminder,
-      condition,
-      expirationDate,
-    });
-  };
+  const handleSendEmail = () => {
+    if (!reminders.length) {
+      alert("No reminders to send an email.");
+      return;
+    }
 
-  const daysInMonth = new Date(2023, 6, 0).getDate(); // July 2023
-  const firstDayOfMonth = new Date(2023, 6, 1).getDay();
-
-  const days = [];
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    days.push(<div key={`empty-${i}`} className="empty"></div>);
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(
-      <div
-        key={i}
-        className={`day ${selectedDate === i ? "selected" : ""}`}
-        onClick={() => handleDateSelect(i)}
-      >
-        {i}
-      </div>
+    setSentEmails([...sentEmails, ...reminders.map((r) => r.name)]);
+    setReminders((prevReminders) =>
+      prevReminders.map((reminder) => ({ ...reminder, emailSent: true }))
     );
-  }
+
+    alert(
+      `Email sent for ${category} reminders:\n` +
+        reminders
+          .map((r) =>
+            category === "Electronics"
+              ? `${r.name} - Purchasing Date: ${r.purchasingDate}`
+              : `${r.name} - Reminder Date: ${r.reminderDate}`
+          )
+          .join("\n")
+    );
+  };
 
   return (
-    <div className="app">
-      <h1>Expiry & Reminders</h1>
+    <div className={`reminder-container ${className}`}>
+      <h3>{category}</h3>
+      <label>Name:</label>
+      <input
+        type="text"
+        placeholder="Enter Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-      {/* Expiration Status */}
-      <div className="status">
-        <h2>Status: {status}</h2>
-        <p>Expiration Date: {expirationDate}</p>
-      </div>
+      {category === "Electronics" ? (
+        <>
+          <label>Purchasing Date:</label>
+          <input
+            type="date"
+            value={purchasingDate}
+            onChange={(e) => setPurchasingDate(e.target.value)}
+          />
+        </>
+      ) : category !== "Status" ? (
+        <>
+          <label>Reminder Date:</label>
+          <input
+            type="date"
+            value={reminderDate}
+            onChange={(e) => setReminderDate(e.target.value)}
+          />
+        </>
+      ) : null}
 
-      {/* Reminder Form */}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={neverExpire}
-              onChange={(e) => setNeverExpire(e.target.checked)}
-            />
-            Never Expire
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={sendReminders}
-              onChange={(e) => setSendReminders(e.target.checked)}
-            />
-            Send Reminder(s)
-          </label>
-        </div>
-        <div>
-          <label>
-            First reminder:
-            <input
-              type="number"
-              value={firstReminder}
-              onChange={(e) => setFirstReminder(parseInt(e.target.value))}
-            />
-            day(s) before
-          </label>
-        </div>
-        <div>
-          <label>
-            Second reminder:
-            <input
-              type="number"
-              value={secondReminder}
-              onChange={(e) => setSecondReminder(parseInt(e.target.value))}
-            />
-            day(s) before
-          </label>
-        </div>
-        <div>
-          <label>
-            Third reminder:
-            <input
-              type="number"
-              value={thirdReminder}
-              onChange={(e) => setThirdReminder(parseInt(e.target.value))}
-            />
-            day(s) before
-          </label>
-        </div>
-        <div>
-          <label>
-            Only if:
-            <select value={condition} onChange={(e) => setCondition(e.target.value)}>
-              <option value="Always">Always</option>
-              <option value="Not opened">Not opened</option>
-              <option value="Not commented">Not commented</option>
-              <option value="Not actioned">Not actioned</option>
-            </select>
-          </label>
-        </div>
-        <button type="submit">Create</button>
-        <button type="button">Cancel</button>
-      </form>
+      {category !== "Status" && (
+        <>
+          <button onClick={handleAddReminder}>Add</button>
+          <button onClick={handleSendEmail}>Send Email</button>
+        </>
+      )}
 
-      {/* Calendar */}
-      <div className="calendar">
-        <div className="weekdays">
-          <div>Sun</div>
-          <div>Mon</div>
-          <div>Tue</div>
-          <div>Wed</div>
-          <div>Thu</div>
-          <div>Fri</div>
-          <div>Sat</div>
-        </div>
-        <div className="days">{days}</div>
+      <ul className="reminder-list">
+        {reminders.map((reminder, index) => (
+          <li key={index}>
+            {reminder.name} -{" "}
+            {category === "Electronics"
+              ? `Purchasing Date: ${reminder.purchasingDate}`
+              : `Reminder Date: ${reminder.reminderDate}`}
+            {category === "Status" && (
+              <span style={{ color: reminder.emailSent ? "green" : "red", marginLeft: "10px" }}>
+                {reminder.emailSent ? "Email Sent ✅" : "Email Not Sent ❌"}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const AlertPage = () => {
+  return (
+    <div className="alert-reminder-page">
+      <h2>Alert Reminder Page</h2>
+      <div className="reminders-grid">
+        <ReminderContainer category="Electronics" className="electronics" />
+        <ReminderContainer category="Medicine" className="medicine" />
+        <ReminderContainer category="Groceries" className="groceries" />
+        <ReminderContainer category="Status" className="status" />
       </div>
     </div>
   );
