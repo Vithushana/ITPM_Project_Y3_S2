@@ -1,5 +1,6 @@
 body {
-  background-color: rgb(186, 202, 226);
+  background-image: url("../exp_img/alertimage.jpeg");
+  background-position: cover;
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
@@ -7,7 +8,7 @@ body {
 
 .alert-reminder-page {
   text-align: center;
-  color: rgb(9, 9, 9);
+  color: black;
   padding: 20px;
 }
 
@@ -23,24 +24,24 @@ body {
   padding: 15px;
   border-radius: 8px;
   width: 250px;
-  text-align: center;
-  color: white;
+  text-align: left;
+  color: rgb(22, 27, 103);
 }
 
 .electronics {
-  background-color: #ff5733; 
+  background-color: rgb(186, 202, 226); 
 }
 
 .medicine {
-  background-color: #33a1ff; 
+  background-color: rgb(186, 202, 226); 
 }
 
 .groceries {
-  background-color: #28a745; 
+  background-color: rgb(186, 202, 226); 
 }
 
 .status {
-  background-color: #ffc107; 
+  background-color: rgb(186, 202, 226); 
   color: black; 
 }
 
@@ -80,3 +81,4 @@ body {
   padding: 5px;
   border-radius: 5px;
 }
+
