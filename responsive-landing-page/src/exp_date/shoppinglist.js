@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/shopping.css";
-import bannerImage from "../exp_img/images.jpg";
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -66,11 +65,8 @@ const ShoppingList = () => {
 
       <div className="banner">
         <div className="banner-text">
-          <h1>Make Your Automated Shopping Lists</h1>
+          <h1>Make Your Shopping Lists</h1>
           <p>🛒 Effortless Shopping, Smart Choices!</p>
-        </div>
-        <div className="banner-image">
-          <img src={bannerImage} alt="Grocery Banner" />
         </div>
       </div>
 
