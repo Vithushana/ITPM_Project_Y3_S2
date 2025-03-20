@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FaArrowLeft } from "react-icons/fa"; // Import the back icon
-import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "../styles/alert.css";
 
 const ReminderContainer = ({ category, className }) => {
@@ -9,8 +9,8 @@ const ReminderContainer = ({ category, className }) => {
   const [reminderDate, setReminderDate] = useState("");
   const [reminders, setReminders] = useState([]);
   const [sentEmails, setSentEmails] = useState([]);
+  const [notification, setNotification] = useState("");
 
-  // Asynchronous function to handle adding a reminder and making a POST request
   const handleAddReminder = async () => {
     if (!name || (category === "Electronics" && !purchasingDate) || (category !== "Electronics" && !reminderDate)) {
       alert("Please enter all required details before adding a reminder.");
@@ -25,27 +25,30 @@ const ReminderContainer = ({ category, className }) => {
       newReminder.reminderDate = reminderDate;
     }
 
-    // Sending the reminder data to the backend API
-    const response = await fetch('http://localhost:8080/api/reminders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: newReminder.name,
-        purchasingDate: newReminder.purchasingDate,
-        reminderDate: newReminder.reminderDate,
-        emailSent: newReminder.emailSent,
-      }),
-    });
+    try {
+      const response = await fetch('http://localhost:8080/api/reminders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newReminder.name,
+          purchasingDate: newReminder.purchasingDate,
+          reminderDate: newReminder.reminderDate,
+          emailSent: newReminder.emailSent,
+        }),
+      });
 
-    if (response.ok) {
-      console.log("Reminder added successfully");
-      // After successful POST request, add the reminder to the state
-      setReminders([...reminders, newReminder]);
-      setName("");
-      setPurchasingDate("");
-      setReminderDate("");
-    } else {
-      alert("Failed to add reminder.");
+      if (response.ok) {
+        setReminders([...reminders, newReminder]);
+        setName("");
+        setPurchasingDate("");
+        setReminderDate("");
+        setNotification(`Reminder "${name}" added successfully.`);
+      } else {
+        setNotification("Failed to add reminder.");
+      }
+    } catch (error) {
+      console.error('Error adding reminder:', error);
+      setNotification("Failed to add reminder.");
     }
   };
 
@@ -107,6 +110,7 @@ const ReminderContainer = ({ category, className }) => {
         <>
           <button onClick={handleAddReminder}>Add</button>
           <button onClick={handleSendEmail}>Send Email</button>
+          {notification && <p className="notification">{notification}</p>}
         </>
       )}
 
@@ -145,7 +149,6 @@ const AlertPage = () => {
         <ReminderContainer category="Groceries" className="groceries" />
         <ReminderContainer category="Status" className="status" />
       </div>
-      {/* Back Icon at Top Left */}
       <div
         style={{
           position: "fixed",
@@ -155,7 +158,7 @@ const AlertPage = () => {
         }}
         onClick={handleGoBack}
       >
-        <FaArrowLeft size={32} color="#000" /> {/* Back Icon */}
+        <FaArrowLeft size={32} color="#000" />
       </div>
     </div>
   );

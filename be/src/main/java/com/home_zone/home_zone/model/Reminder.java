@@ -8,15 +8,21 @@ public class Reminder {
     @Id
     private String id;
     private String name;
-    private String purchasingDate;
+    private String description;
     private String reminderDate;
     private boolean emailSent;
+    private Category category;
 
-    public Reminder(String name, String purchasingDate, String reminderDate, boolean emailSent) {
+    public enum Category {
+        ELECTRONICS, MEDICINE, GROCERY;
+    }
+
+    public Reminder(String name, String description, String reminderDate, boolean emailSent, Category category ) {
         this.name = name;
-        this.purchasingDate = purchasingDate;
+        this.description = description;
         this.reminderDate = reminderDate;
         this.emailSent = emailSent;
+        this.category = category;
     }
 
     public String getId() {
@@ -31,11 +37,11 @@ public class Reminder {
     public void setName(String name) {
         this.name = name;
     }
-    public String getPurchasingDate() {
-        return purchasingDate;
+    public String getdescription() {
+        return description;
     }
-    public void setPurchasingDate(String purchasingDate) {
-        this.purchasingDate = purchasingDate;
+    public void setdescription(String description) {
+        this.description = description;
     }
     public String getReminderDate() {
         return reminderDate;
@@ -48,6 +54,13 @@ public class Reminder {
     }
     public void setEmailSent(boolean emailSent) {
         this.emailSent = emailSent;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+    public void setCategory(Category category) {
+        this.category = category;
     }
     
 }

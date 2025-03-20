@@ -16,6 +16,8 @@ import BudgetPage from './inventory/budget';
 import AlertPage from "./exp_date/alert";
 import AddItemModal from "./inventory/AddItemModal";
 import UpdateItemModal from './inventory/UpdateItemModal';
+import ShoppingList from "./exp_date/shoppinglist";
+
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -50,6 +52,7 @@ const App = () => {
           <Route path="/AlertPage" element={isLoggedIn ? <AlertPage /> : <Navigate to="/login" replace />} />
           <Route path="/AddItemModal" element={isLoggedIn ? <AddItemModal /> : <Navigate to="/login" replace />} />
           <Route path="/UpdateItemModal" element={isLoggedIn ? <UpdateItemModal /> : <Navigate to="/login" replace />} />
+          <Route path="/ShoppingList" element={isLoggedIn ? <ShoppingList /> : <Navigate to="/login" replace />} />
         </Routes>
         <LocationBasedContent isLoggedIn={isLoggedIn} />
       </AppContainer>
@@ -59,14 +62,14 @@ const App = () => {
 
 const HeaderBasedOnLocation = () => {
   const location = useLocation();
-  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' && <Header />;
+  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' && location.pathname !== '/ShoppingList' && <Header />;
 };
 
 const LocationBasedContent = ({ isLoggedIn }) => {
   const location = useLocation();
   if (!isLoggedIn) return null;
 
-  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' &&  (
+  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' && location.pathname !== '/ShoppingList' &&  (
     <>
       <Section id="faqSection">
         <FaqSection />

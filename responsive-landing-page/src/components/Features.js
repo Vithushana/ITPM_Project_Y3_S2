@@ -193,7 +193,7 @@ const HomeStock = () => {
             <p>Monitor your grocery expenses and optimize your spending on household essentials.</p>
           </div>
         </div>
-        <div className="feasto-section">
+        <div className="feasto-section" onClick={() => navigate('/ShoppingList')}>
           <img src={ControlLogo} alt="Shopping List Logo" />
           <div>
             <h2>Automated Shopping Lists</h2>
