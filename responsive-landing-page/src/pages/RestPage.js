@@ -5,7 +5,6 @@ import { FaLock } from 'react-icons/fa';
 import backgroundImage from '../exp_img/home.jpeg';
 import axios from 'axios';
 
-// Animation for the Reset Box (Fades in and slides down)
 const fadeInSlideDown = keyframes`
   from {
     opacity: 0;
@@ -126,7 +125,7 @@ const ResetPasswordPage = () => {
           { email: email.trim() },
           {
             headers: {
-              'Content-Type': 'application/json', 
+              'Content-Type': 'application/json',
             },
           }
         );

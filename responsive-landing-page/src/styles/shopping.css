@@ -1,7 +1,7 @@
 .App {
   font-family: Arial, sans-serif;
   text-align: center;
-  background-color: #bbb;
+  background-color: #bbb !important;
 }
 
 .back-button-container {
@@ -36,7 +36,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgb(186, 202, 226);
+  background-color: rgb(117, 140, 175);
   color: rgb(13, 13, 59);
   padding: 40px;
   height: 280px; /* Fixed height as specified */
@@ -79,6 +79,7 @@
 
 .category-section {
   padding: 280px 20px 80px 20px; 
+  background-color: rgb(186, 202, 226);
 }
 
 .category-section h2 {
@@ -92,6 +93,7 @@
   justify-content: space-around;
   flex-wrap: wrap;
   gap: 20px;
+  background-color: rgb(186, 202, 226);
 }
 
 .category-item {
@@ -128,7 +130,6 @@
   background-color: #2e7d32;
 }
 
-/* Featured Products Section */
 .featured-products {
   padding: 40px 20px;
 }
@@ -139,18 +140,17 @@
   text-align: left;
 }
 
-/* Footer */
 footer {
-  padding: 20px;
+  padding: 70px;
   text-align: right;
   color: #888;
+  background-color: rgb(186, 202, 226);
 }
 
 footer p {
   margin: 0;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .banner {
     flex-direction: column;
@@ -169,11 +169,11 @@ footer p {
 
   .banner-image img {
     width: 100%;
-    height: auto !important; /* Override the fixed height for smaller screens */
+    height: auto !important; 
   }
 
   .category-section {
-    padding-top: 300px; /* Adjust for smaller screens if the banner height changes */
+    padding-top: 300px;
   }
 
   .category-grid {
@@ -184,4 +184,62 @@ footer p {
     width: 120px;
     height: 120px;
   }
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 130%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.popup-container input,
+.popup-container select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.save-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.cancel-btn {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.category-table{
+  background-color: #28a745;
+  margin-top: 12px;
+  border-radius: 3px;
 }

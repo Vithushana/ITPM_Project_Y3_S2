@@ -30,25 +30,25 @@ const Sidebar = () => {
       <Logo src={logo} alt="Logo" />
       <div className="menu">
         <div 
-          className={`menu-item ${active === "Groceries" ? "active" : ""}`} 
+          className={`menu-item1 ${active === "Groceries" ? "active" : ""}`} 
           onClick={() => handleNavigation("Groceries", "/inventory")}
         >
           <FaAppleAlt className="icon" /> Groceries
         </div>
         <div 
-          className={`menu-item ${active === "Electronics" ? "active" : ""}`} 
+          className={`menu-item1 ${active === "Electronics" ? "active" : ""}`} 
           onClick={() => handleNavigation("Electronics", "/electronics")}
         >
           <FaLaptop className="icon" /> Electronics
         </div>
         <div 
-          className={`menu-item ${active === "Medicines" ? "active" : ""}`} 
+          className={`menu-item1 ${active === "Medicines" ? "active" : ""}`} 
           onClick={() => handleNavigation("Medicines", "/medicine")}
         >
           <FaPills className="icon" /> Medicines
         </div>
         <div 
-          className={`menu-item ${active === "Budgets" ? "active" : ""}`} 
+          className={`menu-item1 ${active === "Budgets" ? "active" : ""}`} 
           onClick={() => handleNavigation("Budgets", "/budget")}
         >
           <FaChartPie className="icon" /> Budgets

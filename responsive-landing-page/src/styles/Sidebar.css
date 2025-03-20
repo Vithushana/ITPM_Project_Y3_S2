@@ -26,7 +26,7 @@
   margin-top: 35px;
 }
 
-.menu-item {
+.menu-item1 {
   display: flex;
   align-items: center;
   padding: 12px;
@@ -37,18 +37,18 @@
   transition: 0.3s;
 }
 
-.menu-item .icon {
+.menu-item1 .icon {
   margin-right: 10px;
   font-size: 18px;
 }
 
-.menu-item.active {
+.menu-item1.active {
   background: linear-gradient(to right, rgb(43, 83, 141), rgb(43, 83, 141));
   font-weight: bold;
   color: #fff;
 }
 
-.menu-item:hover {
+.menu-item1:hover {
   background: linear-gradient(to right, rgb(43, 83, 141), rgb(43, 83, 141));
   color: #fff;
 }
