@@ -35,4 +35,6 @@ public class ReminderController {
         reminderService.sendEmailForReminders();
         return "Emails sent successfully!";
     }
+
+    
 }

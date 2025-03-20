@@ -10,6 +10,7 @@ public class Reminder {
     private String name;
     private String description;
     private String reminderDate;
+    private String purchasingDate;
     private boolean emailSent;
     private Category category;
 
@@ -17,10 +18,11 @@ public class Reminder {
         ELECTRONICS, MEDICINE, GROCERY;
     }
 
-    public Reminder(String name, String description, String reminderDate, boolean emailSent, Category category ) {
+    public Reminder(String name, String description, String reminderDate, boolean emailSent, Category category, String purchasingDate) {
         this.name = name;
         this.description = description;
         this.reminderDate = reminderDate;
+        this.purchasingDate = purchasingDate;  
         this.emailSent = emailSent;
         this.category = category;
     }
@@ -62,5 +64,12 @@ public class Reminder {
     public void setCategory(Category category) {
         this.category = category;
     }
+    public String getpurchasingDate(){
+        return purchasingDate;
+    }
+    public void setpurchasingDate(String purchasingDate){
+        this.purchasingDate=purchasingDate;
+    }
+    
     
 }

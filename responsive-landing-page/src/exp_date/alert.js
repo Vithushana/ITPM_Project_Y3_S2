@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import SwipeableViews from "react-swipeable-views";
 import "../styles/alert.css";
 
 const ReminderContainer = ({ category, className }) => {
@@ -52,20 +53,6 @@ const ReminderContainer = ({ category, className }) => {
       setNotification("Failed to add reminder.");
     }
   };
-
-  const getAllReminders = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/api/reminders', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      
-    } catch (error) {
-      console.error('Error adding reminder:', error);
-      setNotification("Failed to add reminder.");
-    }
-  }
 
   const handleSendEmail = () => {
     if (!reminders.length) {
@@ -148,6 +135,57 @@ const ReminderContainer = ({ category, className }) => {
   );
 };
 
+const SwipeableReminderContainer = () => {
+  const [reminders, setReminders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReminders = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/reminders', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setReminders(data);
+        } else {
+          console.error('Failed to fetch reminders');
+        }
+      } catch (error) {
+        console.error('Error fetching reminders:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReminders();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <div className="swipeableviews">
+    <SwipeableViews enableMouseEvents>
+      {reminders.map((reminder, index) => (
+        <div key={reminder.id} style={{ padding: 20 }}>
+          <h3>{reminder.name}</h3>
+          <p>Category: {reminder.category}</p>
+          {reminder.purchasingDate && <p>Purchasing Date: {reminder.purchasingDate}</p>}
+          {reminder.reminderDate && <p>Reminder Date: {reminder.reminderDate}</p>}
+          <p>Email Sent: {reminder.emailSent ? "Yes" : "No"}</p>
+          <button>Edit </button>
+          <button>Delete</button>
+        </div>
+      ))}
+    </SwipeableViews>
+    </div>
+  );
+};
+
 const AlertPage = () => {
   const navigate = useNavigate();
 
@@ -162,13 +200,9 @@ const AlertPage = () => {
         <ReminderContainer category="Electronics" className="electronics" />
         <ReminderContainer category="Medicine" className="medicine" />
         <ReminderContainer category="Groceries" className="groceries" />
-        <ReminderContainer category="Status" className="status" />
       </div>
-      <div className="view-reminder">
-        Category:
-        Name:
-        Purchasing Date:
-        Status
+      <div className="swipeable-container">
+        <SwipeableReminderContainer />
       </div>
       <div
         style={{
