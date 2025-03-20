@@ -186,7 +186,7 @@ const HomeStock = () => {
             <p>Get timely alerts before food or household products expire, reducing waste and saving money.</p>
           </div>
         </div>
-        <div className="feasto-section">
+        <div className="feasto-section" onClick={() => navigate('/SiderChatBot')}>
           <img src={VisibilityLogo} alt="Budget Logo" />
           <div>
             <h2>Voice-Activated Shopping Lists</h2>

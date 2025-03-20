@@ -1,0 +1,138 @@
+.sider-chatbot {
+    width: 250px;
+    height: 100vh;
+    background-color: #1A2A44;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .sider-chatbot-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  
+  .dot.red {
+    background-color: #FF0000;
+  }
+  
+  .dot.yellow {
+    background-color: #FFFF00;
+  }
+  
+  .dot.green {
+    background-color: #00FF00;
+  }
+  
+  .sider-chatbot-header h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .sider-chatbot-menu {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
+  }
+  
+  .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .menu-item span:first-child {
+    margin-right: 10px;
+  }
+  
+  .menu-item.active {
+    background-color: #FF6F61;
+  }
+  
+  .badge {
+    margin-left: auto;
+    background-color: #FF8C00;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  
+  .theme-toggle {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .theme-toggle span {
+    background-color: #FFD700;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #ccc;
+    border-radius: 50%;
+  }
+  
+  .user-info {
+    flex-grow: 1;
+  }
+  
+  .user-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .user-email {
+    margin: 0;
+    font-size: 12px;
+    color: #ccc;
+  }
+  
+  .upgrade-btn {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
