@@ -34,6 +34,7 @@ const ReminderContainer = ({ category, className }) => {
           purchasingDate: newReminder.purchasingDate,
           reminderDate: newReminder.reminderDate,
           emailSent: newReminder.emailSent,
+          category: category.toUpperCase(),
         }),
       });
 
@@ -51,6 +52,20 @@ const ReminderContainer = ({ category, className }) => {
       setNotification("Failed to add reminder.");
     }
   };
+
+  const getAllReminders = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/reminders', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      
+    } catch (error) {
+      console.error('Error adding reminder:', error);
+      setNotification("Failed to add reminder.");
+    }
+  }
 
   const handleSendEmail = () => {
     if (!reminders.length) {
@@ -148,6 +163,12 @@ const AlertPage = () => {
         <ReminderContainer category="Medicine" className="medicine" />
         <ReminderContainer category="Groceries" className="groceries" />
         <ReminderContainer category="Status" className="status" />
+      </div>
+      <div className="view-reminder">
+        Category:
+        Name:
+        Purchasing Date:
+        Status
       </div>
       <div
         style={{
