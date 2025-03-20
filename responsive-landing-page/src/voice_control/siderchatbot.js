@@ -1,6 +1,7 @@
 import React from 'react';
 import '../voice_control/SiderChatBot.css';
 
+// Icons (using emojis as placeholders)
 const ChatIcon = () => <span>💬</span>;
 const FeedbackIcon = () => <span>📢</span>;
 const PromptLibraryIcon = () => <span>📚</span>;
@@ -14,6 +15,7 @@ const LogoutIcon = () => <span>🚪</span>;
 const SiderChatBot = () => {
   return (
     <div className="sider-chatbot">
+      {/* Header */}
       <div className="sider-chatbot-header">
         <div className="dots">
           <span className="dot red"></span>
@@ -22,6 +24,8 @@ const SiderChatBot = () => {
         </div>
         <h2>CHAT BOT</h2>
       </div>
+
+      {/* Menu Items */}
       <ul className="sider-chatbot-menu">
         <li className="menu-item active">
           <ChatIcon />
@@ -60,13 +64,6 @@ const SiderChatBot = () => {
           <span>Log Out</span>
         </li>
       </ul>
-      <div className="user-profile">
-        <div className="avatar"></div>
-        <div className="user-info">
-          <p className="user-name">Adam Williams</p>
-          <p className="user-email">info@gmail.com</p>
-        </div>
-      </div>
     </div>
   );
 };
