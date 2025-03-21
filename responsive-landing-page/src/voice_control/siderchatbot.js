@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import "./SiderChatBot.css";
 
 // Icons (using emojis as placeholders)
 const ChatIcon = () => <span>💬</span>;
@@ -13,6 +15,7 @@ const SendIcon = () => <span>📩</span>;
 const API_KEYWORDS = ["budget", "electronics", "inventory", "medicine", "reminders"];
 
 const SiderChatBot = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [messages, setMessages] = useState([]);
@@ -66,7 +69,7 @@ const SiderChatBot = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data && Array.isArray(data)) {
-          const itemNames = data.map((item) => item.name ? item.name : item.category);
+          const itemNames = data.map((item) => (item.name ? item.name : item.category));
           addMessage(`Items in ${category}:`, "Bot");
           itemNames.forEach((name) => addMessage(name, "Bot"));
         } else {
@@ -111,177 +114,69 @@ const SiderChatBot = () => {
   };
 
   return (
-    <div style={styles.chatContainer}>
+    <div className="chat-container">
       {/* Sidebar */}
-      <div style={styles.siderChatbot}>
+      <div className="sider-chatbot">
         {/* Header */}
-        <div style={styles.siderChatbotHeader}>
+        <div className="sider-chatbot-header">
           <h2>CHAT BOT</h2>
         </div>
 
         {/* Menu Items */}
-        <ul style={styles.siderChatbotMenu}>
-          <li style={styles.menuItem}>
+        <ul className="sider-chatbot-menu">
+          <li className="menu-item">
             <ChatIcon /> <span>Chat Generator</span>
           </li>
-          <li style={styles.menuItem}>
+          <li className="menu-item">
             <FeedbackIcon /> <span>Feedback</span>
           </li>
-          <li style={styles.menuItem}>
+          <li className="menu-item">
             <SavesIcon /> <span>My Saves</span>
           </li>
-          <li style={styles.menuItem}>
+          <li className="menu-item">
             <FavoriteIcon /> <span>Favorite</span>
           </li>
-          <li style={styles.menuItem}>
+          <li className="menu-item">
             <HistoryIcon /> <span>History</span>
           </li>
-          <li style={styles.menuItem}>
+          <li className="menu-item" onClick={() => navigate("/home")}> {/* Added Navigation */}
             <LogoutIcon /> <span>Back Home</span>
           </li>
         </ul>
 
         {/* Voice Assistant Section */}
-        <div style={styles.voiceAssist}>
+        <div className="voice-assist">
           <h3>Voice Assistant</h3>
           <button
-            style={isListening ? { ...styles.micButton, background: "red" } : styles.micButton}
+            className={`mic-button ${isListening ? "listening" : ""}`}
             onClick={toggleListening}
           >
             <MicIcon /> {isListening ? "Listening..." : "Start Voice"}
           </button>
-          <p style={styles.transcript}>{transcript || "Say something..."}</p>
-          <button style={styles.finishButton} onClick={finishChat}>
+          <p className="transcript">{transcript || "Say something..."}</p>
+          <button className="finish-button" onClick={finishChat}>
             <SendIcon /> Finish Chat
           </button>
         </div>
       </div>
 
       {/* Chat Display */}
-      <div style={styles.chatBox}>
+      <div className="chat-box">
         <h3>Chat Messages</h3>
-        <div style={styles.chatMessages}>
+        <div className="chat-messages">
           {messages.length > 0 ? (
             messages.map((msg, index) => (
-              <div
-                key={index}
-                style={{
-                  ...styles.message,
-                  ...(msg.sender === "User" ? styles.userMessage : styles.botMessage),
-                }}
-              >
+              <div key={index} className={`message ${msg.sender === "User" ? "user-message" : "bot-message"}`}>
                 <span>{msg.text}</span>
               </div>
             ))
           ) : (
-            <p style={styles.noMessages}>No messages yet...</p>
+            <p className="no-messages">No messages yet...</p>
           )}
         </div>
       </div>
     </div>
   );
 };
-
-// Inline Styles
-const styles = {
-  chatContainer: {
-    display: "flex",
-    height: "100vh",
-  },
-  siderChatbot: {
-    width: "300px",
-    background: "#282c34",
-    color: "white",
-    padding: "20px",
-    borderRight: "2px solid #444",
-    display: "flex",
-    flexDirection: "column",
-  },
-  siderChatbotHeader: {
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  siderChatbotMenu: {
-    listStyle: "none",
-    padding: "0",
-  },
-  menuItem: {
-    display: "flex",
-    alignItems: "center",
-    padding: "10px",
-    cursor: "pointer",
-  },
-  voiceAssist: {
-    marginTop: "auto",
-    padding: "15px",
-    border: "1px solid #555",
-    borderRadius: "8px",
-    textAlign: "center",
-    background: "#333",
-  },
-  micButton: {
-    background: "#007bff",
-    color: "white",
-    border: "none",
-    padding: "10px 15px",
-    fontSize: "16px",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  finishButton: {
-    background: "green",
-    color: "white",
-    border: "none",
-    padding: "10px",
-    marginTop: "10px",
-    fontSize: "14px",
-    cursor: "pointer",
-    borderRadius: "5px",
-  },
-  transcript: {
-    marginTop: "10px",
-    fontSize: "14px",
-    color: "#ddd",
-  },
-  chatBox: {
-    flexGrow: "1",
-    background: "#f4f4f4",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  chatMessages: {
-    flexGrow: "1",
-    overflowY: "auto",
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    background: "white",
-    display: "flex",
-    flexDirection: "column",
-  },
-  message: {
-    padding: "10px",
-    borderRadius: "5px",
-    margin: "5px",
-    maxWidth: "70%",
-  },
-  userMessage: {
-    background: "#007bff",
-    color: "white",
-    alignSelf: "flex-end",
-  },
-  botMessage: {
-    background: "#444",
-    color: "white",
-    alignSelf: "flex-start",
-  },
-  noMessages: {
-    color: "#666",
-    textAlign: "center",
-    padding: "20px",
-  },
-};
-
 
 export default SiderChatBot;

@@ -177,8 +177,8 @@ const SwipeableReminderContainer = () => {
           {reminder.purchasingDate && <p>Purchasing Date: {reminder.purchasingDate}</p>}
           {reminder.reminderDate && <p>Reminder Date: {reminder.reminderDate}</p>}
           <p>Email Sent: {reminder.emailSent ? "Yes" : "No"}</p>
-          <button>Edit </button>
-          <button>Delete</button>
+          <button className="edit-btn">Edit</button>
+          <button className="delete-btn">Delete</button>
         </div>
       ))}
     </SwipeableViews>
@@ -210,10 +210,19 @@ const AlertPage = () => {
           top: "20px",
           left: "20px",
           cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: "#000",
+          backgroundColor: "#fff",
+          borderRadius: "5px",
         }}
         onClick={handleGoBack}
       >
         <FaArrowLeft size={32} color="#000" />
+        <span>Back Home</span>
       </div>
     </div>
   );

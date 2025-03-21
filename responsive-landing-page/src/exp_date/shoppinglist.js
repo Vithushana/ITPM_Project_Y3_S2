@@ -60,7 +60,7 @@ const ShoppingList = () => {
   return (
     <div className="App">
       <div className="back-button-container">
-        <button className="back-button" onClick={handleBack}>←</button>
+        <button className="back-button" onClick={handleBack}>← Back Home</button>
       </div>
 
       <div className="banner">

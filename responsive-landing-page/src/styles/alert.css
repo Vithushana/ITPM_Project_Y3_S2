@@ -83,7 +83,7 @@ body {
 }
 
 .swipeableviews {
-  background-color: red;
+  background-color: rgb(130, 154, 190);
   padding: 10px;
   border-radius: 10px; 
   margin: 20px auto; 
@@ -92,4 +92,37 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Common button styles */
+button {
+  padding: 8px 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease-in-out;
+  margin-right: 10px;
+}
+
+/* Edit Button */
+button.edit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+button.edit-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Delete Button */
+button.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+button.delete-btn:hover {
+  background-color: #a71d2a;
+  transform: scale(1.05);
+}
 
