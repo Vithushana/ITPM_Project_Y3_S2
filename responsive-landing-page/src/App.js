@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from './components/Header';
@@ -34,12 +34,22 @@ const Section = styled.section`
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Initialize isLoggedIn from localStorage on page load
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(loggedInStatus);
+  }, []);
+
+  // Update localStorage when isLoggedIn changes
+  useEffect(() => {
+    localStorage.setItem('isLoggedIn', isLoggedIn);
+  }, [isLoggedIn]);
 
   return (
     <Router>
       <AppContainer>
         {/* Render header based on the current path */}
-        <HeaderBasedOnLocation />
+        <HeaderBasedOnLocation isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Routes>
           <Route path="/home" element={isLoggedIn ? <HomeStock /> : <Navigate to="/login" />} />
           <Route path="/reset" element={<ResetPasswordPage />} />
@@ -61,26 +71,55 @@ const App = () => {
   );
 };
 
-const HeaderBasedOnLocation = () => {
+// Fix: Destructure isLoggedIn and setIsLoggedIn from props
+const HeaderBasedOnLocation = ({ isLoggedIn, setIsLoggedIn }) => {
   const location = useLocation();
-  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' && location.pathname !== '/ShoppingList' && location.pathname !== '/SiderChatBot' && <Header />;
+
+  // Render Header only on specific routes
+  if (
+    location.pathname !== '/inventory' &&
+    location.pathname !== '/medicine' &&
+    location.pathname !== '/electronics' &&
+    location.pathname !== '/budget' &&
+    location.pathname !== '/AlertPage' &&
+    location.pathname !== '/ShoppingList' &&
+    location.pathname !== '/SiderChatBot'
+  ) {
+    return <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
+  }
+
+  return null;
 };
 
+// Fix: Destructure isLoggedIn from props
 const LocationBasedContent = ({ isLoggedIn }) => {
   const location = useLocation();
-  if (!isLoggedIn) return null;
 
-  return location.pathname !== '/inventory' && location.pathname !== '/medicine' && location.pathname !== '/electronics' && location.pathname !== '/budget' && location.pathname !== '/AlertPage' && location.pathname !== '/ShoppingList' && location.pathname !== '/SiderChatBot' && (
-    <>
-      <Section id="faqSection">
-        <FaqSection />
-      </Section>
-      <Section id="resources">
-        <ContactSection />
-      </Section>
-      <Footer />
-    </>
-  );
+  // Render content only on specific routes and if logged in
+  if (
+    isLoggedIn &&
+    location.pathname !== '/inventory' &&
+    location.pathname !== '/medicine' &&
+    location.pathname !== '/electronics' &&
+    location.pathname !== '/budget' &&
+    location.pathname !== '/AlertPage' &&
+    location.pathname !== '/ShoppingList' &&
+    location.pathname !== '/SiderChatBot'
+  ) {
+    return (
+      <>
+        <Section id="faqSection">
+          <FaqSection />
+        </Section>
+        <Section id="resources">
+          <ContactSection />
+        </Section>
+        <Footer />
+      </>
+    );
+  }
+
+  return null;
 };
 
 export default App;

@@ -126,7 +126,7 @@ const SignUpLink = styled.p`
   }
 `;
 
-const LoginPage = ({ setIsLoggedIn }) => {
+const LoginPage = ({ setIsLoggedIn, isLoggedIn }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -163,42 +163,54 @@ const LoginPage = ({ setIsLoggedIn }) => {
     }
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('loggedIn');
+    navigate('/');
+  };
+
   return (
     <LoginSection>
       <LoginContainer>
         <Logo src={logo} alt="Logo" />
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-        <form onSubmit={handleLogin}>
-          <InputContainer>
-            <Icon>
-              <FaUser />
-            </Icon>
-            <Input
-              type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <Icon>
-              <FaLock />
-            </Icon>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <EyeIcon onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-            </EyeIcon>
-          </InputContainer>
-          <Button type="submit">Login</Button>
-        </form>
-        <SignUpLink>
-          Forgot Password? <Link to="/reset">Click Here</Link>
-        </SignUpLink>
+        {isLoggedIn ? (
+          <Button onClick={handleLogout}>Logout</Button>
+        ) : (
+          <form onSubmit={handleLogin}>
+            <InputContainer>
+              <Icon>
+                <FaUser />
+              </Icon>
+              <Input
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </InputContainer>
+            <InputContainer>
+              <Icon>
+                <FaLock />
+              </Icon>
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <EyeIcon onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+              </EyeIcon>
+            </InputContainer>
+            <Button type="submit">Login</Button>
+          </form>
+        )}
+        {!isLoggedIn && (
+          <SignUpLink>
+            Forgot Password? <Link to="/reset">Click Here</Link>
+          </SignUpLink>
+        )}
       </LoginContainer>
     </LoginSection>
   );

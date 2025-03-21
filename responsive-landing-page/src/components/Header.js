@@ -1,11 +1,11 @@
-// Header.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link as ScrollLink } from 'react-scroll';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import logo from '../images/logo.png';
 
+// Styled Components (unchanged)
 const HeaderContainer = styled.header`
   position: fixed;
   width: 100%;
@@ -13,8 +13,7 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: -10px;
-  border-radius: 2px solid blue;
+  padding: 10px 20px;
   background-color: rgb(186, 202, 226);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -22,8 +21,8 @@ const HeaderContainer = styled.header`
 
 const Logo = styled.img`
   margin-left: 60px;
-  width: 140px; /* Adjust width as per your preference */
-  height: auto; /* Keep the aspect ratio intact */
+  width: 140px;
+  height: auto;
 `;
 
 const NavLinks = styled.nav`
@@ -50,8 +49,8 @@ const NavLink = styled(ScrollLink)`
   cursor: pointer;
   position: relative;
   padding: 5px 0;
-  transition: color 0.3s ease-in-out; /* Smooth transition for text color */
-  
+  transition: color 0.3s ease-in-out;
+
   &::after {
     content: "";
     position: absolute;
@@ -65,11 +64,11 @@ const NavLink = styled(ScrollLink)`
   }
 
   &:hover {
-    color: rgb(43, 83, 141); /* Change text color */
+    color: rgb(43, 83, 141);
   }
 
   &:hover::after {
-    width: 100%; /* Expand underline on hover */
+    width: 100%;
   }
 
   @media (max-width: 768px) {
@@ -85,19 +84,19 @@ const ButtonContainer = styled.div`
   align-items: center;
 `;
 
-const SignUpButton = styled(Link)` /* Use Link for navigation */
+const AuthButton = styled(Link)`
   padding: 11px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color:rgb(43, 83, 141);
+  background-color: rgb(43, 83, 141);
   color: #fff;
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
 
   &:hover {
-    background-color:rgb(34, 25, 115);
+    background-color: rgb(34, 25, 115);
   }
 
   @media (max-width: 768px) {
@@ -142,12 +141,35 @@ const HamburgerMenu = styled.div`
   }
 `;
 
-const Header = () => {
+// Header Component
+const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Logout function
+  const handleLogout = () => {
+    if (typeof setIsLoggedIn === 'function') {
+      setIsLoggedIn(false); // Update the login state
+      localStorage.removeItem('loggedIn'); // Remove the login status from localStorage
+      navigate('/'); // Redirect to the home page
+    } else {
+      console.error('setIsLoggedIn is not a function');
+    }
+  };
+
+  // Persist login state on page refresh
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem('loggedIn') === 'true';
+    if (typeof setIsLoggedIn === 'function') {
+      setIsLoggedIn(loggedInStatus);
+    } else {
+      console.error('setIsLoggedIn is not a function');
+    }
+  }, [setIsLoggedIn]);
 
   return (
     <HeaderContainer>
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Logo src={logo} alt="Logo" />
         <HamburgerMenu onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <FaTimes /> : <FaBars />}
@@ -161,7 +183,11 @@ const Header = () => {
       <div>
         <ButtonContainer>
           <ReportIssueButton href="#demo">Request a Demo</ReportIssueButton>
-          <SignUpButton to="/signup">Sign up</SignUpButton> {/* Link to /signup */}
+          {isLoggedIn ? (
+            <AuthButton as="button" onClick={handleLogout}>Logout</AuthButton>
+          ) : (
+            <AuthButton to="/signup">Sign Up</AuthButton>
+          )}
         </ButtonContainer>
       </div>
     </HeaderContainer>
