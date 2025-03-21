@@ -131,7 +131,7 @@ const SiderChatBot = () => {
             <FeedbackIcon /> <span>Feedback</span>
           </li>
           <li className="menu-item">
-            <SavesIcon /> <span>My Saves</span>
+            <SavesIcon /> <span>My Recipe</span>
           </li>
           <li className="menu-item">
             <FavoriteIcon /> <span>Favorite</span>
