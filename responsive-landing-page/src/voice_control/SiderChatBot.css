@@ -16,6 +16,11 @@
     margin-top: 15px;
   }
   
+  .remove-bg {
+    background-image: none !important;
+    background-color: white !important;
+}
+
   .sider-chatbot-header {
     text-align: center;
     margin-bottom: 20px;

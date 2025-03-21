@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import '../voice_control/SiderChatBot.css';
 
 // Icons (using emojis as placeholders)
@@ -13,6 +13,15 @@ const SettingsIcon = () => <span>⚙️</span>;
 const LogoutIcon = () => <span>🚪</span>;
 
 const SiderChatBot = () => {
+
+  useEffect(() => {
+    document.body.classList.add('remove-bg');
+    
+    return () => {
+      document.body.classList.remove('remove-bg');
+    };
+  }, []);
+
   return (
     <div className="sider-chatbot">
       {/* Header */}
