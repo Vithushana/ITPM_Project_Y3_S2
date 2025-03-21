@@ -139,7 +139,7 @@ const SiderChatBot = () => {
           <li className="menu-item">
             <HistoryIcon /> <span>History</span>
           </li>
-          <li className="menu-item" onClick={() => navigate("/home")}> {/* Added Navigation */}
+          <li className="menu-item" onClick={() => navigate("/home")}>
             <LogoutIcon /> <span>Back Home</span>
           </li>
         </ul>

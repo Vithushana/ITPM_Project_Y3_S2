@@ -6,26 +6,16 @@ import backgroundImage from '../exp_img/home.jpeg';
 import logoImage from '../images/logo.png';
 import { FaUser, FaEnvelope, FaPhone, FaLock } from 'react-icons/fa';
 
-// Fade-in animation for the background
+// Fade-in animation
 const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 `;
 
-// Slide-up animation for the form
+// Slide-up animation
 const slideUp = keyframes`
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 `;
 
 const SignupContainer = styled.section`
@@ -46,13 +36,10 @@ const SignupContainer = styled.section`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    background: rgba(0, 0, 0, 0.5);
   }
 
-  > * {
-    position: relative;
-    z-index: 1;
-  }
+  > * { position: relative; z-index: 1; }
 `;
 
 const SignupForm = styled.div`
@@ -78,17 +65,7 @@ const SignupForm = styled.div`
     font-weight: bold;
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-`;
-
-const Label = styled.label`
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 5px;
+  form { display: flex; flex-direction: column; gap: 8px; }
 `;
 
 const InputWrapper = styled.div`
@@ -100,9 +77,7 @@ const InputWrapper = styled.div`
   background: #f9f9f9;
   transition: transform 0.3s ease-in-out;
 
-  &:hover {
-    transform: scale(1.05);
-  }
+  &:hover { transform: scale(1.05); }
 
   input {
     border: none;
@@ -119,7 +94,13 @@ const InputWrapper = styled.div`
   }
 `;
 
-const Input = styled.input``;
+const ErrorText = styled.p`
+  color: red;
+  font-size: 12px;
+  text-align: left;
+  margin-top: 2px;
+  margin-bottom: 5px;
+`;
 
 const Button = styled.button`
   padding: 12px 20px;
@@ -136,6 +117,11 @@ const Button = styled.button`
     background-color: rgb(25, 48, 83);
     transform: scale(1.05);
   }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 const RedirectLink = styled.div`
@@ -148,10 +134,7 @@ const RedirectLink = styled.div`
     font-weight: bold;
     transition: color 0.3s ease-in-out;
 
-    &:hover {
-      text-decoration: underline;
-      color: rgb(25, 48, 83);
-    }
+    &:hover { text-decoration: underline; color: rgb(25, 48, 83); }
   }
 `;
 
@@ -163,7 +146,26 @@ const SignupPage = () => {
     password: '',
   });
 
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    let tempErrors = {};
+    if (formData.name.trim().length < 3) {
+      tempErrors.name = "Name must be at least 3 characters long.";
+    }
+    if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      tempErrors.email = "Invalid email format.";
+    }
+    if (!/^\d{10,}$/.test(formData.phone)) {
+      tempErrors.phone = "Phone number must be at least 10 digits.";
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(formData.password)) {
+      tempErrors.password = "Password must be at least 6 characters and include uppercase, lowercase, number, and special character.";
+    }
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -171,12 +173,11 @@ const SignupPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     fetch('http://localhost:8080/api/auth/sign-up', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: formData.name,
         email: formData.email,
@@ -185,7 +186,7 @@ const SignupPage = () => {
       }),
     })
       .then((response) => {
-        alert(`Welcome! Your account has been created.`);
+        alert("Welcome! Your account has been created.");
         navigate('/login');
       })
       .catch((error) => {
@@ -200,12 +201,10 @@ const SignupPage = () => {
         <img src={logoImage} alt="Logo" />
         <form onSubmit={handleSubmit}>
           <div>
-            <Label htmlFor="name"></Label>
             <InputWrapper>
               <FaUser />
-              <Input
+              <input
                 type="text"
-                id="name"
                 name="name"
                 placeholder="Enter your name"
                 value={formData.name}
@@ -213,14 +212,14 @@ const SignupPage = () => {
                 required
               />
             </InputWrapper>
+            {errors.name && <ErrorText>{errors.name}</ErrorText>}
           </div>
+
           <div>
-            <Label htmlFor="email"></Label>
             <InputWrapper>
               <FaEnvelope />
-              <Input
+              <input
                 type="email"
-                id="email"
                 name="email"
                 placeholder="Enter your email"
                 value={formData.email}
@@ -228,14 +227,14 @@ const SignupPage = () => {
                 required
               />
             </InputWrapper>
+            {errors.email && <ErrorText>{errors.email}</ErrorText>}
           </div>
+
           <div>
-            <Label htmlFor="phone"></Label>
             <InputWrapper>
               <FaPhone />
-              <Input
+              <input
                 type="tel"
-                id="phone"
                 name="phone"
                 placeholder="Enter your phone number"
                 value={formData.phone}
@@ -243,14 +242,14 @@ const SignupPage = () => {
                 required
               />
             </InputWrapper>
+            {errors.phone && <ErrorText>{errors.phone}</ErrorText>}
           </div>
+
           <div>
-            <Label htmlFor="password"></Label>
             <InputWrapper>
               <FaLock />
-              <Input
+              <input
                 type="password"
-                id="password"
                 name="password"
                 placeholder="Create a password"
                 value={formData.password}
@@ -258,9 +257,12 @@ const SignupPage = () => {
                 required
               />
             </InputWrapper>
+            {errors.password && <ErrorText>{errors.password}</ErrorText>}
           </div>
-          <Button type="submit">Sign Up</Button>
+
+          <Button type="submit" disabled={Object.keys(errors).length > 0}>Sign Up</Button>
         </form>
+
         <RedirectLink>
           Already have an account? <Link to="/login">Login here</Link>
         </RedirectLink>
