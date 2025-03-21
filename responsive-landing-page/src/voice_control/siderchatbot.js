@@ -4,12 +4,9 @@ import '../voice_control/SiderChatBot.css';
 // Icons (using emojis as placeholders)
 const ChatIcon = () => <span>💬</span>;
 const FeedbackIcon = () => <span>📢</span>;
-const PromptLibraryIcon = () => <span>📚</span>;
 const SavesIcon = () => <span>🔖</span>;
 const FavoriteIcon = () => <span>❤️</span>;
 const HistoryIcon = () => <span>⏳</span>;
-const StatisticsIcon = () => <span>📊</span>;
-const SettingsIcon = () => <span>⚙️</span>;
 const LogoutIcon = () => <span>🚪</span>;
 
 const SiderChatBot = () => {
@@ -45,10 +42,6 @@ const SiderChatBot = () => {
           <span>Feedback</span>
         </li>
         <li className="menu-item">
-          <PromptLibraryIcon />
-          <span>Prompt Library</span>
-        </li>
-        <li className="menu-item">
           <SavesIcon />
           <span>My Saves</span>
         </li>
@@ -61,16 +54,8 @@ const SiderChatBot = () => {
           <span>History</span>
         </li>
         <li className="menu-item">
-          <StatisticsIcon />
-          <span>Statistics</span>
-        </li>
-        <li className="menu-item">
-          <SettingsIcon />
-          <span>Settings</span>
-        </li>
-        <li className="menu-item">
           <LogoutIcon />
-          <span>Log Out</span>
+          <span>Back Home</span>
         </li>
       </ul>
     </div>

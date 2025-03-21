@@ -1,94 +1,103 @@
 .sider-chatbot {
-    width: 200px;
-    height: 90vh;
-    background-color: #1A2A44;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    position: fixed;
-    top: 0;
-    left: 0; 
-    z-index: 1000; 
-    overflow-y: auto; 
-    border-radius: 45px;
-    margin-top: 15px;
-  }
-  
-  .remove-bg {
-    background-image: none !important;
-    background-color: white !important;
+  width: 200px;
+  height: 90vh;
+  background-color: #1A2A44;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  overflow-y: auto;
+  border-radius: 45px;
+  margin-top: 15px;
+  margin-left: 5px;
 }
 
-  .sider-chatbot-header {
-    text-align: center;
-    margin-bottom: 20px;
+.remove-bg {
+  background-image: none !important;
+  background-color: white !important;
+}
+
+.sider-chatbot-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.red {
+  background-color: #FF0000;
+}
+
+.dot.yellow {
+  background-color: #FFFF00;
+}
+
+.dot.green {
+  background-color: #00FF00;
+}
+
+.sider-chatbot-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.sider-chatbot-menu {
+  list-style: none;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  cursor: pointer; /* Already present, indicates interactivity */
+  color: aliceblue;
+  transition: all 0.3s ease; /* Smooth transition for animations */
+
+  /* Hover animation */
+  &:hover {
+      background-color: #334466; /* Lighter shade on hover */
+      transform: translateX(5px); /* Slide right on hover */
   }
-  
-  .dots {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  
-  .dot.red {
-    background-color: #FF0000;
-  }
-  
-  .dot.yellow {
-    background-color: #FFFF00;
-  }
-  
-  .dot.green {
-    background-color: #00FF00;
-  }
-  
-  .sider-chatbot-header h2 {
-    font-size: 18px;
-    margin: 0;
-  }
-  
-  .sider-chatbot-menu {
-    list-style: none;
-    padding: 0;
-    flex-grow: 1;
-  }
-  
-  .menu-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    color: aliceblue;
-  }
-  
-  .menu-item span:first-child {
-    margin-right: 10px;
-  }
-  
-  .menu-item.active {
-    background-color: #FF6F61;
-  }
-  
-  .badge {
-    margin-left: auto;
-    background-color: #FF8C00;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-  }
+}
+
+.menu-item span:first-child {
+  margin-right: 10px;
+}
+
+.menu-item.active {
+  background-color: #FF6F61;
+  transform: none; /* Prevent hover animation on active state */
+}
+
+.badge {
+  margin-left: auto;
+  background-color: #FF8C00;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
