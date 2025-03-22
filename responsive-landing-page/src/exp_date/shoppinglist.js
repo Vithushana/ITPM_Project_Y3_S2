@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/shopping.css";
 
@@ -7,6 +7,7 @@ const ShoppingList = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [formData, setFormData] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
   const [electronicsList, setElectronicsList] = useState([]);
   const [groceriesList, setGroceriesList] = useState([]);
@@ -15,7 +16,7 @@ const ShoppingList = () => {
 
   const categories = [
     { name: "Electronics", fields: ["Name", "Date", "Count"] },
-    { name: "Groceries", fields: ["Name", "Quantity", "Price"] },
+    { name: "Groceries", fields: ["Name", "Quantity"] },
     { name: "Medicines", fields: ["Name", "Quantity", "Type"] },
     { name: "Balance Money", fields: ["Amount", "Date", "Note"] },
   ];
@@ -26,28 +27,45 @@ const ShoppingList = () => {
     setShowPopup(!showPopup);
     setSelectedCategory(category);
     setFormData({});
+    setFormErrors({});
   };
 
   const handleChange = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
-  useEffect(() => {
-    categories.forEach((category) => {
-      fetch(`http://localhost:8080/api/shopping/${category.name}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (category.name === "Electronics") setElectronicsList(data);
-          if (category.name === "Groceries") setGroceriesList(data);
-          if (category.name === "Medicines") setMedicinesList(data);
-          if (category.name === "Balance Money") setMoneyBalanceList(data);
-        })
-        .catch((error) => console.error(`Error fetching ${category.name}:`, error));
-    });
-  }, []);
-
+  const validateFormData = () => {
+    let errors = {};
+    const { Date, Count, Amount } = formData;
+  
+    // Validate Date format
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/; // Matches YYYY-MM-DD format
+    if (selectedCategory === "Electronics" && Date && !datePattern.test(Date)) {
+      errors.Date = "Date must be in the format YYYY-MM-DD.";
+    }
+  
+    if (selectedCategory === "Electronics" && (isNaN(Count) || Count <= 0)) {
+      errors.Count = "Count must be a valid number greater than 0.";
+    }
+  
+    if ((selectedCategory === "Electronics" || selectedCategory === "Balance Money") && !Date) {
+      errors.Date = "Date is required.";
+    }
+  
+    if (selectedCategory === "Balance Money" && isNaN(Amount)) {
+      errors.Amount = "Amount must be a valid number.";
+    }
+  
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
   const handleSave = () => {
     if (!selectedCategory) return;
+
+    if (!validateFormData()) {
+      return; // Stop if validation fails
+    }
 
     const newItem = { category: selectedCategory, ...formData };
 
@@ -140,13 +158,15 @@ const ShoppingList = () => {
           <div className="popup-container">
             <h2>Add New {selectedCategory} Item</h2>
             {categories.find((cat) => cat.name === selectedCategory)?.fields.map((field, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={`Enter ${field}`}
-                value={formData[field] || ""}
-                onChange={(e) => handleChange(e, field)}
-              />
+              <div key={index}>
+                <input
+                  type="text"
+                  placeholder={`Enter ${field}`}
+                  value={formData[field] || ""}
+                  onChange={(e) => handleChange(e, field)}
+                />
+                {formErrors[field] && <span className="error">{formErrors[field]}</span>}
+              </div>
             ))}
             <div className="popup-actions">
               <button className="save-btn" onClick={handleSave}>Save</button>
