@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/shopping.css";
 
@@ -32,27 +32,59 @@ const ShoppingList = () => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
+  // Fetch data when component mounts
+  const fetchData = () => {
+    categories.forEach((category) => {
+      fetch(`http://localhost:8080/api/shopping/${category.name}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(`Fetched ${category.name}:`, data);
+
+          switch (category.name) {
+            case "Electronics":
+              setElectronicsList(data);
+              break;
+            case "Groceries":
+              setGroceriesList(data);
+              break;
+            case "Medicines":
+              setMedicinesList(data);
+              break;
+            case "Balance Money":
+              setMoneyBalanceList(data);
+              break;
+            default:
+              break;
+          }
+        })
+        .catch((error) =>
+          console.error(`Error fetching ${category.name}:`, error)
+        );
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const handleSave = () => {
     if (!selectedCategory) return;
 
-    const newItem = { ...formData };
+    const newItem = { category: selectedCategory, ...formData };
 
-    switch (selectedCategory) {
-      case "Electronics":
-        setElectronicsList([...electronicsList, newItem]);
-        break;
-      case "Groceries":
-        setGroceriesList([...groceriesList, newItem]);
-        break;
-      case "Medicines":
-        setMedicinesList([...medicinesList, newItem]);
-        break;
-      case "Balance Money":
-        setMoneyBalanceList([...moneyBalanceList, newItem]);
-        break;
-      default:
-        break;
-    }
+    fetch("http://localhost:8080/api/shopping/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newItem),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Saved Item:", data); // Debugging
+
+        // Refetch data to update frontend
+        fetchData();
+      })
+      .catch((error) => console.error("Error saving item:", error));
 
     setShowPopup(false);
   };
@@ -60,7 +92,9 @@ const ShoppingList = () => {
   return (
     <div className="App">
       <div className="back-button-container">
-        <button className="back-button" onClick={handleBack}>← Back Home</button>
+        <button className="back-button" onClick={handleBack}>
+          ← Back Home
+        </button>
       </div>
 
       <div className="banner">
@@ -89,22 +123,24 @@ const ShoppingList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {category.name === "Electronics" &&
-                    electronicsList.map((item, i) => (
-                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
-                    ))}
-                  {category.name === "Groceries" &&
-                    groceriesList.map((item, i) => (
-                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
-                    ))}
-                  {category.name === "Medicines" &&
-                    medicinesList.map((item, i) => (
-                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
-                    ))}
-                  {category.name === "Balance Money" &&
-                    moneyBalanceList.map((item, i) => (
-                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
-                    ))}
+                  {(() => {
+                    let list =
+                      category.name === "Electronics"
+                        ? electronicsList
+                        : category.name === "Groceries"
+                        ? groceriesList
+                        : category.name === "Medicines"
+                        ? medicinesList
+                        : moneyBalanceList;
+
+                    return list.map((item, i) => (
+                      <tr key={i}>
+                        {category.fields.map((field, j) => (
+                          <td key={j}>{item[field] || "N/A"}</td>
+                        ))}
+                      </tr>
+                    ));
+                  })()}
                 </tbody>
               </table>
             </div>
@@ -116,18 +152,24 @@ const ShoppingList = () => {
         <div className="popup-overlay">
           <div className="popup-container">
             <h2>Add New {selectedCategory} Item</h2>
-            {categories.find((cat) => cat.name === selectedCategory)?.fields.map((field, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={`Enter ${field}`}
-                value={formData[field] || ""}
-                onChange={(e) => handleChange(e, field)}
-              />
-            ))}
+            {categories
+              .find((cat) => cat.name === selectedCategory)
+              ?.fields.map((field, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  placeholder={`Enter ${field}`}
+                  value={formData[field] || ""}
+                  onChange={(e) => handleChange(e, field)}
+                />
+              ))}
             <div className="popup-actions">
-              <button className="save-btn" onClick={handleSave}>Save</button>
-              <button className="cancel-btn" onClick={() => togglePopup()}>Cancel</button>
+              <button className="save-btn" onClick={handleSave}>
+                Save
+              </button>
+              <button className="cancel-btn" onClick={() => togglePopup()}>
+                Cancel
+              </button>
             </div>
           </div>
         </div>
