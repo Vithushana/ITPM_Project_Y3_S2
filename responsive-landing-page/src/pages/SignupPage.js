@@ -160,9 +160,9 @@ const SignupPage = () => {
     if (!/^\d{10,}$/.test(formData.phone)) {
       tempErrors.phone = "Phone number must be at least 10 digits.";
     }
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(formData.password)) {
-      tempErrors.password = "Password must be at least 6 characters and include uppercase, lowercase, number, and special character.";
-    }
+    // if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(formData.password)) {
+    //   tempErrors.password = "Password must be at least 6 characters and include uppercase, lowercase, number, and special character.";
+    // }
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
