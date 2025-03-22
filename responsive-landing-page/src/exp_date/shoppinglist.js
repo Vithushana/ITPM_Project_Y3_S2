@@ -32,39 +32,18 @@ const ShoppingList = () => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
-  // Fetch data when component mounts
-  const fetchData = () => {
+  useEffect(() => {
     categories.forEach((category) => {
       fetch(`http://localhost:8080/api/shopping/${category.name}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(`Fetched ${category.name}:`, data);
-
-          switch (category.name) {
-            case "Electronics":
-              setElectronicsList(data);
-              break;
-            case "Groceries":
-              setGroceriesList(data);
-              break;
-            case "Medicines":
-              setMedicinesList(data);
-              break;
-            case "Balance Money":
-              setMoneyBalanceList(data);
-              break;
-            default:
-              break;
-          }
+          if (category.name === "Electronics") setElectronicsList(data);
+          if (category.name === "Groceries") setGroceriesList(data);
+          if (category.name === "Medicines") setMedicinesList(data);
+          if (category.name === "Balance Money") setMoneyBalanceList(data);
         })
-        .catch((error) =>
-          console.error(`Error fetching ${category.name}:`, error)
-        );
+        .catch((error) => console.error(`Error fetching ${category.name}:`, error));
     });
-  };
-
-  useEffect(() => {
-    fetchData();
   }, []);
 
   const handleSave = () => {
@@ -79,10 +58,22 @@ const ShoppingList = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Saved Item:", data); // Debugging
-
-        // Refetch data to update frontend
-        fetchData();
+        switch (selectedCategory) {
+          case "Electronics":
+            setElectronicsList((prev) => [...prev, data]);
+            break;
+          case "Groceries":
+            setGroceriesList((prev) => [...prev, data]);
+            break;
+          case "Medicines":
+            setMedicinesList((prev) => [...prev, data]);
+            break;
+          case "Balance Money":
+            setMoneyBalanceList((prev) => [...prev, data]);
+            break;
+          default:
+            break;
+        }
       })
       .catch((error) => console.error("Error saving item:", error));
 
@@ -92,9 +83,7 @@ const ShoppingList = () => {
   return (
     <div className="App">
       <div className="back-button-container">
-        <button className="back-button" onClick={handleBack}>
-          ← Back Home
-        </button>
+        <button className="back-button" onClick={handleBack}>← Back Home</button>
       </div>
 
       <div className="banner">
@@ -123,24 +112,22 @@ const ShoppingList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {(() => {
-                    let list =
-                      category.name === "Electronics"
-                        ? electronicsList
-                        : category.name === "Groceries"
-                        ? groceriesList
-                        : category.name === "Medicines"
-                        ? medicinesList
-                        : moneyBalanceList;
-
-                    return list.map((item, i) => (
-                      <tr key={i}>
-                        {category.fields.map((field, j) => (
-                          <td key={j}>{item[field] || "N/A"}</td>
-                        ))}
-                      </tr>
-                    ));
-                  })()}
+                  {category.name === "Electronics" &&
+                    electronicsList.map((item, i) => (
+                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
+                    ))}
+                  {category.name === "Groceries" &&
+                    groceriesList.map((item, i) => (
+                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
+                    ))}
+                  {category.name === "Medicines" &&
+                    medicinesList.map((item, i) => (
+                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
+                    ))}
+                  {category.name === "Balance Money" &&
+                    moneyBalanceList.map((item, i) => (
+                      <tr key={i}>{category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}</tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -152,24 +139,18 @@ const ShoppingList = () => {
         <div className="popup-overlay">
           <div className="popup-container">
             <h2>Add New {selectedCategory} Item</h2>
-            {categories
-              .find((cat) => cat.name === selectedCategory)
-              ?.fields.map((field, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  placeholder={`Enter ${field}`}
-                  value={formData[field] || ""}
-                  onChange={(e) => handleChange(e, field)}
-                />
-              ))}
+            {categories.find((cat) => cat.name === selectedCategory)?.fields.map((field, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder={`Enter ${field}`}
+                value={formData[field] || ""}
+                onChange={(e) => handleChange(e, field)}
+              />
+            ))}
             <div className="popup-actions">
-              <button className="save-btn" onClick={handleSave}>
-                Save
-              </button>
-              <button className="cancel-btn" onClick={() => togglePopup()}>
-                Cancel
-              </button>
+              <button className="save-btn" onClick={handleSave}>Save</button>
+              <button className="cancel-btn" onClick={() => togglePopup()}>Cancel</button>
             </div>
           </div>
         </div>
