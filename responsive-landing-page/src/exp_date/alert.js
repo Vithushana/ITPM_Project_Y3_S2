@@ -196,6 +196,13 @@ const AlertPage = () => {
   return (
     <div className="alert-reminder-page">
       <h2>Alert Reminder Page</h2>
+      <div className="search">
+          <input
+            type="text"
+            placeholder="Search Reminder..."
+            className="search-bar"
+            />
+        </div>
       <div className="reminders-grid">
         <ReminderContainer category="Electronics" className="electronics" />
         <ReminderContainer category="Medicine" className="medicine" />

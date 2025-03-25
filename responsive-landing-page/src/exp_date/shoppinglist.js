@@ -108,6 +108,14 @@ const ShoppingList = () => {
         <div className="banner-text">
           <h1>Make Your Shopping Lists</h1>
           <p>🛒 Effortless Shopping, Smart Choices!</p>
+          <div className="search">
+          <input
+            type="text"
+            placeholder="Search items..."
+            className="search-bar"
+          />
+          <button className="download-report">Download Report</button>
+        </div>
         </div>
       </div>
 

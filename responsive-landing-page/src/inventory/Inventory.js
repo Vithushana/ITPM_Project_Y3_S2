@@ -7,6 +7,7 @@ import "../styles/Groceries.css";
 
 const InventoryPage = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -34,16 +35,31 @@ const InventoryPage = () => {
       });
   };
 
+  // Filter items based on search term
+  const filteredItems = inventoryItems.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="inventory-container">
       <Sidebar />
       <div className="content">
         <h1>Groceries List</h1>
+        <div className="search-report-container">
+          <input
+            type="text"
+            placeholder="Search items..."
+            className="search-bar"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="download-report">Download Report</button>
+        </div>
         <div className="inventory-box">
-          {inventoryItems.length === 0 ? (
-            <p className="no-items">No items found.</p>
+          {filteredItems.length === 0 ? (
+            <p className="no-items animate">No items found.</p>
           ) : (
-            inventoryItems.map((item) => (
+            filteredItems.map((item) => (
               <div className="inventory-item" key={item.id}>
                 <h2>{item.name}</h2>
                 <p><strong>Quantity:</strong> {item.quantity}</p>

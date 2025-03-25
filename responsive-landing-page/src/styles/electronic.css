@@ -12,7 +12,7 @@
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
+  color: #1c0c79;
   animation: fadeIn 1s ease-in-out;
 }
 
@@ -21,10 +21,11 @@ h1 {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: space-between;
+  margin-top: 40px;
 }
 
 .electronics-card {
-  background: white;
+  background: rgb(230, 228, 228);
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -35,6 +36,12 @@ h1 {
   max-width: 300px;
   opacity: 0;
   animation: fadeInCard 0.8s ease-in-out forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.electronics-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .electronics-card h3 {

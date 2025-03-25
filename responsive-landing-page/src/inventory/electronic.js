@@ -76,6 +76,14 @@ const ElectronicsPage = () => {
       <Sidebar />
       <div className="content">
         <h1>Electronics List</h1>
+        <div className="search-report-container">
+          <input
+            type="text"
+            placeholder="Search items..."
+            className="search-bar"
+          />
+          <button className="download-report">Download Report</button>
+        </div>
         <div className="electronics-grid">
           {electronicsItems.length === 0 ? (
             <p>No electronics found.</p>

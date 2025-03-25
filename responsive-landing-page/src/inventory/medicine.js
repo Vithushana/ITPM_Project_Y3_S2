@@ -54,6 +54,14 @@ const MedicinePage = () => {
       <Sidebar />
       <div className="content">
         <h1 className="title">Medicine List</h1>
+        <div className="search-report-container">
+          <input
+            type="text"
+            placeholder="Search items..."
+            className="search-bar"
+          />
+          <button className="download-report">Download Report</button>
+        </div>
         <div className="medicine-container">
           {medicineItems.length === 0 ? (
             <div className="no-data">No medicines found.</div>

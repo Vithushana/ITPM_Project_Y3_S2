@@ -25,10 +25,11 @@ h1 {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+  margin-top: 40px;
 }
 
 .inventory-item {
-  background: white;
+  background: rgb(230, 228, 228) !important;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -217,3 +218,41 @@ h1 {
 .add-item-btn:active {
   transform: scale(1);
 }
+
+.search-report-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 8px;
+  border: 2px solid #4a78e4;
+  border-radius: 16px;
+  margin-right: 10px;
+}
+
+.download-report {
+  background-color: #4a78e4;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.no-items.animate {
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+  text-align: center;
+  animation: fadeIn 1s ease-in-out infinite alternate;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
