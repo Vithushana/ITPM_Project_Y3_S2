@@ -208,7 +208,7 @@ const FooterBottom = styled.div`
   display: flex;
   justify-content: space-between;
   max-width: 1800px;
-  margin: 0 auto;
+  margin: 0 0 0 4px;
   padding: 1rem 2rem;
   border-top: 1px solid rgb(43, 83, 141);
   background-color: rgb(43, 83, 141);
