@@ -111,7 +111,7 @@ const ShoppingList = () => {
           <div className="search">
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder="Search List..."
             className="search-bar"
           />
           <button className="download-report">Download Report</button>
