@@ -47,11 +47,6 @@ h1 {
   transform: translateY(-5px);
 }
 
-.inventory-item h2 {
-  color: #4CAF50;
-  margin-bottom: 10px;
-}
-
 .inventory-item p {
   font-size: 16px;
   margin: 5px 0;

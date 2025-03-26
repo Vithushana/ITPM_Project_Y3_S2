@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
-import { FaAppleAlt, FaLaptop, FaPills, FaChartPie, FaSignOutAlt } from "react-icons/fa";
+import { FaAppleAlt, FaLaptop, FaPills, FaChartPie, FaSignOutAlt, FaUtensils  } from "react-icons/fa";
 import logo from '../images/logo.png';
 import "../styles/Sidebar.css";
 
@@ -46,6 +46,12 @@ const Sidebar = () => {
           onClick={() => handleNavigation("Medicines", "/medicine")}
         >
           <FaPills className="icon" /> Medicines
+        </div>
+        <div 
+          className={`menu-item1 ${active === "Recipe" ? "active" : ""}`} 
+          onClick={() => handleNavigation("Recipe", "/recipe")}
+        >
+          <FaUtensils  className="icon" /> Recipe
         </div>
         <div 
           className={`menu-item1 ${active === "Budgets" ? "active" : ""}`} 
