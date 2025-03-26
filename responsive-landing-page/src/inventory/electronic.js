@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import axios from "axios"; // Import axios for API requests
 import "../styles/electronic.css";
 
 const ElectronicsPage = () => {
@@ -14,28 +15,29 @@ const ElectronicsPage = () => {
     category: "",
     expirationDate: "",
   });
+  const [categoryFilter, setCategoryFilter] = useState(""); // State for category filter
 
   // Fetch electronics items on component mount
   useEffect(() => {
-    fetch("http://localhost:8080/api/electronics")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Fetched Electronics:", data);
-        setElectronicsItems(data);
+    axios
+      .get("http://localhost:8080/api/electronics")
+      .then((response) => {
+        setElectronicsItems(response.data);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  // Handle delete functionality
+  // Handle delete functionality using axios
   const handleDelete = async (id) => {
     console.log("Deleting item with ID:", id);
     try {
-      const response = await fetch(`http://localhost:8080/api/electronics/${id}`, { method: "DELETE" });
-      if (!response.ok) {
+      const response = await axios.delete(`http://localhost:8080/api/electronics/${id}`);
+      if (response.status === 200) {
+        setElectronicsItems((prevItems) => prevItems.filter((item) => item.id !== id));
+        console.log("Item deleted successfully");
+      } else {
         throw new Error("Failed to delete item");
       }
-      setElectronicsItems((prevItems) => prevItems.filter((item) => item.id !== id));
-      console.log("Item deleted successfully");
     } catch (error) {
       console.error("Error deleting item:", error);
     }
@@ -45,18 +47,14 @@ const ElectronicsPage = () => {
   const handleAddNewItem = async () => {
     console.log("Adding new item:", newItem);
     try {
-      const response = await fetch("http://localhost:8080/api/electronics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newItem),
-      });
-      if (!response.ok) {
+      const response = await axios.post("http://localhost:8080/api/electronics", newItem);
+      if (response.status === 201) {
+        setElectronicsItems((prevItems) => [...prevItems, response.data]);
+        console.log("Item added successfully:", response.data);
+        closePopup();
+      } else {
         throw new Error("Failed to add item");
       }
-      const data = await response.json();
-      setElectronicsItems((prevItems) => [...prevItems, data]);
-      console.log("Item added successfully:", data);
-      closePopup();
     } catch (error) {
       console.error("Error adding item:", error);
     }
@@ -73,24 +71,20 @@ const ElectronicsPage = () => {
     setShowPopup(true);
   };
 
-  // Handle updating an item
+  // Handle updating an item using axios
   const handleUpdateItem = async () => {
     console.log("Updating item:", currentItemId, newItem);
     try {
-      const response = await fetch(`http://localhost:8080/api/electronics/${currentItemId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newItem),
-      });
-      if (!response.ok) {
+      const response = await axios.put(`http://localhost:8080/api/electronics/${currentItemId}`, newItem);
+      if (response.status === 200) {
+        setElectronicsItems((prevItems) =>
+          prevItems.map((item) => (item.id === currentItemId ? response.data : item))
+        );
+        console.log("Item updated successfully:", response.data);
+        closePopup();
+      } else {
         throw new Error("Failed to update item");
       }
-      const updatedItem = await response.json();
-      setElectronicsItems((prevItems) =>
-        prevItems.map((item) => (item.id === currentItemId ? updatedItem : item))
-      );
-      console.log("Item updated successfully:", updatedItem);
-      closePopup();
     } catch (error) {
       console.error("Error updating item:", error);
     }
@@ -110,21 +104,37 @@ const ElectronicsPage = () => {
     setCurrentItemId(null);
   };
 
+  // Handle category filter change
+  const handleCategoryChange = (event) => {
+    setCategoryFilter(event.target.value);
+  };
+
+  // Filter items by category
+  const filteredItems = categoryFilter
+    ? electronicsItems.filter((item) => item.category.toLowerCase().includes(categoryFilter.toLowerCase()))
+    : electronicsItems;
+
   return (
     <div className="inventory-container">
       <Sidebar />
       <div className="content">
         <h1>Electronics List</h1>
         <div className="search-report-container">
-          <input type="text" placeholder="Search items..." className="search-bar" />
+          <input
+            type="text"
+            placeholder="Search items by category..."
+            className="search-bar"
+            value={categoryFilter}
+            onChange={handleCategoryChange}
+          />
           <button className="download-report">Download Report</button>
         </div>
 
         <div className="electronics-grid">
-          {electronicsItems.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <p>No electronics found.</p>
           ) : (
-            electronicsItems.map((item) => (
+            filteredItems.map((item) => (
               <div key={item.id} className="electronics-card">
                 {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="electronics-image" />}
                 <h3>{item.name}</h3>
@@ -147,11 +157,30 @@ const ElectronicsPage = () => {
         <div className="popup-overlay">
           <div className="popup-content">
             <h2>{isEditing ? "Edit Electronic" : "Add New Electronic"}</h2>
-            <input type="text" placeholder="Image URL" value={newItem.imageUrl} onChange={(e) => setNewItem({ ...newItem, imageUrl: e.target.value })} />
-            <input type="number" placeholder="Quantity" value={newItem.quantity} onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value })} />
-            <input type="text" placeholder="Category" value={newItem.category} onChange={(e) => setNewItem({ ...newItem, category: e.target.value })} />
-            <input type="date" placeholder="Expiration Date" value={newItem.expirationDate} onChange={(e) => setNewItem({ ...newItem, expirationDate: e.target.value })} />
-            
+            <input
+              type="text"
+              placeholder="Image URL"
+              value={newItem.imageUrl}
+              onChange={(e) => setNewItem({ ...newItem, imageUrl: e.target.value })}
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              value={newItem.quantity}
+              onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Category"
+              value={newItem.category}
+              onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+            />
+            <input
+              type="date"
+              placeholder="Expiration Date"
+              value={newItem.expirationDate}
+              onChange={(e) => setNewItem({ ...newItem, expirationDate: e.target.value })}
+            />
             <button onClick={isEditing ? handleUpdateItem : handleAddNewItem}>
               {isEditing ? "Update" : "Add"}
             </button>

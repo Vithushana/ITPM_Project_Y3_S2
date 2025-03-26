@@ -48,8 +48,8 @@ const Sidebar = () => {
           <FaPills className="icon" /> Medicines
         </div>
         <div 
-          className={`menu-item1 ${active === "Recipe" ? "active" : ""}`} 
-          onClick={() => handleNavigation("Recipe", "/recipe")}
+          className={`menu-item1 ${active === "FoodRecipe" ? "active" : ""}`} 
+          onClick={() => handleNavigation("FoodRecipe", "/FoodRecipe")}
         >
           <FaUtensils  className="icon" /> Recipe
         </div>

@@ -18,6 +18,7 @@ import AddItemModal from "./inventory/AddItemModal";
 import UpdateItemModal from './inventory/UpdateItemModal';
 import ShoppingList from "./exp_date/shoppinglist";
 import SiderChatBot from './voice_control/siderchatbot';
+import FoodRecipe from './inventory/recipe';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -64,6 +65,7 @@ const App = () => {
           <Route path="/UpdateItemModal" element={isLoggedIn ? <UpdateItemModal /> : <Navigate to="/login" replace />} />
           <Route path="/ShoppingList" element={isLoggedIn ? <ShoppingList /> : <Navigate to="/login" replace />} />
           <Route path="/SiderChatBot" element={isLoggedIn ? <SiderChatBot /> : <Navigate to="/login" replace />} />
+          <Route path="/FoodRecipe" element={isLoggedIn ? <FoodRecipe /> : <Navigate to="/login" replace />} />
         </Routes>
         <LocationBasedContent isLoggedIn={isLoggedIn} />
       </AppContainer>
@@ -83,7 +85,8 @@ const HeaderBasedOnLocation = ({ isLoggedIn, setIsLoggedIn }) => {
     location.pathname !== '/budget' &&
     location.pathname !== '/AlertPage' &&
     location.pathname !== '/ShoppingList' &&
-    location.pathname !== '/SiderChatBot'
+    location.pathname !== '/SiderChatBot' &&
+    location.pathname !== '/FoodRecipe'
   ) {
     return <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
   }
@@ -104,7 +107,8 @@ const LocationBasedContent = ({ isLoggedIn }) => {
     location.pathname !== '/budget' &&
     location.pathname !== '/AlertPage' &&
     location.pathname !== '/ShoppingList' &&
-    location.pathname !== '/SiderChatBot'
+    location.pathname !== '/SiderChatBot' &&
+    location.pathname !== '/FoodRecipe'
   ) {
     return (
       <>

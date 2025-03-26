@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "../styles/medicine.css";
 
 const MedicinePage = () => {
   const [medicineItems, setMedicineItems] = useState([]);
-  const [showPopup, setShowPopup] = useState(false); // For showing the popup
+  const [filteredMedicine, setFilteredMedicine] = useState([]); // To store the filtered results
+  const [searchTerm, setSearchTerm] = useState(""); // For search input
+  const [showPopup, setShowPopup] = useState(false);
   const [newMedicine, setNewMedicine] = useState({
+    name: "",
+    quantity: "",
+    category: "",
+    expirationDate: "",
+  });
+
+  const [updateMedicine, setUpdateMedicine] = useState({
+    id: "",
     name: "",
     quantity: "",
     category: "",
@@ -17,7 +26,10 @@ const MedicinePage = () => {
   useEffect(() => {
     fetch("http://localhost:8080/api/medicine")
       .then((response) => response.json())
-      .then((data) => setMedicineItems(data))
+      .then((data) => {
+        setMedicineItems(data);
+        setFilteredMedicine(data); // Initially, show all medicines
+      })
       .catch((error) => console.error("Error fetching medicines:", error));
   }, []);
 
@@ -38,6 +50,7 @@ const MedicinePage = () => {
       .then((response) => response.json())
       .then((data) => {
         setMedicineItems([...medicineItems, data]);
+        setFilteredMedicine([...medicineItems, data]); // Update the filtered list as well
         setShowPopup(false); // Close the popup after adding
         setNewMedicine({
           name: "",
@@ -49,6 +62,47 @@ const MedicinePage = () => {
       .catch((error) => console.error("Error adding medicine:", error));
   };
 
+  // Handle update medicine
+  const handleUpdateMedicine = () => {
+    fetch(`http://localhost:8080/api/medicine/${updateMedicine.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updateMedicine),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const updatedItems = medicineItems.map((item) =>
+          item.id === updateMedicine.id ? data : item
+        );
+        setMedicineItems(updatedItems);
+        setFilteredMedicine(updatedItems); // Update the filtered list as well
+        setShowPopup(false); 
+        setUpdateMedicine({
+          id: "",
+          name: "",
+          quantity: "",
+          category: "",
+          expirationDate: "",
+        }); // Reset form
+      })
+      .catch((error) => console.error("Error updating medicine:", error));
+  };
+
+  // Handle search input change
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+
+    if (term === "") {
+      setFilteredMedicine(medicineItems); // If no search term, show all medicines
+    } else {
+      const filtered = medicineItems.filter((medicine) =>
+        medicine.name.toLowerCase().includes(term.toLowerCase()) // Case-insensitive search
+      );
+      setFilteredMedicine(filtered);
+    }
+  };
+
   return (
     <div className="inventory-container">
       <Sidebar />
@@ -57,16 +111,18 @@ const MedicinePage = () => {
         <div className="search-report-container">
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder="Search by name..."
             className="search-bar"
+            value={searchTerm}
+            onChange={handleSearch} // Call search handler on input change
           />
           <button className="download-report">Download Report</button>
         </div>
         <div className="medicine-container">
-          {medicineItems.length === 0 ? (
+          {filteredMedicine.length === 0 ? (
             <div className="no-data">No medicines found.</div>
           ) : (
-            medicineItems.map((medicine) => (
+            filteredMedicine.map((medicine) => (
               <div className="medicine-box" key={medicine.id}>
                 <div className="medicine-info">
                   <p><strong>Name:</strong> {medicine.name}</p>
@@ -75,9 +131,15 @@ const MedicinePage = () => {
                   <p><strong>Expiration Date:</strong> {medicine.expirationDate}</p>
                 </div>
                 <div className="medicine-actions">
-                  <Link to={`/update-medicine/${medicine.id}`}>
-                    <button className="update-btn">Update</button>
-                  </Link>
+                  <button
+                    className="update-btn"
+                    onClick={() => {
+                      setUpdateMedicine(medicine);
+                      setShowPopup(true); // Open the popup with medicine details
+                    }}
+                  >
+                    Update
+                  </button>
                   <button className="delete-btn" onClick={() => handleDelete(medicine.id)}>Delete</button>
                 </div>
               </div>
@@ -88,36 +150,54 @@ const MedicinePage = () => {
         {/* Add New Medicine Button */}
         <button className="add-button" onClick={() => setShowPopup(true)}>+</button>
 
-        {/* Popup Form for Adding New Medicine */}
+        {/* Popup Form for Adding or Updating Medicine */}
         {showPopup && (
           <div className="popup-overlay">
             <div className="popup-content">
-              <h2>Add New Medicine</h2>
+              <h2>{updateMedicine.id ? "Update Medicine" : "Add New Medicine"}</h2>
               <input
                 type="text"
                 placeholder="Name"
-                value={newMedicine.name}
-                onChange={(e) => setNewMedicine({ ...newMedicine, name: e.target.value })}
+                value={updateMedicine.name || newMedicine.name}
+                onChange={(e) =>
+                  updateMedicine.id
+                    ? setUpdateMedicine({ ...updateMedicine, name: e.target.value })
+                    : setNewMedicine({ ...newMedicine, name: e.target.value })
+                }
               />
               <input
                 type="number"
                 placeholder="Quantity"
-                value={newMedicine.quantity}
-                onChange={(e) => setNewMedicine({ ...newMedicine, quantity: e.target.value })}
+                value={updateMedicine.quantity || newMedicine.quantity}
+                onChange={(e) =>
+                  updateMedicine.id
+                    ? setUpdateMedicine({ ...updateMedicine, quantity: e.target.value })
+                    : setNewMedicine({ ...newMedicine, quantity: e.target.value })
+                }
               />
               <input
                 type="text"
                 placeholder="Category"
-                value={newMedicine.category}
-                onChange={(e) => setNewMedicine({ ...newMedicine, category: e.target.value })}
+                value={updateMedicine.category || newMedicine.category}
+                onChange={(e) =>
+                  updateMedicine.id
+                    ? setUpdateMedicine({ ...updateMedicine, category: e.target.value })
+                    : setNewMedicine({ ...newMedicine, category: e.target.value })
+                }
               />
               <input
                 type="date"
                 placeholder="Expiration Date"
-                value={newMedicine.expirationDate}
-                onChange={(e) => setNewMedicine({ ...newMedicine, expirationDate: e.target.value })}
+                value={updateMedicine.expirationDate || newMedicine.expirationDate}
+                onChange={(e) =>
+                  updateMedicine.id
+                    ? setUpdateMedicine({ ...updateMedicine, expirationDate: e.target.value })
+                    : setNewMedicine({ ...newMedicine, expirationDate: e.target.value })
+                }
               />
-              <button onClick={handleAddNewMedicine}>Add</button>
+              <button onClick={updateMedicine.id ? handleUpdateMedicine : handleAddNewMedicine}>
+                {updateMedicine.id ? "Update" : "Add"}
+              </button>
               <button className="close-btn" onClick={() => setShowPopup(false)}>Cancel</button>
             </div>
           </div>
