@@ -1,34 +1,58 @@
-import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import '../styles/recipe.css';
+import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import "../styles/recipe.css";
+
+const API_URL = "http://localhost:8080/api/recipes";
 
 const FoodRecipe = () => {
-  const [recipes] = useState([
-    { id: 1, image: 'french-toast.jpg', name: 'French Toast', category: 'Breakfast' },
-    { id: 2, image: 'croque-madame.jpg', name: 'Croque Madame', category: 'Breakfast' },
-    { id: 3, image: 'egg-bhurji.jpg', name: 'Egg Bhurji', category: 'Breakfast' },
-    { id: 4, image: 'eggs-benedict.jpg', name: 'Eggs Benedict Toast', category: 'Breakfast' },
-    { id: 5, image: 'cinnamon-pancakes.jpg', name: 'Cinnamon Pancakes', category: 'Breakfast' },
-    { id: 6, image: 'katsu-sando.jpg', name: 'Katsu Sando', category: 'Lunch' },
-    { id: 7, image: 'igado.jpg', name: 'Igado', category: 'Lunch' },
-  ]);
+  const [recipes, setRecipes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [newRecipe, setNewRecipe] = useState({ image: "", name: "", category: "" });
+  const [editingRecipe, setEditingRecipe] = useState(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [displayedRecipes, setDisplayedRecipes] = useState(recipes);
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
 
-  // Handle search functionality
+  const fetchRecipes = async () => {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    setRecipes(data);
+  };
+
   const handleSearch = (event) => {
-    const term = event.target.value;
-    setSearchQuery(term);
+    setSearchQuery(event.target.value);
+  };
 
-    if (term === '') {
-      setDisplayedRecipes(recipes);
+  const handleAddOrUpdate = async () => {
+    if (editingRecipe) {
+      await fetch(`${API_URL}/${editingRecipe.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRecipe),
+      });
     } else {
-      const filtered = recipes.filter((recipe) =>
-        recipe.name.toLowerCase().includes(term.toLowerCase())
-      );
-      setDisplayedRecipes(filtered);
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRecipe),
+      });
     }
+    setShowPopup(false);
+    setEditingRecipe(null);
+    fetchRecipes();
+  };
+
+  const handleEdit = (recipe) => {
+    setEditingRecipe(recipe);
+    setNewRecipe(recipe);
+    setShowPopup(true);
+  };
+
+  const handleDelete = async (id) => {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    fetchRecipes();
   };
 
   return (
@@ -61,31 +85,39 @@ const FoodRecipe = () => {
                 </tr>
               </thead>
               <tbody>
-                {displayedRecipes.map((recipe) => (
-                  <tr key={recipe.id}>
-                    <td>{recipe.id}</td>
-                    <td>
-                      <img
-                        src={recipe.image}
-                        alt={recipe.name}
-                        className="recipe-preview-img"
-                      />
-                    </td>
-                    <td>{recipe.name}</td>
-                    <td>{recipe.category}</td>
-                    <td>
-                      <button className="recipe-action-menu">⋮</button>
-                      <button className="recipe-action-edit">✏️</button>
-                      <button className="recipe-action-delete">🗑️</button>
-                    </td>
-                  </tr>
-                ))}
+                {recipes
+                  .filter((recipe) =>
+                    recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((recipe) => (
+                    <tr key={recipe.id}>
+                      <td>{recipe.id}</td>
+                      <td><img src={recipe.image} alt={recipe.name} className="recipe-preview-img" /></td>
+                      <td>{recipe.name}</td>
+                      <td>{recipe.category}</td>
+                      <td><button className="recipe-action-view" onClick={() => handleDelete(recipe.id)}>👁️</button>
+                        <button className="recipe-action-edit" onClick={() => handleEdit(recipe)}>✏️</button>
+                        <button className="recipe-action-delete" onClick={() => handleDelete(recipe.id)}>🗑️</button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
-            <button className="new-recipe-btn bottom-right-btn">➕</button>
+            <button className="new-recipe-btn bottom-right-btn" onClick={() => setShowPopup(true)}>➕</button>
           </div>
         </div>
       </div>
+
+      {showPopup && (
+        <div className="popup">
+          <h2>{editingRecipe ? "Edit Recipe" : "Add Recipe"}</h2>
+          <input type="text" placeholder="Name" value={newRecipe.name} onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })} />
+          <input type="text" placeholder="Image URL" value={newRecipe.image} onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })} />
+          <input type="text" placeholder="Category" value={newRecipe.category} onChange={(e) => setNewRecipe({ ...newRecipe, category: e.target.value })} />
+          <button onClick={handleAddOrUpdate}>{editingRecipe ? "Update" : "Add"}</button>
+          <button onClick={() => setShowPopup(false)}>Cancel</button>
+        </div>
+      )}
     </div>
   );
 };

@@ -56,12 +56,24 @@
     border-radius: 4px;
   }
   
-  .recipe-action-menu,
-  .recipe-action-edit,
+  .recipe-action-edit {
+    margin-right: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
   .recipe-action-delete {
     margin-right: 5px;
     padding: 5px 10px;
     cursor: pointer;
+    background-color: #ff3333;
+  }
+
+  .recipe-action-view{
+    margin-right: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: rgb(55, 55, 179);
   }
   
   .recipe-search-input {
