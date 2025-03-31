@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
+import { saveAs } from "file-saver";
 import AddItemModal from "../inventory/AddItemModal"; 
 import UpdateItemModal from "../inventory/UpdateItemModal";
 import "../styles/Groceries.css";
@@ -40,6 +41,27 @@ const InventoryPage = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleDownloadReport = () => {
+    if (filteredItems.length === 0) {
+      alert("No items available for download.");
+      return;
+    }
+  
+    // Prepare CSV header
+    let csvContent = "Name,Quantity,Category,Expiration Date\n";
+  
+    // Append data rows
+    filteredItems.forEach(item => {
+      csvContent += `${item.name},${item.quantity},${item.category},${item.expirationDate}\n`;
+    });
+  
+    // Convert CSV content to Blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "inventory_report.csv");
+  };
+  
+  
+
   return (
     <div className="inventory-container">
       <Sidebar />
@@ -53,7 +75,7 @@ const InventoryPage = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="download-report">Download Report</button>
+          <button className="download-report" onClick={handleDownloadReport} >Download Report</button>
         </div>
         <div className="inventory-box">
           {filteredItems.length === 0 ? (

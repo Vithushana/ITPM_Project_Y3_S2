@@ -109,6 +109,29 @@ const ElectronicsPage = () => {
     setCategoryFilter(event.target.value);
   };
 
+  const handleDownloadReport = () => {
+    if (electronicsItems.length === 0) {
+      alert("No data available to download.");
+      return;
+    }
+
+    // Convert data to CSV format
+    const headers = ["ID", "Name", "Quantity", "Category", "Expiration Date"];
+    const rows = electronicsItems.map((item) =>
+      [item.id, item.name, item.quantity, item.category, item.expirationDate].join(",")
+    );
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "electronics_report.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // Filter items by category
   const filteredItems = categoryFilter
     ? electronicsItems.filter((item) => item.category.toLowerCase().includes(categoryFilter.toLowerCase()))
@@ -127,7 +150,7 @@ const ElectronicsPage = () => {
             value={categoryFilter}
             onChange={handleCategoryChange}
           />
-          <button className="download-report">Download Report</button>
+          <button className="download-report" onClick={handleDownloadReport}>Download Report</button>
         </div>
 
         <div className="electronics-grid">

@@ -47,7 +47,7 @@ const SubHeading = styled.p`
   font-weight: bold;
   color: rgb(43, 83, 141);
   margin-bottom: 40px;
-  margin-top: 45px;
+  margin-top: 40px;
 
   @media (max-width: 768px) {
     font-size: 12px;

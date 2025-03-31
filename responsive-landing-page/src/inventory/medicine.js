@@ -103,6 +103,38 @@ const MedicinePage = () => {
     }
   };
 
+  const handleDownloadReport = () => {
+    if (filteredMedicine.length === 0) {
+      alert("No data available to download.");
+      return;
+    }
+  
+    // Define CSV column headers
+    const headers = ["Name", "Quantity", "Category", "Expiration Date"];
+  
+    // Convert data to CSV format
+    const csvRows = [
+      headers.join(","), // Add headers
+      ...filteredMedicine.map((medicine) =>
+        [medicine.name, medicine.quantity, medicine.category, medicine.expirationDate].join(",")
+      ),
+    ];
+  
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+  
+    // Create a downloadable link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "medicine_report.csv");
+  
+    // Append the link to the document and trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); // Clean up after download
+  };
+  
+
   return (
     <div className="inventory-container">
       <Sidebar />
@@ -116,7 +148,7 @@ const MedicinePage = () => {
             value={searchTerm}
             onChange={handleSearch} // Call search handler on input change
           />
-          <button className="download-report">Download Report</button>
+          <button className="download-report" onClick={handleDownloadReport} >Download Report</button>
         </div>
         <div className="medicine-container">
           {filteredMedicine.length === 0 ? (

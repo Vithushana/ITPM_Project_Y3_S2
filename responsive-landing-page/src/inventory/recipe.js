@@ -21,6 +21,7 @@ const FoodRecipe = () => {
     setRecipes(data);
   };
 
+  // Debounced search handler
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -63,9 +64,9 @@ const FoodRecipe = () => {
           <div className="recipe-header">
             <h1>FoodRecipe Lists</h1>
             <div className="recipe-controls">
-              <input 
-                type="text" 
-                placeholder="Search..." 
+              <input
+                type="text"
+                placeholder="Search Food..."
                 className="recipe-search-input"
                 value={searchQuery}
                 onChange={handleSearch}
@@ -90,12 +91,19 @@ const FoodRecipe = () => {
                     recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   .map((recipe) => (
-                    <tr key={recipe.id}>
+                    <tr
+                      key={recipe.id}
+                      className="recipe-item"
+                      style={{
+                        animation: "fadeIn 0.5s ease-out",
+                      }}
+                    >
                       <td>{recipe.id}</td>
                       <td><img src={recipe.image} alt={recipe.name} className="recipe-preview-img" /></td>
                       <td>{recipe.name}</td>
                       <td>{recipe.category}</td>
-                      <td><button className="recipe-action-view" onClick={() => handleDelete(recipe.id)}>👁️</button>
+                      <td>
+                        <button className="recipe-action-view" onClick={() => handleDelete(recipe.id)}>👁️</button>
                         <button className="recipe-action-edit" onClick={() => handleEdit(recipe)}>✏️</button>
                         <button className="recipe-action-delete" onClick={() => handleDelete(recipe.id)}>🗑️</button>
                       </td>
@@ -111,9 +119,24 @@ const FoodRecipe = () => {
       {showPopup && (
         <div className="popup">
           <h2>{editingRecipe ? "Edit Recipe" : "Add Recipe"}</h2>
-          <input type="text" placeholder="Name" value={newRecipe.name} onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })} />
-          <input type="text" placeholder="Image URL" value={newRecipe.image} onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })} />
-          <input type="text" placeholder="Category" value={newRecipe.category} onChange={(e) => setNewRecipe({ ...newRecipe, category: e.target.value })} />
+          <input
+            type="text"
+            placeholder="Name"
+            value={newRecipe.name}
+            onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="Image URL"
+            value={newRecipe.image}
+            onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="Category"
+            value={newRecipe.category}
+            onChange={(e) => setNewRecipe({ ...newRecipe, category: e.target.value })}
+          />
           <button onClick={handleAddOrUpdate}>{editingRecipe ? "Update" : "Add"}</button>
           <button onClick={() => setShowPopup(false)}>Cancel</button>
         </div>
