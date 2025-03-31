@@ -26,6 +26,7 @@ body {
   width: 250px;
   text-align: left;
   color: rgb(22, 27, 103);
+  margin-top: -15px;
 }
 
 .electronics {
@@ -87,8 +88,8 @@ body {
   padding: 10px;
   border-radius: 10px; 
   margin: 20px auto; 
-  max-width: 500px;
-  max-height:250px;
+  max-width: 450px;
+  max-height:200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
