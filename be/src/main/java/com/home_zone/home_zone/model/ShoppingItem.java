@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ShoppingItem {
      @Id
     private String id;
-    private String category;
+    private Category category;
     private String name;
     private date date;
     private String count; 
@@ -15,9 +15,13 @@ public class ShoppingItem {
     private String price; 
     private String type;
     private String amount;
-    private String note; 
+    private String note;
+
+    public enum Category {
+        ELECTRONICS, MEDICINE, GROCERIES, BALANCEMONEY;
+    }
     
-    public ShoppingItem(String id, String category, String name, date date, String count , String quantity, String price, String type, String amount,  String note){
+    public ShoppingItem(String id, Category category, String name, date date, String count , String quantity, String price, String type, String amount,  String note){
         this.id = id;
         this.category=category;
         this.name=name;
@@ -37,10 +41,10 @@ public class ShoppingItem {
     public void setId(String id) {
         this.id = id;
     }
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
     public String getName() {
@@ -92,4 +96,20 @@ public class ShoppingItem {
         this.note = note;
     }
     
+    @Override
+    public String toString() {
+        return "ShoppingItem{" +
+                "id='" + id + '\'' +
+                ", category=" + category +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", count='" + count + '\'' +
+                ", quantity='" + quantity + '\'' +
+                ", price='" + price + '\'' +
+                ", type='" + type + '\'' +
+                ", amount='" + amount + '\'' +
+                ", note='" + note + '\'' +
+                '}';
+    }
+
 }

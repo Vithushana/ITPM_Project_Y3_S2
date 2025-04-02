@@ -230,10 +230,50 @@ footer p {
   border-radius: 5px;
 }
 
-.category-table{
+.category-table {
   background-color: white;
   margin-top: 12px;
-  border-radius: 3px;
+  border-radius: 5px;
   width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.category-table th {
+  background-color: #297ad1;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  text-align: left;
+}
+
+.category-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.category-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.category-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 

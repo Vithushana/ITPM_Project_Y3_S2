@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,31 +7,58 @@ import "../styles/shopping.css";
 const ShoppingList = () => {
   const navigate = useNavigate();
 
-  // UI States
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Category Lists
   const [electronicsList, setElectronicsList] = useState([]);
   const [groceriesList, setGroceriesList] = useState([]);
   const [medicinesList, setMedicinesList] = useState([]);
   const [moneyBalanceList, setMoneyBalanceList] = useState([]);
 
   const getCategories = () => [
-    { name: "Electronics", fields: ["Name", "Date", "Count"] },
-    { name: "Groceries", fields: ["Name", "Quantity"] },
-    { name: "Medicines", fields: ["Name", "Quantity", "Type"] },
-    { name: "Balance Money", fields: ["Amount", "Date", "Note"] },
+    { name: "ELECTRONICS", fields: ["name", "date", "count"] },
+    { name: "GROCERIES", fields: ["name", "quantity"] },
+    { name: "MEDICINE", fields: ["name", "quantity", "type"] },
+    { name: "BALANCEMONEY", fields: ["amount", "date", "note"] },
   ];
+
+  useEffect(() => {
+    getCategories().forEach((category) => {
+      fetch(`http://localhost:8080/api/shopping/${category.name}`)
+        .then((res) => res.json())
+        .then((data) => {
+          switch (category.name) {
+            case "ELECTRONICS":
+              setElectronicsList(data);
+              break;
+            case "GROCERIES":
+              setGroceriesList(data);
+              break;
+            case "MEDICINE":
+              setMedicinesList(data);
+              break;
+            case "BALANCEMONEY":
+              setMoneyBalanceList(data);
+              break;
+            default:
+              break;
+          }
+        })
+        .catch(() => {
+          toast.error(`Failed to load ${category.name} items`);
+        });
+    });
+  }, []);
 
   const handleBack = () => navigate("/home");
 
-  const togglePopup = (category = null) => {
+  const togglePopup = (category = null, item = null) => {
     setShowPopup(!showPopup);
     setSelectedCategory(category);
-    setFormData({});
+    setFormData(item || {});
     setFormErrors({});
   };
 
@@ -41,27 +68,26 @@ const ShoppingList = () => {
 
   const validateFormData = () => {
     let errors = {};
-    const { Date, Count, Amount } = formData;
+    const { date, count, amount } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
-    if (selectedCategory === "Electronics" && Date && !datePattern.test(Date)) {
-      errors.Date = "Date must be in the format YYYY-MM-DD.";
+    if (selectedCategory === "ELECTRONICS" && date && !datePattern.test(date)) {
+      errors.date = "Date must be in the format YYYY-MM-DD.";
     }
 
-    if (selectedCategory === "Electronics" && (isNaN(Count) || Count <= 0)) {
-      errors.Count = "Count must be a valid number greater than 0.";
+    if (selectedCategory === "ELECTRONICS" && (isNaN(count) || count <= 0)) {
+      errors.count = "Count must be a valid number greater than 0.";
     }
 
-    if ((selectedCategory === "Electronics" || selectedCategory === "Balance Money") && !Date) {
-      errors.Date = "Date is required.";
+    if ((selectedCategory === "ELECTRONICS" || selectedCategory === "BALANCEMONEY") && !date) {
+      errors.date = "Date is required.";
     }
 
-    if (selectedCategory === "Balance Money" && isNaN(Amount)) {
-      errors.Amount = "Amount must be a valid number.";
+    if (selectedCategory === "BALANCEMONEY" && isNaN(amount)) {
+      errors.amount = "Amount must be a valid number.";
     }
 
     setFormErrors(errors);
-
     if (Object.keys(errors).length > 0) {
       toast.warn("Please fix form errors before saving.");
       return false;
@@ -73,40 +99,81 @@ const ShoppingList = () => {
   const handleSave = () => {
     if (!selectedCategory || !validateFormData()) return;
 
-    const newItem = { category: selectedCategory, ...formData };
+    const isEditing = !!formData._id;
+    const method = isEditing ? "PUT" : "POST";
+    const url = isEditing
+      ? `http://localhost:8080/api/shopping/update/${formData._id}`
+      : "http://localhost:8080/api/shopping/add";
 
-    fetch("http://localhost:8080/api/shopping/add", {
-      method: "POST",
+    fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newItem),
+      body: JSON.stringify({ category: selectedCategory, ...formData }),
     })
       .then((res) => res.json())
       .then((data) => {
-        toast.success("Item added successfully!");
+        toast.success(isEditing ? "Item updated!" : "Item added!");
+
+        const updateList = (list, setList) => {
+          if (isEditing) {
+            setList(list.map((item) => (item._id === data._id ? data : item)));
+          } else {
+            setList([...list, data]);
+          }
+        };
 
         switch (selectedCategory) {
-          case "Electronics":
-            setElectronicsList((prev) => [...prev, data]);
+          case "ELECTRONICS":
+            updateList(electronicsList, setElectronicsList);
             break;
-          case "Groceries":
-            setGroceriesList((prev) => [...prev, data]);
+          case "GROCERIES":
+            updateList(groceriesList, setGroceriesList);
             break;
-          case "Medicines":
-            setMedicinesList((prev) => [...prev, data]);
+          case "MEDICINE":
+            updateList(medicinesList, setMedicinesList);
             break;
-          case "Balance Money":
-            setMoneyBalanceList((prev) => [...prev, data]);
+          case "BALANCEMONEY":
+            updateList(moneyBalanceList, setMoneyBalanceList);
             break;
           default:
             break;
         }
+        setShowPopup(false);
       })
-      .catch((error) => {
-        console.error("Error saving item:", error);
-        toast.error("Failed to save item. Please try again.");
-      });
+      .catch(() => toast.error("Save failed. Try again."));
+  };
 
-    setShowPopup(false);
+  const handleDelete = (id, categoryName) => {
+    fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (res.ok) {
+          toast.success("Item deleted!");
+          const updateList = (list, setList) =>
+            setList(list.filter((item) => item._id !== id));
+
+          switch (categoryName) {
+            case "ELECTRONICS":
+              updateList(electronicsList, setElectronicsList);
+              break;
+            case "GROCERIES":
+              updateList(groceriesList, setGroceriesList);
+              break;
+            case "MEDICINE":
+              updateList(medicinesList, setMedicinesList);
+              break;
+            case "BALANCEMONEY":
+              updateList(moneyBalanceList, setMoneyBalanceList);
+              break;
+            default:
+              break;
+          }
+        } else {
+          toast.error("Delete failed.");
+        }
+      })
+      .catch(() => toast.error("Server error during delete."));
   };
 
   return (
@@ -120,7 +187,13 @@ const ShoppingList = () => {
           <h1>Make Your Shopping Lists</h1>
           <p>🛒 Effortless Shopping, Smart Choices!</p>
           <div className="search">
-            <input type="text" placeholder="Search List..." className="search-bar" />
+            <input
+              type="text"
+              placeholder="Search List..."
+              className="search-bar"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            />
             <button className="download-report">Download Report</button>
           </div>
         </div>
@@ -129,55 +202,60 @@ const ShoppingList = () => {
       <div className="category-section">
         <h2>Category</h2>
         <div className="category-grid">
-          {getCategories().map((category, index) => (
-            <div key={index} className="category-item">
-              <h3>🛒{category.name}</h3>
-              <button className="add-btn" onClick={() => togglePopup(category.name)}>➕ Add Item</button>
+          {getCategories().map((category, index) => {
+            const list =
+              category.name === "ELECTRONICS"
+                ? electronicsList
+                : category.name === "GROCERIES"
+                ? groceriesList
+                : category.name === "MEDICINE"
+                ? medicinesList
+                : moneyBalanceList;
 
-              <table className="category-table">
-                <thead>
-                  <tr>
-                    {category.fields.map((field, i) => (
-                      <th key={i}>{field}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {category.name === "Electronics" &&
-                    electronicsList.map((item, i) => (
-                      <tr key={i}>
-                        {category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}
+            const filteredList = list.filter((item) =>
+              category.fields.some((field) =>
+                String(item[field] || "").toLowerCase().includes(searchTerm)
+              )
+            );
+
+            return (
+              <div key={index} className="category-item">
+                <h3>🛒{category.name}</h3>
+                <button className="add-btn" onClick={() => togglePopup(category.name)}>➕ Add Item</button>
+
+                <table className="category-table">
+                  <thead>
+                    <tr>
+                      {category.fields.map((field, i) => (
+                        <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
+                      ))}
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredList.map((item, i) => (
+                      <tr key={i} className="fade-in">
+                        {category.fields.map((field, j) => (
+                          <td key={j}>{item[field]}</td>
+                        ))}
+                        <td>
+                          <button onClick={() => togglePopup(category.name, item)}>✏️</button>
+                          <button onClick={() => handleDelete(item._id, category.name)}>🗑️</button>
+                        </td>
                       </tr>
                     ))}
-                  {category.name === "Groceries" &&
-                    groceriesList.map((item, i) => (
-                      <tr key={i}>
-                        {category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}
-                      </tr>
-                    ))}
-                  {category.name === "Medicines" &&
-                    medicinesList.map((item, i) => (
-                      <tr key={i}>
-                        {category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}
-                      </tr>
-                    ))}
-                  {category.name === "Balance Money" &&
-                    moneyBalanceList.map((item, i) => (
-                      <tr key={i}>
-                        {category.fields.map((field, j) => <td key={j}>{item[field]}</td>)}
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {showPopup && selectedCategory && (
         <div className="popup-overlay">
           <div className="popup-container">
-            <h2>Add New {selectedCategory} Item</h2>
+            <h2>{formData._id ? "Edit" : "Add"} {selectedCategory} Item</h2>
             {getCategories()
               .find((cat) => cat.name === selectedCategory)
               ?.fields.map((field, index) => (
@@ -200,9 +278,7 @@ const ShoppingList = () => {
       )}
 
       <ToastContainer position="top-right" autoClose={3000} />
-      <footer>
-        <p>Home-Zone</p>
-      </footer>
+      <footer><p>Home-Zone</p></footer>
     </div>
   );
 };
