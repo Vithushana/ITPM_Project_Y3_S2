@@ -36,7 +36,6 @@ const InventoryPage = () => {
       });
   };
 
-  // Filter items based on search term
   const filteredItems = inventoryItems.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );

@@ -21,6 +21,10 @@ public class ReminderService {
         return reminderRepository.findAll();
     }
 
+    public void deleteReminder(String id){
+        reminderRepository.deleteById(id);
+    }
+
     public void sendEmailForReminders() {
         List<Reminder> reminders = reminderRepository.findAll();
         

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import SwipeableViews from "react-swipeable-views";
+import { motion } from "framer-motion";
 import "../styles/alert.css";
 
 const ReminderContainer = ({ category, className }) => {
@@ -9,34 +9,31 @@ const ReminderContainer = ({ category, className }) => {
   const [purchasingDate, setPurchasingDate] = useState("");
   const [reminderDate, setReminderDate] = useState("");
   const [reminders, setReminders] = useState([]);
-  const [sentEmails, setSentEmails] = useState([]);
   const [notification, setNotification] = useState("");
 
   const handleAddReminder = async () => {
-    if (!name || (category === "Electronics" && !purchasingDate) || (category !== "Electronics" && !reminderDate)) {
+    if (
+      !name ||
+      (category === "Electronics" && !purchasingDate) ||
+      (category !== "Electronics" && !reminderDate)
+    ) {
       alert("Please enter all required details before adding a reminder.");
       return;
     }
 
-    const newReminder = { name, emailSent: false };
-    
-    if (category === "Electronics") {
-      newReminder.purchasingDate = purchasingDate;
-    } else {
-      newReminder.reminderDate = reminderDate;
-    }
+    const newReminder = {
+      name,
+      emailSent: false,
+      purchasingDate: category === "Electronics" ? purchasingDate : null,
+      reminderDate: category !== "Electronics" ? reminderDate : null,
+      category: category.toUpperCase(),
+    };
 
     try {
-      const response = await fetch('http://localhost:8080/api/reminders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newReminder.name,
-          purchasingDate: newReminder.purchasingDate,
-          reminderDate: newReminder.reminderDate,
-          emailSent: newReminder.emailSent,
-          category: category.toUpperCase(),
-        }),
+      const response = await fetch("http://localhost:8080/api/reminders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReminder),
       });
 
       if (response.ok) {
@@ -45,11 +42,12 @@ const ReminderContainer = ({ category, className }) => {
         setPurchasingDate("");
         setReminderDate("");
         setNotification(`Reminder "${name}" added successfully.`);
+        setTimeout(() => setNotification(""), 3000);
       } else {
         setNotification("Failed to add reminder.");
       }
     } catch (error) {
-      console.error('Error adding reminder:', error);
+      console.error("Error adding reminder:", error);
       setNotification("Failed to add reminder.");
     }
   };
@@ -60,14 +58,15 @@ const ReminderContainer = ({ category, className }) => {
       return;
     }
 
-    setSentEmails([...sentEmails, ...reminders.map((r) => r.name)]);
-    setReminders((prevReminders) =>
-      prevReminders.map((reminder) => ({ ...reminder, emailSent: true }))
-    );
+    const updatedReminders = reminders.map((r) => ({
+      ...r,
+      emailSent: true,
+    }));
 
+    setReminders(updatedReminders);
     alert(
       `Email sent for ${category} reminders:\n` +
-        reminders
+        updatedReminders
           .map((r) =>
             category === "Electronics"
               ? `${r.name} - Purchasing Date: ${r.purchasingDate}`
@@ -78,7 +77,12 @@ const ReminderContainer = ({ category, className }) => {
   };
 
   return (
-    <div className={`reminder-container ${className}`}>
+    <motion.div
+      className={`reminder-container ${className}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <h3>{category}</h3>
       <label>Name:</label>
       <input
@@ -87,7 +91,6 @@ const ReminderContainer = ({ category, className }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-
       {category === "Electronics" ? (
         <>
           <label>Purchasing Date:</label>
@@ -97,7 +100,7 @@ const ReminderContainer = ({ category, className }) => {
             onChange={(e) => setPurchasingDate(e.target.value)}
           />
         </>
-      ) : category !== "Status" ? (
+      ) : (
         <>
           <label>Reminder Date:</label>
           <input
@@ -106,15 +109,10 @@ const ReminderContainer = ({ category, className }) => {
             onChange={(e) => setReminderDate(e.target.value)}
           />
         </>
-      ) : null}
-
-      {category !== "Status" && (
-        <>
-          <button onClick={handleAddReminder}>Add</button>
-          <button onClick={handleSendEmail}>Send Email</button>
-          {notification && <p className="notification">{notification}</p>}
-        </>
       )}
+      <button onClick={handleAddReminder}>Add</button>
+      <button onClick={handleSendEmail}>Send Email</button>
+      {notification && <p className="notification">{notification}</p>}
 
       <ul className="reminder-list">
         {reminders.map((reminder, index) => (
@@ -123,112 +121,158 @@ const ReminderContainer = ({ category, className }) => {
             {category === "Electronics"
               ? `Purchasing Date: ${reminder.purchasingDate}`
               : `Reminder Date: ${reminder.reminderDate}`}
-            {category === "Status" && (
-              <span style={{ color: reminder.emailSent ? "green" : "red", marginLeft: "10px" }}>
-                {reminder.emailSent ? "Email Sent ✅" : "Email Not Sent ❌"}
-              </span>
-            )}
           </li>
         ))}
       </ul>
-    </div>
+    </motion.div>
   );
 };
 
-const SwipeableReminderContainer = () => {
-  const [reminders, setReminders] = useState([]);
-  const [loading, setLoading] = useState(true);
+const ReminderCardView = ({ searchTerm, reminders, setReminders, loading }) => {
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this reminder?");
+    if (!confirmDelete) return;
 
-  useEffect(() => {
-    const fetchReminders = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/api/reminders', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
+    try {
+      const response = await fetch(`http://localhost:8080/api/reminders/${id}`, {
+        method: "DELETE",
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setReminders(data);
-        } else {
-          console.error('Failed to fetch reminders');
-        }
-      } catch (error) {
-        console.error('Error fetching reminders:', error);
-      } finally {
-        setLoading(false);
+      if (response.ok) {
+        setReminders((prev) => prev.filter((r) => r.id !== id));
+      } else {
+        console.error("Failed to delete reminder");
       }
-    };
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+    }
+  };
 
-    fetchReminders();
-  }, []);
+  const filteredReminders = reminders.filter((reminder) =>
+    reminder.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="swipeableviews">
-    <SwipeableViews enableMouseEvents>
-      {reminders.map((reminder, index) => (
-        <div key={reminder.id} style={{ padding: 20 }}>
+    <div className="reminder-card-view">
+      {filteredReminders.map((reminder, index) => (
+        <motion.div
+          key={reminder.id || index}
+          className="reminder-card"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: index * 0.1 }}
+        >
           <h3>{reminder.name}</h3>
-          <p>Category: {reminder.category}</p>
-          {reminder.purchasingDate && <p>Purchasing Date: {reminder.purchasingDate}</p>}
-          {reminder.reminderDate && <p>Reminder Date: {reminder.reminderDate}</p>}
-          <p>Email Sent: {reminder.emailSent ? "Yes" : "No"}</p>
-          <button className="edit-btn">Edit</button>
-          <button className="delete-btn">Delete</button>
-        </div>
+          <p><strong>Category:</strong> {reminder.category}</p>
+          {reminder.purchasingDate && (
+            <p><strong>Purchasing Date:</strong> {reminder.purchasingDate}</p>
+          )}
+          {reminder.reminderDate && (
+            <p><strong>Reminder Date:</strong> {reminder.reminderDate}</p>
+          )}
+          <p><strong>Email Sent:</strong> {reminder.emailSent ? "Yes ✅" : "No ❌"}</p>
+          <div className="btn-group">
+            <button className="edit-btn">Edit</button>
+            <button className="delete-btn" onClick={() => handleDelete(reminder.id)}>Delete</button>
+          </div>
+        </motion.div>
       ))}
-    </SwipeableViews>
     </div>
   );
 };
 
 const AlertPage = () => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [reminders, setReminders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleGoBack = () => {
-    navigate("/home"); 
+  useEffect(() => {
+    fetchReminders();
+  }, []);
+
+  const fetchReminders = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/reminders");
+      if (response.ok) {
+        const data = await response.json();
+        setReminders(data);
+      } else {
+        console.error("Failed to fetch reminders");
+      }
+    } catch (error) {
+      console.error("Error fetching reminders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadReport = () => {
+    if (!reminders.length) {
+      alert("No reminders available to download.");
+      return;
+    }
+
+    const csvHeader = "Name,Category,Purchasing Date,Reminder Date,Email Sent\n";
+    const csvRows = reminders.map((r) =>
+      [
+        `"${r.name}"`,
+        `"${r.category}"`,
+        r.purchasingDate || "",
+        r.reminderDate || "",
+        r.emailSent ? "Yes" : "No"
+      ].join(",")
+    );
+    const csvContent = csvHeader + csvRows.join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "reminders_report.csv";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="alert-reminder-page">
       <h2>Alert Reminder Page</h2>
       <div className="search">
-          <input
-            type="text"
-            placeholder="Search Reminder..."
-            className="search-bar"
-            />
-        </div>
+        <input
+          type="text"
+          placeholder="Search Reminder..."
+          className="search-bar"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button className="download-report" onClick={handleDownloadReport}>
+          Download Report
+        </button>
+      </div>
+
       <div className="reminders-grid">
         <ReminderContainer category="Electronics" className="electronics" />
         <ReminderContainer category="Medicine" className="medicine" />
         <ReminderContainer category="Groceries" className="groceries" />
       </div>
-      <div className="swipeable-container">
-        <SwipeableReminderContainer />
+
+      <div className="cardview-container">
+        <ReminderCardView
+          searchTerm={searchTerm}
+          reminders={reminders}
+          setReminders={setReminders}
+          loading={loading}
+        />
       </div>
-      <div
-        style={{
-          position: "fixed",
-          top: "20px",
-          left: "20px",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "18px",
-          fontWeight: "bold",
-          color: "#000",
-          backgroundColor: "#fff",
-          borderRadius: "5px",
-        }}
-        onClick={handleGoBack}
-      >
-        <FaArrowLeft size={32} color="#000" />
+
+      <div className="back-button" onClick={() => navigate("/home")}>
+        <FaArrowLeft size={32} />
         <span>Back Home</span>
       </div>
     </div>
