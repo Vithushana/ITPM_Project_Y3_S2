@@ -65,7 +65,6 @@ const ReminderContainer = ({ category, className }) => {
     }));
 
     setReminders(updatedReminders);
-
     toast.success(`Email sent for ${category} reminders.`);
   };
 
@@ -120,7 +119,74 @@ const ReminderContainer = ({ category, className }) => {
   );
 };
 
+const EditReminderModal = ({ isOpen, onClose, reminder, onSave }) => {
+  const [name, setName] = useState(reminder?.name || "");
+  const [purchasingDate, setPurchasingDate] = useState(reminder?.purchasingDate || "");
+  const [reminderDate, setReminderDate] = useState(reminder?.reminderDate || "");
+
+  useEffect(() => {
+    if (reminder) {
+      setName(reminder.name || "");
+      setPurchasingDate(reminder.purchasingDate || "");
+      setReminderDate(reminder.reminderDate || "");
+    }
+  }, [reminder]);
+
+  const handleSave = () => {
+    if (!name) {
+      toast.warning("Name is required.");
+      return;
+    }
+
+    const updatedReminder = {
+      ...reminder,
+      name,
+      purchasingDate: reminder.category === "ELECTRONICS" ? purchasingDate : null,
+      reminderDate: reminder.category !== "ELECTRONICS" ? reminderDate : null,
+    };
+
+    onSave(updatedReminder);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="edit-modal-overlay">
+      <div className="edit-modal-content">
+        <h3>Edit Reminder</h3>
+        <label>Name:</label>
+        <input value={name} onChange={(e) => setName(e.target.value)} />
+        {reminder.category === "ELECTRONICS" ? (
+          <>
+            <label>Purchasing Date:</label>
+            <input
+              type="date"
+              value={purchasingDate}
+              onChange={(e) => setPurchasingDate(e.target.value)}
+            />
+          </>
+        ) : (
+          <>
+            <label>Reminder Date:</label>
+            <input
+              type="date"
+              value={reminderDate}
+              onChange={(e) => setReminderDate(e.target.value)}
+            />
+          </>
+        )}
+        <div className="edit-modal-buttons">
+          <button onClick={handleSave}>Save</button>
+          <button className="edit-cancel-btn" onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ReminderCardView = ({ searchTerm, reminders, setReminders, loading }) => {
+  const [editingReminder, setEditingReminder] = useState(null);
+
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this reminder?");
     if (!confirmDelete) return;
@@ -139,6 +205,30 @@ const ReminderCardView = ({ searchTerm, reminders, setReminders, loading }) => {
     } catch (error) {
       console.error("Error deleting reminder:", error);
       toast.error("Error deleting reminder.");
+    }
+  };
+
+  const handleSaveEdit = async (updatedReminder) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/reminders/${updatedReminder.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedReminder),
+      });
+
+      if (response.ok) {
+        const updated = await response.json();
+        setReminders((prev) =>
+          prev.map((r) => (r.id === updated.id ? updated : r))
+        );
+        toast.success("Reminder updated.");
+        setEditingReminder(null);
+      } else {
+        toast.error("Failed to update reminder.");
+      }
+    } catch (error) {
+      console.error("Error updating reminder:", error);
+      toast.error("Error updating reminder.");
     }
   };
 
@@ -168,11 +258,18 @@ const ReminderCardView = ({ searchTerm, reminders, setReminders, loading }) => {
           )}
           <p><strong>Email Sent:</strong> {reminder.emailSent ? "Yes ✅" : "No ❌"}</p>
           <div className="btn-group">
-            <button className="edit-btn">Edit</button>
+            <button className="edit-btn" onClick={() => setEditingReminder(reminder)}>Edit</button>
             <button className="delete-btn" onClick={() => handleDelete(reminder.id)}>Delete</button>
           </div>
         </motion.div>
       ))}
+
+      <EditReminderModal
+        isOpen={!!editingReminder}
+        onClose={() => setEditingReminder(null)}
+        reminder={editingReminder}
+        onSave={handleSaveEdit}
+      />
     </div>
   );
 };

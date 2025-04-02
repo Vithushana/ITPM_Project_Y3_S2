@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.home_zone.home_zone.model.Medicine;
 import com.home_zone.home_zone.model.Reminder;
 import com.home_zone.home_zone.repository.ReminderRepository;
 
@@ -23,6 +24,10 @@ public class ReminderService {
 
     public void deleteReminder(String id){
         reminderRepository.deleteById(id);
+    }
+
+    public Reminder updateReminder(String id, Reminder newReminder) {
+        return reminderRepository.save(newReminder);
     }
 
     public void sendEmailForReminders() {

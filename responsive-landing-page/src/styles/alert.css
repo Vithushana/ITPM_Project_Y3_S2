@@ -157,3 +157,45 @@ body {
   margin-top: 8px;
 }
 
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.edit-modal-content {
+  background: rgb(186, 202, 226);
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  text-align: left;
+}
+
+.edit-modal-content input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 8px;
+}
+
+.edit-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.edit-modal-buttons button {
+  padding: 8px 16px;
+}
+
+.edit-cancel-btn {
+  background-color: rgb(186, 202, 226);
+}

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.home_zone.home_zone.model.Reminder;
 import com.home_zone.home_zone.service.ReminderService;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -43,5 +45,9 @@ public class ReminderController {
         reminderService.deleteReminder(id);
     }
 
+    @PutMapping("/{id}")
+    public Reminder updateReminder(@PathVariable String id, @RequestBody Reminder reminder){
+        return reminderService.updateReminder(id, reminder);
+    }
     
 }

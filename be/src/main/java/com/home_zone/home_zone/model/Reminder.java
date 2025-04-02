@@ -15,7 +15,7 @@ public class Reminder {
     private Category category;
 
     public enum Category {
-        ELECTRONICS, MEDICINE, GROCERY;
+        ELECTRONICS, MEDICINE, GROCERIES;
     }
 
     public Reminder(String name, String description, String reminderDate, boolean emailSent, Category category, String purchasingDate) {
