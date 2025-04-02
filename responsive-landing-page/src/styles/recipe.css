@@ -78,8 +78,8 @@
   
   .recipe-search-input {
     padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 2px solid rgb(37, 97, 188);
+    border-radius: 10px;
   }
   
   .bottom-right-btn {
@@ -105,4 +105,94 @@
     background-color: #2949b3;
   }
 
+  .recipe-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .recipe-modal-box {
+    background: rgb(186, 202, 226);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 350px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .recipe-modal-box h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  
+  .recipe-modal-box input,
+  .recipe-modal-select {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  .recipe-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .recipe-modal-actions button {
+    padding: 10px 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .recipe-modal-actions button:first-child {
+    background-color: #2949b3;
+    color: #fff;
+  }
+  
+  .recipe-modal-cancel {
+    background-color: #ff3333;
+    color: #333;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .recipe-view-img {
+    width: 80%;
+    height: 80%;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    object-fit: cover;
+    align-items: center;
+  }
+  
+  .recipe-view-steps {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  
   

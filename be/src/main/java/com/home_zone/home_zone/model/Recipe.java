@@ -10,6 +10,7 @@ public class Recipe {
     private String image;
     private String name;
     private String category;
+    private String steps;
 
    public String getId() {
     return id;
@@ -40,6 +41,13 @@ public class Recipe {
 
    public void setCategory(String category) {
     this.category = category;
+   }
+
+   public String getSteps() {
+    return steps;
+   }
+   public void setSteps(String steps) {
+    this.steps = steps;
    }
 
 }

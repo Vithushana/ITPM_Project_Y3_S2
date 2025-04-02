@@ -9,9 +9,15 @@ const API_URL = "http://localhost:8080/api/recipes";
 const FoodRecipe = () => {
   const [recipes, setRecipes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
-  const [newRecipe, setNewRecipe] = useState({ image: "", name: "", category: "" });
+  const [showModal, setShowModal] = useState(false);
+  const [viewingRecipe, setViewingRecipe] = useState(null);
   const [editingRecipe, setEditingRecipe] = useState(null);
+  const [newRecipe, setNewRecipe] = useState({
+    image: "",
+    name: "",
+    category: "",
+    steps: ""
+  });
 
   useEffect(() => {
     fetchRecipes();
@@ -32,6 +38,13 @@ const FoodRecipe = () => {
   };
 
   const handleAddOrUpdate = async () => {
+    const { name, image, category, steps } = newRecipe;
+
+    if (!name || !image || !category || !steps) {
+      toast.warning("Please fill all fields including steps.");
+      return;
+    }
+
     const method = editingRecipe ? "PUT" : "POST";
     const endpoint = editingRecipe ? `${API_URL}/${editingRecipe.id}` : API_URL;
 
@@ -44,9 +57,9 @@ const FoodRecipe = () => {
 
       if (response.ok) {
         toast.success(editingRecipe ? "Recipe updated." : "Recipe added.");
-        setShowPopup(false);
+        setShowModal(false);
         setEditingRecipe(null);
-        setNewRecipe({ image: "", name: "", category: "" });
+        setNewRecipe({ image: "", name: "", category: "", steps: "" });
         fetchRecipes();
       } else {
         throw new Error("Failed to save recipe.");
@@ -59,7 +72,7 @@ const FoodRecipe = () => {
   const handleEdit = (recipe) => {
     setEditingRecipe(recipe);
     setNewRecipe(recipe);
-    setShowPopup(true);
+    setShowModal(true);
   };
 
   const handleDelete = async (id) => {
@@ -119,7 +132,7 @@ const FoodRecipe = () => {
                       <td>{recipe.name}</td>
                       <td>{recipe.category}</td>
                       <td>
-                        <button className="recipe-action-view" onClick={() => toast.info(`Viewing: ${recipe.name}`)}>👁️</button>
+                        <button className="recipe-action-view" onClick={() => setViewingRecipe(recipe)}>👁️</button>
                         <button className="recipe-action-edit" onClick={() => handleEdit(recipe)}>✏️</button>
                         <button className="recipe-action-delete" onClick={() => handleDelete(recipe.id)}>🗑️</button>
                       </td>
@@ -127,38 +140,82 @@ const FoodRecipe = () => {
                   ))}
               </tbody>
             </table>
-            <button className="new-recipe-btn bottom-right-btn" onClick={() => {
-              setShowPopup(true);
-              setEditingRecipe(null);
-              setNewRecipe({ image: "", name: "", category: "" });
-            }}>➕</button>
+
+            <button
+              className="new-recipe-btn bottom-right-btn"
+              onClick={() => {
+                setShowModal(true);
+                setEditingRecipe(null);
+                setNewRecipe({ image: "", name: "", category: "", steps: "" });
+              }}
+            >
+              ➕
+            </button>
           </div>
         </div>
       </div>
 
-      {showPopup && (
-        <div className="popup">
-          <h2>{editingRecipe ? "Edit Recipe" : "Add Recipe"}</h2>
-          <input
-            type="text"
-            placeholder="Name"
-            value={newRecipe.name}
-            onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Image URL"
-            value={newRecipe.image}
-            onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Category"
-            value={newRecipe.category}
-            onChange={(e) => setNewRecipe({ ...newRecipe, category: e.target.value })}
-          />
-          <button onClick={handleAddOrUpdate}>{editingRecipe ? "Update" : "Add"}</button>
-          <button onClick={() => setShowPopup(false)}>Cancel</button>
+      {/* Add/Edit Modal */}
+      {showModal && (
+        <div className="recipe-modal-overlay">
+          <div className="recipe-modal-box">
+            <h2>{editingRecipe ? "Edit Recipe" : "Add Recipe"}</h2>
+            <input
+              type="text"
+              placeholder="Name"
+              value={newRecipe.name}
+              onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Image URL"
+              value={newRecipe.image}
+              onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
+            />
+            <select
+              value={newRecipe.category}
+              onChange={(e) => setNewRecipe({ ...newRecipe, category: e.target.value })}
+              className="recipe-modal-select"
+            >
+              <option value="">Select Category</option>
+              <option value="Breakfast">Breakfast</option>
+              <option value="Lunch">Lunch</option>
+              <option value="Dinner">Dinner</option>
+            </select>
+            <textarea
+              rows="5"
+              placeholder="Enter recipe steps..."
+              value={newRecipe.steps}
+              onChange={(e) => setNewRecipe({ ...newRecipe, steps: e.target.value })}
+              className="recipe-modal-steps"
+            />
+            <div className="recipe-modal-actions">
+              <button onClick={handleAddOrUpdate}>
+                {editingRecipe ? "Update" : "Add"}
+              </button>
+              <button className="recipe-modal-cancel" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View-Only Modal */}
+      {viewingRecipe && (
+        <div className="recipe-modal-overlay">
+          <div className="recipe-modal-box">
+            <h2>{viewingRecipe.name}</h2>
+            <img src={viewingRecipe.image} alt={viewingRecipe.name} className="recipe-view-img" />
+            <p><strong>Category:</strong> {viewingRecipe.category}</p>
+            <p><strong>Steps:</strong></p>
+            <p className="recipe-view-steps">{viewingRecipe.steps || "No steps provided."}</p>
+            <div className="recipe-modal-actions">
+              <button className="recipe-modal-cancel" onClick={() => setViewingRecipe(null)}>
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

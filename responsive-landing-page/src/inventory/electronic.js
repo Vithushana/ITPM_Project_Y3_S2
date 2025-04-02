@@ -49,7 +49,7 @@ const ElectronicsPage = () => {
   const handleAddNewItem = async () => {
     try {
       const response = await axios.post("http://localhost:8080/api/electronics", newItem);
-      if (response.status === 201) {
+      if (response.status === 200) {
         setElectronicsItems((prevItems) => [...prevItems, response.data]);
         toast.success("Item added successfully.");
         closePopup();
@@ -195,12 +195,6 @@ const ElectronicsPage = () => {
               placeholder="Image URL"
               value={newItem.imageUrl}
               onChange={(e) => setNewItem({ ...newItem, imageUrl: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="Name"
-              value={newItem.name}
-              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
             />
             <input
               type="number"
