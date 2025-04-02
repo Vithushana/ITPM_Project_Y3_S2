@@ -24,6 +24,7 @@ public class ShoppingController {
 
     @PostMapping("/add")
     public ShoppingItem addItem(@RequestBody ShoppingItem item) {
+        System.out.println( "Adding : " + item.toString());
         return shoppingItemRepository.save(item);
     }
 
