@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/alert.css";
 
 const ReminderContainer = ({ category, className }) => {
@@ -9,7 +11,6 @@ const ReminderContainer = ({ category, className }) => {
   const [purchasingDate, setPurchasingDate] = useState("");
   const [reminderDate, setReminderDate] = useState("");
   const [reminders, setReminders] = useState([]);
-  const [notification, setNotification] = useState("");
 
   const handleAddReminder = async () => {
     if (
@@ -17,7 +18,7 @@ const ReminderContainer = ({ category, className }) => {
       (category === "Electronics" && !purchasingDate) ||
       (category !== "Electronics" && !reminderDate)
     ) {
-      alert("Please enter all required details before adding a reminder.");
+      toast.warning("Please enter all required details before adding a reminder.");
       return;
     }
 
@@ -37,24 +38,24 @@ const ReminderContainer = ({ category, className }) => {
       });
 
       if (response.ok) {
-        setReminders([...reminders, newReminder]);
+        const savedReminder = await response.json();
+        setReminders([...reminders, savedReminder]);
         setName("");
         setPurchasingDate("");
         setReminderDate("");
-        setNotification(`Reminder "${name}" added successfully.`);
-        setTimeout(() => setNotification(""), 3000);
+        toast.success(`Reminder "${name}" added successfully.`);
       } else {
-        setNotification("Failed to add reminder.");
+        toast.error("Failed to add reminder.");
       }
     } catch (error) {
       console.error("Error adding reminder:", error);
-      setNotification("Failed to add reminder.");
+      toast.error("Failed to add reminder.");
     }
   };
 
   const handleSendEmail = () => {
     if (!reminders.length) {
-      alert("No reminders to send an email.");
+      toast.info("No reminders to send an email.");
       return;
     }
 
@@ -64,16 +65,8 @@ const ReminderContainer = ({ category, className }) => {
     }));
 
     setReminders(updatedReminders);
-    alert(
-      `Email sent for ${category} reminders:\n` +
-        updatedReminders
-          .map((r) =>
-            category === "Electronics"
-              ? `${r.name} - Purchasing Date: ${r.purchasingDate}`
-              : `${r.name} - Reminder Date: ${r.reminderDate}`
-          )
-          .join("\n")
-    );
+
+    toast.success(`Email sent for ${category} reminders.`);
   };
 
   return (
@@ -112,7 +105,6 @@ const ReminderContainer = ({ category, className }) => {
       )}
       <button onClick={handleAddReminder}>Add</button>
       <button onClick={handleSendEmail}>Send Email</button>
-      {notification && <p className="notification">{notification}</p>}
 
       <ul className="reminder-list">
         {reminders.map((reminder, index) => (
@@ -140,11 +132,13 @@ const ReminderCardView = ({ searchTerm, reminders, setReminders, loading }) => {
 
       if (response.ok) {
         setReminders((prev) => prev.filter((r) => r.id !== id));
+        toast.success("Reminder deleted.");
       } else {
-        console.error("Failed to delete reminder");
+        toast.error("Failed to delete reminder.");
       }
     } catch (error) {
       console.error("Error deleting reminder:", error);
+      toast.error("Error deleting reminder.");
     }
   };
 
@@ -200,10 +194,11 @@ const AlertPage = () => {
         const data = await response.json();
         setReminders(data);
       } else {
-        console.error("Failed to fetch reminders");
+        toast.error("Failed to fetch reminders.");
       }
     } catch (error) {
       console.error("Error fetching reminders:", error);
+      toast.error("Error fetching reminders.");
     } finally {
       setLoading(false);
     }
@@ -211,7 +206,7 @@ const AlertPage = () => {
 
   const handleDownloadReport = () => {
     if (!reminders.length) {
-      alert("No reminders available to download.");
+      toast.info("No reminders available to download.");
       return;
     }
 
@@ -275,6 +270,8 @@ const AlertPage = () => {
         <FaArrowLeft size={32} />
         <span>Back Home</span>
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

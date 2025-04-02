@@ -3,6 +3,8 @@ import Sidebar from "../components/Sidebar";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/budget.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -23,10 +25,9 @@ const BudgetPage = () => {
         const response = await axios.get("http://localhost:8080/api/budget");
         setBudgetItems(response.data);
       } catch (error) {
-        console.error("Error fetching budget items:", error);
+        toast.error("Failed to fetch budget items.");
       }
     };
-
     fetchBudgetItems();
   }, []);
 
@@ -34,21 +35,28 @@ const BudgetPage = () => {
     try {
       await axios.delete(`http://localhost:8080/api/budget/${id}`);
       setBudgetItems(budgetItems.filter((item) => item.id !== id));
+      toast.success("Item deleted successfully.");
     } catch (error) {
-      console.error("Error deleting budget item:", error);
+      toast.error("Error deleting budget item.");
     }
   };
 
   const handleAddNewItem = async () => {
+    if (!newItem.category || !newItem.amount) {
+      toast.error("Please fill in both category and amount.");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:8080/api/budget", {
         category: newItem.category,
-        amount: parseFloat(newItem.amount), // Ensure amount is a number
+        amount: parseFloat(newItem.amount),
       });
       setBudgetItems([...budgetItems, response.data]);
+      toast.success("Item added successfully.");
       closePopup();
     } catch (error) {
-      console.error("Error adding new budget item:", error);
+      toast.error("Error adding new budget item.");
     }
   };
 
@@ -61,17 +69,23 @@ const BudgetPage = () => {
   };
 
   const handleUpdateItem = async () => {
+    if (!newItem.category || !newItem.amount) {
+      toast.error("Please fill in both category and amount.");
+      return;
+    }
+
     try {
       const response = await axios.put(`http://localhost:8080/api/budget/${currentItemId}`, {
         category: newItem.category,
-        amount: parseFloat(newItem.amount), // Ensure amount is a number
+        amount: parseFloat(newItem.amount),
       });
       setBudgetItems(budgetItems.map((item) =>
         item.id === currentItemId ? response.data : item
       ));
+      toast.success("Item updated successfully.");
       closePopup();
     } catch (error) {
-      console.error("Error updating budget item:", error);
+      toast.error("Error updating budget item.");
     }
   };
 
@@ -87,7 +101,7 @@ const BudgetPage = () => {
     datasets: [
       {
         data: budgetItems.map((item) => item.amount),
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"], // Added a third color for 3 categories
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
         hoverBackgroundColor: ["#FF4384", "#36A2BC", "#FFC107"],
       },
     ],
@@ -115,27 +129,15 @@ const BudgetPage = () => {
                 <h2>{item.category}</h2>
                 <p>Amount: ${item.amount}</p>
                 <div className="actions">
-                  <button
-                    className="edit"
-                    onClick={() => handleEditItem(item.id)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="delete"
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    Delete
-                  </button>
+                  <button className="edit" onClick={() => handleEditItem(item.id)}>Edit</button>
+                  <button className="delete" onClick={() => handleDelete(item.id)}>Delete</button>
                 </div>
               </div>
             ))
           )}
         </div>
 
-        <button className="add-button" onClick={() => setShowPopup(true)}>
-          +
-        </button>
+        <button className="add-button" onClick={() => setShowPopup(true)}>+</button>
 
         {showPopup && (
           <div className="popup-overlay">
@@ -145,18 +147,12 @@ const BudgetPage = () => {
                 <label>Category:</label>
                 <select
                   value={newItem.category}
-                  onChange={(e) =>
-                    setNewItem({ ...newItem, category: e.target.value })
-                  }
+                  onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                   required
                 >
-                  <option value="" disabled>
-                    Select a category
-                  </option>
+                  <option value="" disabled>Select a category</option>
                   {categoryOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
+                    <option key={option} value={option}>{option}</option>
                   ))}
                 </select>
               </div>
@@ -166,9 +162,7 @@ const BudgetPage = () => {
                   type="number"
                   placeholder="Amount"
                   value={newItem.amount}
-                  onChange={(e) =>
-                    setNewItem({ ...newItem, amount: e.target.value })
-                  }
+                  onChange={(e) => setNewItem({ ...newItem, amount: e.target.value })}
                   required
                 />
               </div>
@@ -176,14 +170,14 @@ const BudgetPage = () => {
                 <button onClick={isEditing ? handleUpdateItem : handleAddNewItem}>
                   {isEditing ? "Update" : "Add"}
                 </button>
-                <button className="close-btn" onClick={closePopup}>
-                  Cancel
-                </button>
+                <button className="close-btn" onClick={closePopup}>Cancel</button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

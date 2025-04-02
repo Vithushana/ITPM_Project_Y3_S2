@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import axios from "axios"; // Import axios for API requests
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/electronic.css";
 
 const ElectronicsPage = () => {
@@ -15,54 +17,52 @@ const ElectronicsPage = () => {
     category: "",
     expirationDate: "",
   });
-  const [categoryFilter, setCategoryFilter] = useState(""); // State for category filter
+  const [categoryFilter, setCategoryFilter] = useState("");
 
-  // Fetch electronics items on component mount
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/electronics")
       .then((response) => {
         setElectronicsItems(response.data);
       })
-      .catch((error) => console.error("Error fetching data:", error));
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to fetch electronics data.");
+      });
   }, []);
 
-  // Handle delete functionality using axios
   const handleDelete = async (id) => {
-    console.log("Deleting item with ID:", id);
     try {
       const response = await axios.delete(`http://localhost:8080/api/electronics/${id}`);
       if (response.status === 200) {
         setElectronicsItems((prevItems) => prevItems.filter((item) => item.id !== id));
-        console.log("Item deleted successfully");
+        toast.success("Item deleted successfully.");
       } else {
         throw new Error("Failed to delete item");
       }
     } catch (error) {
       console.error("Error deleting item:", error);
+      toast.error("Error deleting item.");
     }
   };
 
-  // Handle adding a new electronic item
   const handleAddNewItem = async () => {
-    console.log("Adding new item:", newItem);
     try {
       const response = await axios.post("http://localhost:8080/api/electronics", newItem);
       if (response.status === 201) {
         setElectronicsItems((prevItems) => [...prevItems, response.data]);
-        console.log("Item added successfully:", response.data);
+        toast.success("Item added successfully.");
         closePopup();
       } else {
         throw new Error("Failed to add item");
       }
     } catch (error) {
       console.error("Error adding item:", error);
+      toast.error("Error adding item.");
     }
   };
 
-  // Handle editing an existing item
   const handleEditItem = (id) => {
-    console.log("Editing item with ID:", id);
     const itemToEdit = electronicsItems.find((item) => item.id === id);
     if (!itemToEdit) return;
     setNewItem(itemToEdit);
@@ -71,26 +71,24 @@ const ElectronicsPage = () => {
     setShowPopup(true);
   };
 
-  // Handle updating an item using axios
   const handleUpdateItem = async () => {
-    console.log("Updating item:", currentItemId, newItem);
     try {
       const response = await axios.put(`http://localhost:8080/api/electronics/${currentItemId}`, newItem);
       if (response.status === 200) {
         setElectronicsItems((prevItems) =>
           prevItems.map((item) => (item.id === currentItemId ? response.data : item))
         );
-        console.log("Item updated successfully:", response.data);
+        toast.success("Item updated successfully.");
         closePopup();
       } else {
         throw new Error("Failed to update item");
       }
     } catch (error) {
       console.error("Error updating item:", error);
+      toast.error("Error updating item.");
     }
   };
 
-  // Close popup and reset fields
   const closePopup = () => {
     setShowPopup(false);
     setIsEditing(false);
@@ -104,25 +102,22 @@ const ElectronicsPage = () => {
     setCurrentItemId(null);
   };
 
-  // Handle category filter change
   const handleCategoryChange = (event) => {
     setCategoryFilter(event.target.value);
   };
 
   const handleDownloadReport = () => {
     if (electronicsItems.length === 0) {
-      alert("No data available to download.");
+      toast.info("No data available to download.");
       return;
     }
 
-    // Convert data to CSV format
     const headers = ["ID", "Name", "Quantity", "Category", "Expiration Date"];
     const rows = electronicsItems.map((item) =>
       [item.id, item.name, item.quantity, item.category, item.expirationDate].join(",")
     );
 
     const csvContent = [headers.join(","), ...rows].join("\n");
-
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -130,11 +125,14 @@ const ElectronicsPage = () => {
     a.download = "electronics_report.csv";
     a.click();
     URL.revokeObjectURL(url);
+
+    toast.success("Report downloaded successfully.");
   };
 
-  // Filter items by category
   const filteredItems = categoryFilter
-    ? electronicsItems.filter((item) => item.category.toLowerCase().includes(categoryFilter.toLowerCase()))
+    ? electronicsItems.filter((item) =>
+        item.category.toLowerCase().includes(categoryFilter.toLowerCase())
+      )
     : electronicsItems;
 
   return (
@@ -150,7 +148,9 @@ const ElectronicsPage = () => {
             value={categoryFilter}
             onChange={handleCategoryChange}
           />
-          <button className="download-report" onClick={handleDownloadReport}>Download Report</button>
+          <button className="download-report" onClick={handleDownloadReport}>
+            Download Report
+          </button>
         </div>
 
         <div className="electronics-grid">
@@ -159,14 +159,24 @@ const ElectronicsPage = () => {
           ) : (
             filteredItems.map((item) => (
               <div key={item.id} className="electronics-card">
-                {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="electronics-image" />}
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.name}
+                    className="electronics-image"
+                  />
+                )}
                 <h3>{item.name}</h3>
                 <p><strong>Quantity:</strong> {item.quantity}</p>
                 <p><strong>Category:</strong> {item.category}</p>
                 <p><strong>Expiration Date:</strong> {item.expirationDate}</p>
                 <div className="button-group">
-                  <button className="edit-btn" onClick={() => handleEditItem(item.id)}>Update</button>
-                  <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                  <button className="edit-btn" onClick={() => handleEditItem(item.id)}>
+                    Update
+                  </button>
+                  <button className="delete-btn" onClick={() => handleDelete(item.id)}>
+                    Delete
+                  </button>
                 </div>
               </div>
             ))
@@ -185,6 +195,12 @@ const ElectronicsPage = () => {
               placeholder="Image URL"
               value={newItem.imageUrl}
               onChange={(e) => setNewItem({ ...newItem, imageUrl: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Name"
+              value={newItem.name}
+              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
             />
             <input
               type="number"
@@ -211,6 +227,8 @@ const ElectronicsPage = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

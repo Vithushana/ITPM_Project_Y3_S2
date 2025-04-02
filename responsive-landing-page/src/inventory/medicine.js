@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/medicine.css";
 
 const MedicinePage = () => {
   const [medicineItems, setMedicineItems] = useState([]);
-  const [filteredMedicine, setFilteredMedicine] = useState([]); // To store the filtered results
-  const [searchTerm, setSearchTerm] = useState(""); // For search input
+  const [filteredMedicine, setFilteredMedicine] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [newMedicine, setNewMedicine] = useState({
     name: "",
@@ -13,7 +15,6 @@ const MedicinePage = () => {
     category: "",
     expirationDate: "",
   });
-
   const [updateMedicine, setUpdateMedicine] = useState({
     id: "",
     name: "",
@@ -22,25 +23,33 @@ const MedicinePage = () => {
     expirationDate: "",
   });
 
-  // Fetch medicines from API
   useEffect(() => {
     fetch("http://localhost:8080/api/medicine")
       .then((response) => response.json())
       .then((data) => {
         setMedicineItems(data);
-        setFilteredMedicine(data); // Initially, show all medicines
+        setFilteredMedicine(data);
       })
-      .catch((error) => console.error("Error fetching medicines:", error));
+      .catch((error) => {
+        console.error("Error fetching medicines:", error);
+        toast.error("Failed to fetch medicines.");
+      });
   }, []);
 
-  // Handle delete medicine
   const handleDelete = (id) => {
     fetch(`http://localhost:8080/api/medicine/${id}`, { method: "DELETE" })
-      .then(() => setMedicineItems(medicineItems.filter((item) => item.id !== id)))
-      .catch((error) => console.error("Error deleting medicine:", error));
+      .then(() => {
+        const updated = medicineItems.filter((item) => item.id !== id);
+        setMedicineItems(updated);
+        setFilteredMedicine(updated);
+        toast.success("Medicine deleted successfully.");
+      })
+      .catch((error) => {
+        console.error("Error deleting medicine:", error);
+        toast.error("Error deleting medicine.");
+      });
   };
 
-  // Handle adding new medicine
   const handleAddNewMedicine = () => {
     fetch("http://localhost:8080/api/medicine", {
       method: "POST",
@@ -49,20 +58,19 @@ const MedicinePage = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setMedicineItems([...medicineItems, data]);
-        setFilteredMedicine([...medicineItems, data]); // Update the filtered list as well
-        setShowPopup(false); // Close the popup after adding
-        setNewMedicine({
-          name: "",
-          quantity: "",
-          category: "",
-          expirationDate: "",
-        }); // Reset form
+        const updated = [...medicineItems, data];
+        setMedicineItems(updated);
+        setFilteredMedicine(updated);
+        setShowPopup(false);
+        setNewMedicine({ name: "", quantity: "", category: "", expirationDate: "" });
+        toast.success("Medicine added successfully.");
       })
-      .catch((error) => console.error("Error adding medicine:", error));
+      .catch((error) => {
+        console.error("Error adding medicine:", error);
+        toast.error("Error adding medicine.");
+      });
   };
 
-  // Handle update medicine
   const handleUpdateMedicine = () => {
     fetch(`http://localhost:8080/api/medicine/${updateMedicine.id}`, {
       method: "PUT",
@@ -75,29 +83,25 @@ const MedicinePage = () => {
           item.id === updateMedicine.id ? data : item
         );
         setMedicineItems(updatedItems);
-        setFilteredMedicine(updatedItems); // Update the filtered list as well
-        setShowPopup(false); 
-        setUpdateMedicine({
-          id: "",
-          name: "",
-          quantity: "",
-          category: "",
-          expirationDate: "",
-        }); // Reset form
+        setFilteredMedicine(updatedItems);
+        setShowPopup(false);
+        setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "" });
+        toast.success("Medicine updated successfully.");
       })
-      .catch((error) => console.error("Error updating medicine:", error));
+      .catch((error) => {
+        console.error("Error updating medicine:", error);
+        toast.error("Error updating medicine.");
+      });
   };
 
-  // Handle search input change
   const handleSearch = (event) => {
     const term = event.target.value;
     setSearchTerm(term);
-
     if (term === "") {
-      setFilteredMedicine(medicineItems); // If no search term, show all medicines
+      setFilteredMedicine(medicineItems);
     } else {
       const filtered = medicineItems.filter((medicine) =>
-        medicine.name.toLowerCase().includes(term.toLowerCase()) // Case-insensitive search
+        medicine.name.toLowerCase().includes(term.toLowerCase())
       );
       setFilteredMedicine(filtered);
     }
@@ -105,35 +109,29 @@ const MedicinePage = () => {
 
   const handleDownloadReport = () => {
     if (filteredMedicine.length === 0) {
-      alert("No data available to download.");
+      toast.info("No data available to download.");
       return;
     }
-  
-    // Define CSV column headers
+
     const headers = ["Name", "Quantity", "Category", "Expiration Date"];
-  
-    // Convert data to CSV format
     const csvRows = [
-      headers.join(","), // Add headers
+      headers.join(","),
       ...filteredMedicine.map((medicine) =>
         [medicine.name, medicine.quantity, medicine.category, medicine.expirationDate].join(",")
       ),
     ];
-  
+
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-  
-    // Create a downloadable link
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", "medicine_report.csv");
-  
-    // Append the link to the document and trigger the download
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link); // Clean up after download
+    document.body.removeChild(link);
+
+    toast.success("Report downloaded successfully.");
   };
-  
 
   return (
     <div className="inventory-container">
@@ -146,9 +144,11 @@ const MedicinePage = () => {
             placeholder="Search by name..."
             className="search-bar"
             value={searchTerm}
-            onChange={handleSearch} // Call search handler on input change
+            onChange={handleSearch}
           />
-          <button className="download-report" onClick={handleDownloadReport} >Download Report</button>
+          <button className="download-report" onClick={handleDownloadReport}>
+            Download Report
+          </button>
         </div>
         <div className="medicine-container">
           {filteredMedicine.length === 0 ? (
@@ -167,22 +167,27 @@ const MedicinePage = () => {
                     className="update-btn"
                     onClick={() => {
                       setUpdateMedicine(medicine);
-                      setShowPopup(true); // Open the popup with medicine details
+                      setShowPopup(true);
                     }}
                   >
                     Update
                   </button>
-                  <button className="delete-btn" onClick={() => handleDelete(medicine.id)}>Delete</button>
+                  <button className="delete-btn" onClick={() => handleDelete(medicine.id)}>
+                    Delete
+                  </button>
                 </div>
               </div>
             ))
           )}
         </div>
 
-        {/* Add New Medicine Button */}
-        <button className="add-button" onClick={() => setShowPopup(true)}>+</button>
+        <button className="add-button" onClick={() => {
+          setShowPopup(true);
+          setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "" });
+        }}>
+          +
+        </button>
 
-        {/* Popup Form for Adding or Updating Medicine */}
         {showPopup && (
           <div className="popup-overlay">
             <div className="popup-content">
@@ -190,7 +195,7 @@ const MedicinePage = () => {
               <input
                 type="text"
                 placeholder="Name"
-                value={updateMedicine.name || newMedicine.name}
+                value={updateMedicine.id ? updateMedicine.name : newMedicine.name}
                 onChange={(e) =>
                   updateMedicine.id
                     ? setUpdateMedicine({ ...updateMedicine, name: e.target.value })
@@ -200,7 +205,7 @@ const MedicinePage = () => {
               <input
                 type="number"
                 placeholder="Quantity"
-                value={updateMedicine.quantity || newMedicine.quantity}
+                value={updateMedicine.id ? updateMedicine.quantity : newMedicine.quantity}
                 onChange={(e) =>
                   updateMedicine.id
                     ? setUpdateMedicine({ ...updateMedicine, quantity: e.target.value })
@@ -210,7 +215,7 @@ const MedicinePage = () => {
               <input
                 type="text"
                 placeholder="Category"
-                value={updateMedicine.category || newMedicine.category}
+                value={updateMedicine.id ? updateMedicine.category : newMedicine.category}
                 onChange={(e) =>
                   updateMedicine.id
                     ? setUpdateMedicine({ ...updateMedicine, category: e.target.value })
@@ -220,7 +225,7 @@ const MedicinePage = () => {
               <input
                 type="date"
                 placeholder="Expiration Date"
-                value={updateMedicine.expirationDate || newMedicine.expirationDate}
+                value={updateMedicine.id ? updateMedicine.expirationDate : newMedicine.expirationDate}
                 onChange={(e) =>
                   updateMedicine.id
                     ? setUpdateMedicine({ ...updateMedicine, expirationDate: e.target.value })
@@ -234,6 +239,8 @@ const MedicinePage = () => {
             </div>
           </div>
         )}
+
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </div>
   );

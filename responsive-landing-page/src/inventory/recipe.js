@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/recipe.css";
 
 const API_URL = "http://localhost:8080/api/recipes";
@@ -16,33 +18,42 @@ const FoodRecipe = () => {
   }, []);
 
   const fetchRecipes = async () => {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    setRecipes(data);
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setRecipes(data);
+    } catch (error) {
+      toast.error("Failed to fetch recipes.");
+    }
   };
 
-  // Debounced search handler
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const handleAddOrUpdate = async () => {
-    if (editingRecipe) {
-      await fetch(`${API_URL}/${editingRecipe.id}`, {
-        method: "PUT",
+    const method = editingRecipe ? "PUT" : "POST";
+    const endpoint = editingRecipe ? `${API_URL}/${editingRecipe.id}` : API_URL;
+
+    try {
+      const response = await fetch(endpoint, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRecipe),
       });
-    } else {
-      await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newRecipe),
-      });
+
+      if (response.ok) {
+        toast.success(editingRecipe ? "Recipe updated." : "Recipe added.");
+        setShowPopup(false);
+        setEditingRecipe(null);
+        setNewRecipe({ image: "", name: "", category: "" });
+        fetchRecipes();
+      } else {
+        throw new Error("Failed to save recipe.");
+      }
+    } catch (error) {
+      toast.error(editingRecipe ? "Error updating recipe." : "Error adding recipe.");
     }
-    setShowPopup(false);
-    setEditingRecipe(null);
-    fetchRecipes();
   };
 
   const handleEdit = (recipe) => {
@@ -52,8 +63,17 @@ const FoodRecipe = () => {
   };
 
   const handleDelete = async (id) => {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    fetchRecipes();
+    try {
+      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      if (response.ok) {
+        toast.success("Recipe deleted.");
+        fetchRecipes();
+      } else {
+        throw new Error("Delete failed.");
+      }
+    } catch (error) {
+      toast.error("Error deleting recipe.");
+    }
   };
 
   return (
@@ -91,19 +111,15 @@ const FoodRecipe = () => {
                     recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   .map((recipe) => (
-                    <tr
-                      key={recipe.id}
-                      className="recipe-item"
-                      style={{
-                        animation: "fadeIn 0.5s ease-out",
-                      }}
-                    >
+                    <tr key={recipe.id} className="recipe-item" style={{ animation: "fadeIn 0.5s ease-out" }}>
                       <td>{recipe.id}</td>
-                      <td><img src={recipe.image} alt={recipe.name} className="recipe-preview-img" /></td>
+                      <td>
+                        <img src={recipe.image} alt={recipe.name} className="recipe-preview-img" />
+                      </td>
                       <td>{recipe.name}</td>
                       <td>{recipe.category}</td>
                       <td>
-                        <button className="recipe-action-view" onClick={() => handleDelete(recipe.id)}>👁️</button>
+                        <button className="recipe-action-view" onClick={() => toast.info(`Viewing: ${recipe.name}`)}>👁️</button>
                         <button className="recipe-action-edit" onClick={() => handleEdit(recipe)}>✏️</button>
                         <button className="recipe-action-delete" onClick={() => handleDelete(recipe.id)}>🗑️</button>
                       </td>
@@ -111,7 +127,11 @@ const FoodRecipe = () => {
                   ))}
               </tbody>
             </table>
-            <button className="new-recipe-btn bottom-right-btn" onClick={() => setShowPopup(true)}>➕</button>
+            <button className="new-recipe-btn bottom-right-btn" onClick={() => {
+              setShowPopup(true);
+              setEditingRecipe(null);
+              setNewRecipe({ image: "", name: "", category: "" });
+            }}>➕</button>
           </div>
         </div>
       </div>
@@ -141,6 +161,8 @@ const FoodRecipe = () => {
           <button onClick={() => setShowPopup(false)}>Cancel</button>
         </div>
       )}
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
