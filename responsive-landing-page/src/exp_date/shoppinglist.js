@@ -30,6 +30,7 @@ const ShoppingList = () => {
       fetch(`http://localhost:8080/api/shopping/${category.name}`)
         .then((res) => res.json())
         .then((data) => {
+          console.log('Received data:', data); // Add this line
           switch (category.name) {
             case "ELECTRONICS":
               setElectronicsList(data);
@@ -47,15 +48,14 @@ const ShoppingList = () => {
               break;
           }
         })
-        .catch(() => {
-          toast.error(`Failed to load ${category.name} items`);
-        });
+        .catch(() => toast.error(`Failed to load ${category.name} items`));
     });
   }, []);
 
   const handleBack = () => navigate("/home");
 
   const togglePopup = (category = null, item = null) => {
+    console.log("Categorygjgjgjg",category,)
     setShowPopup(!showPopup);
     setSelectedCategory(category);
     setFormData(item || {});
@@ -99,10 +99,10 @@ const ShoppingList = () => {
   const handleSave = () => {
     if (!selectedCategory || !validateFormData()) return;
 
-    const isEditing = !!formData._id;
+    const isEditing = !!formData.id;
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `http://localhost:8080/api/shopping/update/${formData._id}`
+      ? `http://localhost:8080/api/shopping/update/${formData.id}`
       : "http://localhost:8080/api/shopping/add";
 
     fetch(url, {
@@ -116,7 +116,7 @@ const ShoppingList = () => {
 
         const updateList = (list, setList) => {
           if (isEditing) {
-            setList(list.map((item) => (item._id === data._id ? data : item)));
+            setList(list.map((item) => (item._id === data.id ? data : item)));
           } else {
             setList([...list, data]);
           }
@@ -144,6 +144,7 @@ const ShoppingList = () => {
   };
 
   const handleDelete = (id, categoryName) => {
+    console.log("Categorygjgjgjg",categoryName, id)
     fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
       method: "DELETE",
     })
@@ -151,7 +152,7 @@ const ShoppingList = () => {
         if (res.ok) {
           toast.success("Item deleted!");
           const updateList = (list, setList) =>
-            setList(list.filter((item) => item._id !== id));
+            setList(list.filter((item) => item.id !== id));
 
           switch (categoryName) {
             case "ELECTRONICS":
@@ -176,6 +177,45 @@ const ShoppingList = () => {
       .catch(() => toast.error("Server error during delete."));
   };
 
+  const handleDownloadReport = () => {
+    const allData = [
+      { name: "ELECTRONICS", list: electronicsList, fields: ["name", "date", "count"] },
+      { name: "GROCERIES", list: groceriesList, fields: ["name", "quantity"] },
+      { name: "MEDICINE", list: medicinesList, fields: ["name", "quantity", "type"] },
+      { name: "BALANCEMONEY", list: moneyBalanceList, fields: ["amount", "date", "note"] },
+    ];
+
+    let csv = "Category,";
+
+    const uniqueHeaders = new Set();
+    allData.forEach((cat) => cat.fields.forEach((f) => uniqueHeaders.add(f)));
+    const headers = ["Category", ...Array.from(uniqueHeaders)];
+    csv += headers.slice(1).join(",") + "\n";
+
+    allData.forEach(({ name, list, fields }) => {
+      const filtered = list.filter((item) =>
+        fields.some((field) =>
+          String(item[field] || "").toLowerCase().includes(searchTerm)
+        )
+      );
+
+      filtered.forEach((item) => {
+        const row = headers.map((field) =>
+          field === "Category" ? name : item[field] || ""
+        );
+        csv += row.join(",") + "\n";
+      });
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "shopping_report.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="App">
       <div className="back-button-container">
@@ -184,7 +224,7 @@ const ShoppingList = () => {
 
       <div className="banner">
         <div className="banner-text">
-          <h1>Make Your Shopping Lists</h1>
+          <h1>Make Your Card Lists</h1>
           <p>🛒 Effortless Shopping, Smart Choices!</p>
           <div className="search">
             <input
@@ -194,7 +234,9 @@ const ShoppingList = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
             />
-            <button className="download-report">Download Report</button>
+            <button className="download-report" onClick={handleDownloadReport}>
+              Download Report
+            </button>
           </div>
         </div>
       </div>
@@ -240,7 +282,7 @@ const ShoppingList = () => {
                         ))}
                         <td>
                           <button onClick={() => togglePopup(category.name, item)}>✏️</button>
-                          <button onClick={() => handleDelete(item._id, category.name)}>🗑️</button>
+                          <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
                         </td>
                       </tr>
                     ))}
@@ -255,7 +297,7 @@ const ShoppingList = () => {
       {showPopup && selectedCategory && (
         <div className="popup-overlay">
           <div className="popup-container">
-            <h2>{formData._id ? "Edit" : "Add"} {selectedCategory} Item</h2>
+            <h2>{formData.id ? "Edit" : "Add"} {selectedCategory} Item</h2>
             {getCategories()
               .find((cat) => cat.name === selectedCategory)
               ?.fields.map((field, index) => (
