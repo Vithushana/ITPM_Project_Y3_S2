@@ -11,6 +11,8 @@ public class Medicine {
     private int quantity;
     private String category;
     private String expirationDate;
+    private String illnessType;
+    private boolean available;
 
     public String getId() {
         return id;
@@ -52,6 +54,22 @@ public class Medicine {
         this.expirationDate = expirationDate;
     }
 
+    public String getIllnessType() {
+        return illnessType;
+    }
+
+    public void setIllnessType(String illnessType) {
+        this.illnessType = illnessType;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
     @Override
     public String toString() {
         return "Medicine{" +
@@ -59,8 +77,9 @@ public class Medicine {
                 ", name='" + name + '\'' +
                 ", quantity=" + quantity +
                 ", category='" + category + '\'' +
-                ", expirationDate=" + expirationDate +
+                ", expirationDate='" + expirationDate + '\'' +
+                ", illnessType='" + illnessType + '\'' +
+                ", available=" + available +
                 '}';
     }
-    
-    }
+}

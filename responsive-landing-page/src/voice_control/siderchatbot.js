@@ -64,8 +64,14 @@ const SiderChatBot = () => {
     };
   }, []);
 
-  const fetchData = (category) => {
-    fetch(`http://localhost:8080/api/${category}`)
+  const fetchData = (transcript, category) => {
+    fetch("http://localhost:8080/nlp-query", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sentence: transcript }),
+    })
       .then((response) => response.json())
       .then((data) => {
         if (data && Array.isArray(data)) {
@@ -80,7 +86,7 @@ const SiderChatBot = () => {
         console.error("Error fetching data:", error);
         addMessage("Error fetching data. Please try again.", "Bot");
       });
-  };
+  };  
 
   const toggleListening = () => {
     if (!recognition) return;
@@ -101,9 +107,10 @@ const SiderChatBot = () => {
       addMessage(transcript, "User");
       const detectedKeyword = API_KEYWORDS.find((keyword) => transcript.includes(keyword));
 
-      if (detectedKeyword) {
-        fetchData(detectedKeyword); // Call the API after finishing the chat
-      }
+      // if (detectedKeyword) {
+      //   fetchData(detectedKeyword); // Call the API after finishing the chat
+      // }
+      fetchData(transcript, detectedKeyword);
     }
 
     setTranscript("");

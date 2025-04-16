@@ -10,6 +10,7 @@ public class Electronics {
     private String name;
     private int quantity;
     private String category;
+    private Integer price;
     private String expirationDate;
     private String imageUrl;
 
@@ -45,6 +46,14 @@ public class Electronics {
         this.category = category;
     }
 
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
     public String getExpirationDate() {
         return expirationDate;
     }
@@ -67,6 +76,7 @@ public class Electronics {
                 ", name='" + name + '\'' +
                 ", quantity=" + quantity +
                 ", category='" + category + '\'' +
+                ", price='" + price + '\'' +
                 ", expirationDate='" + expirationDate + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';

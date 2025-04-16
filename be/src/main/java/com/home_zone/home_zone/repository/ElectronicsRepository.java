@@ -6,6 +6,9 @@ import com.home_zone.home_zone.model.Electronics;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 @Repository
-public interface ElectronicsRepository extends MongoRepository<Electronics, String> {
+public interface ElectronicsRepository
+    extends MongoRepository<Electronics, String>,
+            ElectronicsCustomRepository {
+    
     Electronics findByName(String name);
 }
