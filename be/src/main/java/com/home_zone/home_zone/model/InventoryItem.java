@@ -11,7 +11,6 @@ public class InventoryItem {
     private int quantity;
     private String category;
     private String expirationDate;
-
     public InventoryItem() {}
 
     public InventoryItem(String name, int quantity, String category, String expirationDate) {
