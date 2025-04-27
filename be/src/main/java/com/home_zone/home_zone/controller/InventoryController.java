@@ -31,7 +31,6 @@ public class InventoryController {
     public List<InventoryItem> getAllItems() {
         return inventoryService.getAllItems();
     }
-
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable String id) {
         inventoryService.deleteItem(id);
