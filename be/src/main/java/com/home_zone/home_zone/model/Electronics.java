@@ -12,7 +12,6 @@ public class Electronics {
     private Integer price;
     private String expirationDate;
     private String imageUrl;
-
     public String getId() {
         return id;
     }
