@@ -116,7 +116,7 @@ const ShoppingList = () => {
 
         const updateList = (list, setList) => {
           if (isEditing) {
-            setList(list.map((item) => (item._id === data.id ? data : item)));
+            setList(list.map((item) => (item.id === data.id ? data : item)));
           } else {
             setList([...list, data]);
           }
