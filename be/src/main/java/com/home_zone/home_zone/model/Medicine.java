@@ -1,5 +1,4 @@
 package com.home_zone.home_zone.model;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
