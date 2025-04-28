@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/shopping.css";
+import Swal from 'sweetalert2';
+
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -151,41 +153,49 @@ const ShoppingList = () => {
   };
 
   const handleDelete = (id, categoryName) => {
-    const confirmed = window.confirm("Are you sure you want to delete this item?"); // 🔥 Confirmation popup
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",   // Red
+      cancelButtonColor: "#3085d6", // Blue
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => {
+            if (res.ok) {
+              toast.success("Item deleted!");
+              const updateList = (list, setList) =>
+                setList(list.filter((item) => item.id !== id));
 
-    if (!confirmed) {
-      return; 
-  }
-    fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) {
-          toast.success("Item deleted!");
-          const updateList = (list, setList) =>
-            setList(list.filter((item) => item.id !== id));
-
-          switch (categoryName) {
-            case "ELECTRONICS":
-              updateList(electronicsList, setElectronicsList);
-              break;
-            case "GROCERIES":
-              updateList(groceriesList, setGroceriesList);
-              break;
-            case "MEDICINE":
-              updateList(medicinesList, setMedicinesList);
-              break;
-            case "BALANCEMONEY":
-              updateList(moneyBalanceList, setMoneyBalanceList);
-              break;
-            default:
-              break;
-          }
-        } else {
-          toast.error("Delete failed.");
-        }
-      })
-      .catch(() => toast.error("Server error during delete."));
+              switch (categoryName) {
+                case "ELECTRONICS":
+                  updateList(electronicsList, setElectronicsList);
+                  break;
+                case "GROCERIES":
+                  updateList(groceriesList, setGroceriesList);
+                  break;
+                case "MEDICINE":
+                  updateList(medicinesList, setMedicinesList);
+                  break;
+                case "BALANCEMONEY":
+                  updateList(moneyBalanceList, setMoneyBalanceList);
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              toast.error("Delete failed.");
+            }
+          })
+          .catch(() => toast.error("Server error during delete."));
+       }
+     });
   };
 
   const handleDownloadReport = () => {
