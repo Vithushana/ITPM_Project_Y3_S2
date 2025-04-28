@@ -71,6 +71,13 @@ const ShoppingList = () => {
     const { date, count, amount } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
+  const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
+    requiredFields.forEach(field => {
+    if (!formData[field] || formData[field].toString().trim() === "") {
+      errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
+    }
+  });
+
     if (selectedCategory === "ELECTRONICS" && date && !datePattern.test(date)) {
       errors.date = "Date must be in the format YYYY-MM-DD.";
     }
@@ -144,7 +151,11 @@ const ShoppingList = () => {
   };
 
   const handleDelete = (id, categoryName) => {
-    console.log("Categorygjgjgjg",categoryName, id)
+    const confirmed = window.confirm("Are you sure you want to delete this item?"); // 🔥 Confirmation popup
+
+    if (!confirmed) {
+      return; 
+  }
     fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
       method: "DELETE",
     })
@@ -303,7 +314,7 @@ const ShoppingList = () => {
               ?.fields.map((field, index) => (
                 <div key={index}>
                   <input
-                    type="text"
+                    type={field === "date" ? "date" : "text"}
                     placeholder={`Enter ${field}`}
                     value={formData[field] || ""}
                     onChange={(e) => handleChange(e, field)}
