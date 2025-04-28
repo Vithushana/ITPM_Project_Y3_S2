@@ -292,21 +292,23 @@ const ShoppingList = () => {
                       {category.fields.map((field, i) => (
                         <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
                       ))}
-                      <th>Actions</th>
+                      {filteredList.length > 0 && <th>Actions</th>}  {/* Only show "Actions" header if there are items */}
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredList.map((item, i) => (
-                      <tr key={i} className="fade-in">
-                        {category.fields.map((field, j) => (
-                          <td key={j}>{item[field]}</td>
-                        ))}
-                        <td>
-                          <button onClick={() => togglePopup(category.name, item)}>✏️</button>
-                          <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredList.length > 0 && (  // Check if there are items in the filtered list
+                      filteredList.map((item, i) => (
+                        <tr key={i} className="fade-in">
+                          {category.fields.map((field, j) => (
+                            <td key={j}>{item[field]}</td>
+                          ))}
+                          <td>
+                            <button onClick={() => togglePopup(category.name, item)}>✏️</button>
+                            <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
