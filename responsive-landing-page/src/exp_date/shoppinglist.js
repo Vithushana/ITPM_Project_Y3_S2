@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/shopping.css";
-import Swal from 'sweetalert2';
-
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -14,6 +12,7 @@ const ShoppingList = () => {
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [quantityTypeOptions, setQuantityTypeOptions] = useState([]);
 
   const [electronicsList, setElectronicsList] = useState([]);
   const [groceriesList, setGroceriesList] = useState([]);
@@ -22,8 +21,8 @@ const ShoppingList = () => {
 
   const getCategories = () => [
     { name: "ELECTRONICS", fields: ["name", "date", "count"] },
-    { name: "GROCERIES", fields: ["name", "quantity"] },
-    { name: "MEDICINE", fields: ["name", "quantity", "type"] },
+    { name: "GROCERIES", fields: ["name", "quantity"], quantityTypes: ["kg", "g", "L", "ml", "unit"] },
+    { name: "MEDICINE", fields: ["name", "quantity", "type"], quantityTypes: ["tablets", "capsules", "ml", "g", "unit", "bottles"] },
     { name: "BALANCEMONEY", fields: ["amount", "date", "note"] },
   ];
 
@@ -32,7 +31,6 @@ const ShoppingList = () => {
       fetch(`http://localhost:8080/api/shopping/${category.name}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log('Received data:', data); // Add this line
           switch (category.name) {
             case "ELECTRONICS":
               setElectronicsList(data);
@@ -57,46 +55,68 @@ const ShoppingList = () => {
   const handleBack = () => navigate("/home");
 
   const togglePopup = (category = null, item = null) => {
-    console.log("Categorygjgjgjg",category,)
     setShowPopup(!showPopup);
     setSelectedCategory(category);
-    setFormData(item || {});
+    setFormData(item ? { ...item } : {});
     setFormErrors({});
+    setQuantityTypeOptions(getCategories().find(c => c.name === category)?.quantityTypes || []);
   };
 
   const handleChange = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
+  const handleQuantityTypeChange = (e) => {
+    setFormData({ ...formData, quantity: `${formData.quantity?.split(' ')[0] || ''} ${e.target.value}` });
+  };
+
   const validateFormData = () => {
     let errors = {};
-    const { date, count, amount } = formData;
+    const { name, date, count, quantity, amount, type } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
-  const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
-    requiredFields.forEach(field => {
-    if (!formData[field] || formData[field].toString().trim() === "") {
-      errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
+    if (selectedCategory === "ELECTRONICS" && !name?.trim()) {
+      errors.name = "Name is required.";
     }
-  });
-
     if (selectedCategory === "ELECTRONICS" && date && !datePattern.test(date)) {
-      errors.date = "Date must be in the format YYYY-MM-DD.";
+      errors.date = "Date must be in the format<\ctrl98>-MM-DD.";
     }
-
-    if (selectedCategory === "ELECTRONICS" && (isNaN(count) || count <= 0)) {
+    if (selectedCategory === "ELECTRONICS" && (isNaN(count) || Number(count) <= 0)) {
       errors.count = "Count must be a valid number greater than 0.";
     }
 
-    if ((selectedCategory === "ELECTRONICS" || selectedCategory === "BALANCEMONEY") && !date) {
+    if (selectedCategory === "GROCERIES" && !name?.trim()) {
+      errors.name = "Name is required.";
+    }
+    if (selectedCategory === "GROCERIES") {
+      const quantityParts = quantity?.split(' ');
+      if (!quantity?.trim() || isNaN(quantityParts?.[0]) || Number(quantityParts?.[0]) <= 0 || !quantityParts?.[1]?.trim()) {
+        errors.quantity = "Quantity must be a valid number followed by a unit (e.g., '1 kg').";
+      }
+    }
+
+    if (selectedCategory === "MEDICINE" && !name?.trim()) {
+      errors.name = "Name is required.";
+    }
+    if (selectedCategory === "MEDICINE") {
+      const quantityParts = quantity?.split(' ');
+      if (!quantity?.trim() || isNaN(quantityParts?.[0]) || Number(quantityParts?.[0]) <= 0 || !quantityParts?.[1]?.trim()) {
+        errors.quantity = "Quantity must be a valid number followed by a unit (e.g., '10 tablets').";
+      }
+    }
+    if (selectedCategory === "MEDICINE" && !type?.trim()) {
+      errors.type = "Type is required.";
+    }
+
+    if (selectedCategory === "BALANCEMONEY" && (isNaN(amount))) {
+      errors.amount = "Amount must be a valid number.";
+    }
+    if (selectedCategory === "BALANCEMONEY" && !date) {
       errors.date = "Date is required.";
     }
 
-    if (selectedCategory === "BALANCEMONEY" && isNaN(amount)) {
-      errors.amount = "Amount must be a valid number.";
-    }
-
     setFormErrors(errors);
+
     if (Object.keys(errors).length > 0) {
       toast.warn("Please fix form errors before saving.");
       return false;
@@ -153,49 +173,36 @@ const ShoppingList = () => {
   };
 
   const handleDelete = (id, categoryName) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",   // Red
-      cancelButtonColor: "#3085d6", // Blue
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
-          method: "DELETE",
-        })
-          .then((res) => {
-            if (res.ok) {
-              toast.success("Item deleted!");
-              const updateList = (list, setList) =>
-                setList(list.filter((item) => item.id !== id));
+    fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (res.ok) {
+          toast.success("Item deleted!");
+          const updateList = (list, setList) =>
+            setList(list.filter((item) => item.id !== id));
 
-              switch (categoryName) {
-                case "ELECTRONICS":
-                  updateList(electronicsList, setElectronicsList);
-                  break;
-                case "GROCERIES":
-                  updateList(groceriesList, setGroceriesList);
-                  break;
-                case "MEDICINE":
-                  updateList(medicinesList, setMedicinesList);
-                  break;
-                case "BALANCEMONEY":
-                  updateList(moneyBalanceList, setMoneyBalanceList);
-                  break;
-                default:
-                  break;
-              }
-            } else {
-              toast.error("Delete failed.");
-            }
-          })
-          .catch(() => toast.error("Server error during delete."));
-       }
-     });
+          switch (categoryName) {
+            case "ELECTRONICS":
+              updateList(electronicsList, setElectronicsList);
+              break;
+            case "GROCERIES":
+              updateList(groceriesList, setGroceriesList);
+              break;
+            case "MEDICINE":
+              updateList(medicinesList, setMedicinesList);
+              break;
+            case "BALANCEMONEY":
+              updateList(moneyBalanceList, setMoneyBalanceList);
+              break;
+            default:
+              break;
+          }
+        } else {
+          toast.error("Delete failed.");
+        }
+      })
+      .catch(() => toast.error("Server error during delete."));
   };
 
   const handleDownloadReport = () => {
@@ -292,23 +299,21 @@ const ShoppingList = () => {
                       {category.fields.map((field, i) => (
                         <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
                       ))}
-                      {filteredList.length > 0 && <th>Actions</th>}  {/* Only show "Actions" header if there are items */}
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredList.length > 0 && (  // Check if there are items in the filtered list
-                      filteredList.map((item, i) => (
-                        <tr key={i} className="fade-in">
-                          {category.fields.map((field, j) => (
-                            <td key={j}>{item[field]}</td>
-                          ))}
-                          <td>
-                            <button onClick={() => togglePopup(category.name, item)}>✏️</button>
-                            <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
+                    {filteredList.map((item, i) => (
+                      <tr key={i} className="fade-in">
+                        {category.fields.map((field, j) => (
+                          <td key={j}>{item[field]}</td>
+                        ))}
+                        <td>
+                          <button onClick={() => togglePopup(category.name, item)}>✏️</button>
+                          <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -321,29 +326,53 @@ const ShoppingList = () => {
         <div className="popup-overlay">
           <div className="popup-container">
             <h2>{formData.id ? "Edit" : "Add"} {selectedCategory} Item</h2>
-            {getCategories()
-              .find((cat) => cat.name === selectedCategory)
-              ?.fields.map((field, index) => (
-                <div key={index}>
-                  <input
-                    type={field === "date" ? "date" : "text"}
-                    placeholder={`Enter ${field}`}
-                    value={formData[field] || ""}
-                    onChange={(e) => handleChange(e, field)}
-                  />
-                  {formErrors[field] && <span className="error">{formErrors[field]}</span>}
+            <div className="popup-form">
+              {getCategories().find(c => c.name === selectedCategory)?.fields.map((field, idx) => (
+                <div key={idx} className="popup-form-field">
+                  <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                  {field === "quantity" && (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") ? (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        style={{ flexGrow: 1, marginRight: '8px' }}
+                        value={formData[field]?.split(' ')[0] || ""}
+                        onChange={(e) => handleChange(e, field)}
+                        placeholder={`Enter quantity`}
+                      />
+                      <select
+                        value={formData[field]?.split(' ')[1] || ""}
+                        onChange={handleQuantityTypeChange}
+                      >
+                        <option value="">Select Unit</option>
+                        {quantityTypeOptions.map((type, i) => (
+                          <option key={i} value={type}>{type}</option>
+                        ))}
+                      </select>
+                      {formErrors[field] && <span className="error" style={{ color: 'red' }}>{formErrors[field]}</span>}
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={formData[field] || ""}
+                        onChange={(e) => handleChange(e, field)}
+                        placeholder={`Enter ${field}`}
+                      />
+                      {formErrors[field] && <span className="error" style={{ color: 'red' }}>{formErrors[field]}</span>}
+                    </>
+                  )}
                 </div>
               ))}
+            </div>
             <div className="popup-actions">
-              <button className="save-btn" onClick={handleSave}>Save</button>
-              <button className="cancel-btn" onClick={() => togglePopup()}>Cancel</button>
+              <button onClick={handleSave} className="save-btn">Save</button>
+              <button onClick={togglePopup} className="cancel-btn">Cancel</button>
             </div>
           </div>
         </div>
       )}
 
-      <ToastContainer position="top-right" autoClose={3000} />
-      <footer><p>Home-Zone</p></footer>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
