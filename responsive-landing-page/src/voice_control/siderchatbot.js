@@ -65,6 +65,7 @@ const SiderChatBot = () => {
     };
   }, []);
 
+  // FETCH METHOD
   const fetchData = (transcript, category) => {
     fetch("http://localhost:8080/nlp-query", {
       method: "POST",
@@ -132,24 +133,31 @@ const SiderChatBot = () => {
 
         {/* Menu Items */}
         <ul className="sider-chatbot-menu">
+
           <li className="menu-item">
             <ChatIcon /> <span>Chat Generator</span>
           </li>
+
           <li className="menu-item">
             <FeedbackIcon /> <span>Feedback</span>
           </li>
+
           <li className="menu-item">
             <SavesIcon /> <span>My Recipe</span>
           </li>
+
           <li className="menu-item">
             <FavoriteIcon /> <span>Favorite</span>
           </li>
+
           <li className="menu-item">
             <HistoryIcon /> <span>History</span>
           </li>
+
           <li className="menu-item" onClick={() => navigate("/home")}>
             <LogoutIcon /> <span>Back Home</span>
           </li>
+          
         </ul>
 
         {/* Voice Assistant Section */}
