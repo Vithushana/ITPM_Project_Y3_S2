@@ -50,7 +50,6 @@ public class Electronics {
     public void setPrice(Integer price) {
         this.price = price;
     }
-
     public String getExpirationDate() {
         return expirationDate;
     }
@@ -58,7 +57,6 @@ public class Electronics {
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
-
     public String getImageUrl() {
         return imageUrl;
     }
