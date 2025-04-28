@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import { FaAppleAlt, FaLaptop, FaPills, FaChartPie, FaSignOutAlt, FaUtensils  } from "react-icons/fa";
-
 import logo from '../images/logo.png';
-import styled from 'styled-components';
 import "../styles/Sidebar.css";
 
 const Logo = styled.img`

@@ -14,12 +14,20 @@ const SendIcon = () => <span>📩</span>;
 
 const API_KEYWORDS = ["budget", "electronics", "inventory", "medicine", "reminders"];
 
-//SidebarChatBot
+// SidebarChatBot
 const SiderChatBot = () => {
   const navigate = useNavigate(); // Initialize useNavigate
-  const [isListening, setIsListening] = useState(false); // Initialize setIsListening
-  const [transcript, setTranscript] = useState(""); // Initialize setTranscript
-  const [messages, setMessages] = useState([]); // Initialize setMessages
+  const [isListening, setIsListening] = useState(false); // Voice assistant listening
+  const [transcript, setTranscript] = useState(""); // Transcribed text
+  const [messages, setMessages] = useState([]); // Messages list
+
+  // ✅ Added below two to fix your errors
+  const [active, setActive] = useState(""); 
+  const handleNavigation = (menuName, path) => {
+    setActive(menuName);
+    navigate(path);
+  };
+
   let recognition = null;
 
   if (window.SpeechRecognition || window.webkitSpeechRecognition) {
@@ -88,7 +96,7 @@ const SiderChatBot = () => {
         console.error("Error fetching data:", error);
         addMessage("Error fetching data. Please try again.", "Bot");
       });
-  };  
+  };
 
   const toggleListening = () => {
     if (!recognition) return;
@@ -108,10 +116,6 @@ const SiderChatBot = () => {
     if (transcript.trim()) {
       addMessage(transcript, "User");
       const detectedKeyword = API_KEYWORDS.find((keyword) => transcript.includes(keyword));
-
-      // if (detectedKeyword) {
-      //   fetchData(detectedKeyword); // Call the API after finishing the chat
-      // }
       fetchData(transcript, detectedKeyword);
     }
 
@@ -142,7 +146,11 @@ const SiderChatBot = () => {
             <FeedbackIcon /> <span>Feedback</span>
           </li>
 
-          <li className="menu-item">
+          <li 
+            className={`menu-item ${active === "FoodRecipe" ? "active" : ""}`} 
+            onClick={() => handleNavigation("FoodRecipe", "/FoodRecipe")}
+            style={{ cursor: "pointer" }}
+          >
             <SavesIcon /> <span>My Recipe</span>
           </li>
 
@@ -154,10 +162,10 @@ const SiderChatBot = () => {
             <HistoryIcon /> <span>History</span>
           </li>
 
-          <li className="menu-item" onClick={() => navigate("/home")}>
+          <li className="menu-item" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
             <LogoutIcon /> <span>Back Home</span>
           </li>
-          
+
         </ul>
 
         {/* Voice Assistant Section */}
