@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-
 import styled from 'styled-components';
 import Header from './components/Header';
 import HomeStock from './components/Features';
@@ -33,102 +32,101 @@ const Section = styled.section`
   background-color: #f9f9f9;
 `;
 
-const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+// 👇 A simple PrivateRoute wrapper
+const PrivateRoute = ({ isLoggedIn, children }) => {
+  return isLoggedIn ? children : <Navigate to="/login" replace />;
+};
 
-  // Initialize isLoggedIn from localStorage on page load
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(null); // Start with null (unknown)
+
+  // Check localStorage on first load
   useEffect(() => {
     const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
     setIsLoggedIn(loggedInStatus);
   }, []);
 
-  // Update localStorage when isLoggedIn changes
+  // Update localStorage whenever isLoggedIn changes (except when null)
   useEffect(() => {
-    localStorage.setItem('isLoggedIn', isLoggedIn);
+    if (isLoggedIn !== null) {
+      localStorage.setItem('isLoggedIn', isLoggedIn);
+    }
   }, [isLoggedIn]);
 
+  if (isLoggedIn === null) {
+    // Show loading screen until login state is known
+    return <div>Loading...</div>;
+  }
+
   return (
-
     <Router>
-
       <AppContainer>
-        {/* Render header based on the current path */}
         <HeaderBasedOnLocation isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Routes>
-          <Route path="/home" element={isLoggedIn ? <HomeStock /> : <Navigate to="/login" />} />
+          <Route path="/home" element={<PrivateRoute isLoggedIn={isLoggedIn}><HomeStock /></PrivateRoute>} />
           <Route path="/reset" element={<ResetPasswordPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
-          <Route path="/inventory" element={isLoggedIn ? <Inventory /> : <Navigate to="/login" replace />} />
-          <Route path="/medicine" element={isLoggedIn ? <MedicinePage /> : <Navigate to="/login" replace />} />
-          <Route path="/electronics" element={isLoggedIn ? <ElectronicsPage /> : <Navigate to="/login" replace />} />
-          <Route path="/budget" element={isLoggedIn ? <BudgetPage /> : <Navigate to="/login" replace />} />
-          <Route path="/AlertPage" element={isLoggedIn ? <AlertPage /> : <Navigate to="/login" replace />} />
-          <Route path="/AddItemModal" element={isLoggedIn ? <AddItemModal /> : <Navigate to="/login" replace />} />
-          <Route path="/UpdateItemModal" element={isLoggedIn ? <UpdateItemModal /> : <Navigate to="/login" replace />} />
-          <Route path="/ShoppingList" element={isLoggedIn ? <ShoppingList /> : <Navigate to="/login" replace />} />
-          <Route path="/SiderChatBot" element={isLoggedIn ? <SiderChatBot /> : <Navigate to="/login" replace />} />
-          <Route path="/FoodRecipe" element={isLoggedIn ? <FoodRecipe /> : <Navigate to="/login" replace />} />
+
+          {/* Inventory related routes */}
+          <Route path="/inventory" element={<PrivateRoute isLoggedIn={isLoggedIn}><Inventory /></PrivateRoute>} />
+          <Route path="/medicine" element={<PrivateRoute isLoggedIn={isLoggedIn}><MedicinePage /></PrivateRoute>} />
+          <Route path="/electronics" element={<PrivateRoute isLoggedIn={isLoggedIn}><ElectronicsPage /></PrivateRoute>} />
+          <Route path="/budget" element={<PrivateRoute isLoggedIn={isLoggedIn}><BudgetPage /></PrivateRoute>} />
+          <Route path="/AlertPage" element={<PrivateRoute isLoggedIn={isLoggedIn}><AlertPage /></PrivateRoute>} />
+          <Route path="/AddItemModal" element={<PrivateRoute isLoggedIn={isLoggedIn}><AddItemModal /></PrivateRoute>} />
+          <Route path="/UpdateItemModal" element={<PrivateRoute isLoggedIn={isLoggedIn}><UpdateItemModal /></PrivateRoute>} />
+          <Route path="/ShoppingList" element={<PrivateRoute isLoggedIn={isLoggedIn}><ShoppingList /></PrivateRoute>} />
+          <Route path="/SiderChatBot" element={<PrivateRoute isLoggedIn={isLoggedIn}><SiderChatBot /></PrivateRoute>} />
+          <Route path="/FoodRecipe" element={<PrivateRoute isLoggedIn={isLoggedIn}><FoodRecipe /></PrivateRoute>} />
+
+          {/* Redirect unknown routes */}
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
         <LocationBasedContent isLoggedIn={isLoggedIn} />
       </AppContainer>
-
     </Router>
-    
   );
 };
 
-// Fix: Destructure isLoggedIn and setIsLoggedIn from props
+// Helper to show Header only on some pages
 const HeaderBasedOnLocation = ({ isLoggedIn, setIsLoggedIn }) => {
   const location = useLocation();
+  const hideHeaderOnPaths = [
+    '/inventory', '/medicine', '/electronics', '/budget',
+    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe'
+  ];
 
-  // Render Header only on specific routes
-  if (
-    location.pathname !== '/inventory' &&
-    location.pathname !== '/medicine' &&
-    location.pathname !== '/electronics' &&
-    location.pathname !== '/budget' &&
-    location.pathname !== '/AlertPage' &&
-    location.pathname !== '/ShoppingList' &&
-    location.pathname !== '/SiderChatBot' &&
-    location.pathname !== '/FoodRecipe'
-  ) {
-    return <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
+  if (hideHeaderOnPaths.includes(location.pathname)) {
+    return null;
   }
 
-  return null;
+  return <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
 };
 
-// Fix: Destructure isLoggedIn from props
+// Helper to show Footer, FAQ, and Contact sections conditionally
 const LocationBasedContent = ({ isLoggedIn }) => {
   const location = useLocation();
+  const hideContentOnPaths = [
+    '/inventory', '/medicine', '/electronics', '/budget',
+    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe'
+  ];
 
-  // Render content only on specific routes and if logged in
-  if (
-    isLoggedIn &&
-    location.pathname !== '/inventory' &&
-    location.pathname !== '/medicine' &&
-    location.pathname !== '/electronics' &&
-    location.pathname !== '/budget' &&
-    location.pathname !== '/AlertPage' &&
-    location.pathname !== '/ShoppingList' &&
-    location.pathname !== '/SiderChatBot' &&
-    location.pathname !== '/FoodRecipe'
-  ) {
-    return (
-      <>
-        <Section id="faqSection">
-          <FaqSection />
-        </Section>
-        <Section id="resources">
-          <ContactSection />
-        </Section>
-        <Footer />
-      </>
-    );
+  if (!isLoggedIn || hideContentOnPaths.includes(location.pathname)) {
+    return null;
   }
 
-  return null;
+  return (
+    <>
+      <Section id="faqSection">
+        <FaqSection />
+      </Section>
+      <Section id="resources">
+        <ContactSection />
+      </Section>
+      <Footer />
+    </>
+  );
 };
 
 export default App;
