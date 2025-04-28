@@ -264,7 +264,7 @@ const SignupPage = () => {
         </form>
 
         <RedirectLink>
-          Already have an account? <Link to="/login">Login here</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </RedirectLink>
       </SignupForm>
     </SignupContainer>
