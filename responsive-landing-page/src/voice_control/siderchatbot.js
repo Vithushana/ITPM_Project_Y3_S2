@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import "./SiderChatBot.css";
 
-// Icons (using emojis as placeholders)
+// Icons
 const ChatIcon = () => <span>💬</span>;
-const FeedbackPage = () => <span>📢</span>;
+const FeedbackIcon = () => <span>📢</span>;
 const SavesIcon = () => <span>🔖</span>;
 const FavoriteIcon = () => <span>❤️</span>;
 const HistoryIcon = () => <span>⏳</span>;
@@ -14,31 +14,18 @@ const SendIcon = () => <span>📩</span>;
 
 const API_KEYWORDS = ["budget", "electronics", "inventory", "medicine", "reminders"];
 
-// SidebarChatBot
 const SiderChatBot = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const [isListening, setIsListening] = useState(false); // Voice assistant listening
-  const [transcript, setTranscript] = useState(""); // Transcribed text
-  const [messages, setMessages] = useState([]); // Messages list
-
-  // ✅ Added below two to fix your errors
-  const [active, setActive] = useState(""); 
-  const handleNavigation = (menuName, path) => {
-    setActive(menuName);
-    navigate(path);
-  };
-
-  let recognition = null;
-
-  if (window.SpeechRecognition || window.webkitSpeechRecognition) {
-    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  }
+  const navigate = useNavigate();
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [recognition, setRecognition] = useState(null);
 
   useEffect(() => {
-    document.body.classList.add("remove-bg");
-    return () => {
-      document.body.classList.remove("remove-bg");
-    };
+    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+      const recog = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      setRecognition(recog);
+    }
   }, []);
 
   useEffect(() => {
@@ -56,7 +43,6 @@ const SiderChatBot = () => {
       const text = Array.from(event.results)
         .map((result) => result[0].transcript.toLowerCase())
         .join("");
-
       setTranscript(text);
     };
 
@@ -71,32 +57,7 @@ const SiderChatBot = () => {
         recognition.stop();
       }
     };
-  }, []);
-
-  // FETCH METHOD
-  const fetchData = (transcript, category) => {
-    fetch("http://localhost:8080/nlp-query", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sentence: transcript }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && Array.isArray(data)) {
-          const itemNames = data.map((item) => (item.name ? item.name : item.category));
-          addMessage(`Items in ${category}:`, "Bot");
-          itemNames.forEach((name) => addMessage(name, "Bot"));
-        } else {
-          addMessage(`No items found for ${category}`, "Bot");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        addMessage("Error fetching data. Please try again.", "Bot");
-      });
-  };
+  }, [recognition]);
 
   const toggleListening = () => {
     if (!recognition) return;
@@ -122,39 +83,63 @@ const SiderChatBot = () => {
     setTranscript("");
   };
 
+  const fetchData = (transcript, category) => {
+    fetch("http://localhost:8080/nlp-query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sentence: transcript }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          const itemNames = data.map((item) => item.name || item.category);
+          addMessage(`Items in ${category}:`, "Bot");
+          itemNames.forEach((name) => addMessage(name, "Bot"));
+        } else {
+          addMessage(`No items found for ${category}`, "Bot");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        addMessage("Error fetching data. Please try again.", "Bot");
+      });
+  };
+
   const addMessage = (text, sender) => {
     setMessages((prevMessages) => [...prevMessages, { text, sender }]);
+  };
+
+  const handleNavigate = (page) => {
+    if (page === "Feedback") {
+      navigate("/feedback");
+    }
+    if (page === "FoodRecipe") {
+      navigate("/FoodRecipe");
+    }
+    if (page === "Home") {
+      navigate("/home");
+    }
   };
 
   return (
     <div className="chat-container">
       {/* Sidebar */}
       <div className="sider-chatbot">
-        {/* Header */}
         <div className="sider-chatbot-header">
           <h2>CHAT BOT</h2>
         </div>
 
         {/* Menu Items */}
         <ul className="sider-chatbot-menu">
-
           <li className="menu-item">
             <ChatIcon /> <span>Chat Generator</span>
           </li>
 
-          <li 
-            className={`menu-item ${active === "FeedbackPage" ? "active" : ""}`} 
-            onClick={() => handleNavigation("FeedbackPage", "/feedback")}
-            style={{ cursor: "pointer" }}
-          >
-            <SavesIcon /> <span>FeedBack</span>
+          <li className="menu-item" onClick={() => handleNavigate("Feedback")}>
+            <FeedbackIcon /> <span>Feedback</span>
           </li>
 
-          <li 
-            className={`menu-item ${active === "FoodRecipe" ? "active" : ""}`} 
-            onClick={() => handleNavigation("FoodRecipe", "/FoodRecipe")}
-            style={{ cursor: "pointer" }}
-          >
+          <li className="menu-item" onClick={() => handleNavigate("FoodRecipe")}>
             <SavesIcon /> <span>My Recipe</span>
           </li>
 
@@ -166,13 +151,12 @@ const SiderChatBot = () => {
             <HistoryIcon /> <span>History</span>
           </li>
 
-          <li className="menu-item" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
+          <li className="menu-item" onClick={() => handleNavigate("Home")}>
             <LogoutIcon /> <span>Back Home</span>
           </li>
-
         </ul>
 
-        {/* Voice Assistant Section */}
+        {/* Voice Assistant */}
         <div className="voice-assist">
           <h3>Voice Assistant</h3>
           <button

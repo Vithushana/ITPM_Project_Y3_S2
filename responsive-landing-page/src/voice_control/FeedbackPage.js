@@ -28,7 +28,7 @@ const FeedbackPage = () => {
   };
 
   const handleBack = () => {
-    navigate('/sidechatbot');
+    navigate('/SiderChatBot');
   };
 
   return (
