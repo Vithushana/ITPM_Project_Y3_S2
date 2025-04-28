@@ -44,6 +44,7 @@ public class ReminderController {
     public void deleteReminder(@PathVariable String id) {
         reminderService.deleteReminder(id);
     }
+    
     // update reminder by id
     @PutMapping("/{id}")
     public Reminder updateReminder(@PathVariable String id, @RequestBody Reminder reminder){
