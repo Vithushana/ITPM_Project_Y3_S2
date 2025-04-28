@@ -1,7 +1,6 @@
 package com.home_zone.home_zone.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +31,6 @@ public class InventoryController {
     public List<InventoryItem> getAllItems() {
         return inventoryService.getAllItems();
     }
-
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable String id) {
         inventoryService.deleteItem(id);

@@ -6,13 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "inventoryitems")
 public class InventoryItem {
     @Id 
-    
     private String id;
     private String name;
     private int quantity;
     private String category;
     private String expirationDate;
-
     public InventoryItem() {}
 
     public InventoryItem(String name, int quantity, String category, String expirationDate) {

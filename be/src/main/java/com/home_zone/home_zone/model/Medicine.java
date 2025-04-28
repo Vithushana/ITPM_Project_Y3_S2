@@ -13,7 +13,7 @@ public class Medicine {
     private String expirationDate;
     private String illnessType;
     private boolean available;
-
+    
     public String getId() {
         return id;
     }    

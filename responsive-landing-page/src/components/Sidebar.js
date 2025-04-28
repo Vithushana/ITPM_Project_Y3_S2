@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { FaAppleAlt, FaLaptop, FaPills, FaChartPie, FaSignOutAlt, FaUtensils  } from "react-icons/fa";
 
 import logo from '../images/logo.png';
+import styled from 'styled-components';
 import "../styles/Sidebar.css";
 
 const Logo = styled.img`

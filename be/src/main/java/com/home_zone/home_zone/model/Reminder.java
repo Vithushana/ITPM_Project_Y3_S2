@@ -30,30 +30,39 @@ public class Reminder {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getdescription() {
         return description;
     }
+
     public void setdescription(String description) {
         this.description = description;
     }
+
     public String getReminderDate() {
         return reminderDate;
     }
+
     public void setReminderDate(String reminderDate) {
         this.reminderDate = reminderDate;
     }
+
     public boolean isEmailSent() {
         return emailSent;
     }
+
     public void setEmailSent(boolean emailSent) {
         this.emailSent = emailSent;
     }
@@ -61,12 +70,15 @@ public class Reminder {
     public Category getCategory() {
         return category;
     }
+
     public void setCategory(Category category) {
         this.category = category;
     }
+
     public String getpurchasingDate(){
         return purchasingDate;
     }
+    
     public void setpurchasingDate(String purchasingDate){
         this.purchasingDate=purchasingDate;
     }

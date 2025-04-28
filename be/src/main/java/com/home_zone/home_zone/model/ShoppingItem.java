@@ -11,7 +11,6 @@ public class ShoppingItem {
     private String id;
     private Category category;
     private String name;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;    
     
