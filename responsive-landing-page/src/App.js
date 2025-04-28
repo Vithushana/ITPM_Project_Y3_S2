@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
 import styled from 'styled-components';
 import Header from './components/Header';
 import HomeStock from './components/Features';
@@ -47,7 +48,9 @@ const App = () => {
   }, [isLoggedIn]);
 
   return (
+
     <Router>
+
       <AppContainer>
         {/* Render header based on the current path */}
         <HeaderBasedOnLocation isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
@@ -69,7 +72,9 @@ const App = () => {
         </Routes>
         <LocationBasedContent isLoggedIn={isLoggedIn} />
       </AppContainer>
+
     </Router>
+    
   );
 };
 
