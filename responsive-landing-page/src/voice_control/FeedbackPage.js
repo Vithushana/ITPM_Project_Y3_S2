@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './FeedbackPage.css'; // Import your CSS file
+import axios from 'axios'; // ✅ Import Axios
+import './FeedbackPage.css'; // Import your CSS
 
 const FeedbackPage = () => {
   const [name, setName] = useState('');
@@ -10,7 +11,7 @@ const FeedbackPage = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !message) {
@@ -18,13 +19,24 @@ const FeedbackPage = () => {
       return;
     }
 
-    console.log({ name, email, message });
-    toast.success("Thank you for your feedback!");
+    try {
+      // ✅ Send feedback to backend
+      await axios.post('http://localhost:8080/api/feedbacks', {
+        name,
+        email,
+        message,
+      });
 
-    // Reset fields
-    setName('');
-    setEmail('');
-    setMessage('');
+      toast.success("Thank you for your feedback!");
+
+      // Reset fields
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      toast.error('Failed to submit feedback. Please try again!');
+    }
   };
 
   const handleBack = () => {
