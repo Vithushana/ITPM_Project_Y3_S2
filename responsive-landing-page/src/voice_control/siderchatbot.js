@@ -18,7 +18,7 @@ const API_KEYWORDS = ["budget", "electronics", "inventory", "medicine", "reminde
 const SiderChatBot = () => {
   const navigate = useNavigate(); // Initialize useNavigate
   const [isListening, setIsListening] = useState(false); // Initialize setIsListening
-  const [transcript, setTranscript] = useState("");
+  const [transcript, setTranscript] = useState(""); // Initialize setTranscript
   const [messages, setMessages] = useState([]);
   let recognition = null;
 
