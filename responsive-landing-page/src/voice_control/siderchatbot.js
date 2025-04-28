@@ -19,7 +19,7 @@ const SiderChatBot = () => {
   const navigate = useNavigate(); // Initialize useNavigate
   const [isListening, setIsListening] = useState(false); // Initialize setIsListening
   const [transcript, setTranscript] = useState(""); // Initialize setTranscript
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // Initialize setMessages
   let recognition = null;
 
   if (window.SpeechRecognition || window.webkitSpeechRecognition) {
