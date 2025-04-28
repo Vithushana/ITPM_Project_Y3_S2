@@ -1,21 +1,13 @@
 # 🏠 HomeStock - Smart Inventory and Feedback System
 
 HomeZone is a smart home inventory management and feedback system that allows users to manage their groceries, medicines, electronics, and more — combined with a chatbot interface and a voice assistant for a seamless experience.
-
 ---
-
 ## 🚀 Features
 
 - 📋 **Inventory Management** — Track and manage household items
 - 🎤 **Voice Assistant** — Control inventory and reminders via voice commands
-- 🧠 **Chatbot Generator** — Smart chatbot interface
-- 🕰️ **Smart Reminders** — Get expiry alerts for food, medicine, warranties
-- 📝 **Feedback System** — Submit and manage user feedback
-- 📊 **Admin Dashboard (Coming Soon)** — Manage feedback and monitor inventory usage
 - 🔒 **Secure Backend** — Spring Boot REST API with MongoDB
-
 ---
-
 ## 🛠️ Tech Stack
 
 | Frontend | Backend | Database |
@@ -24,9 +16,7 @@ HomeZone is a smart home inventory management and feedback system that allows us
 | Axios | Java 17+ | MongoDB Atlas / Local |
 | React Router | Maven | Spring Data MongoDB |
 | Toastify | | |
-
 ---
-
 ## 📂 Project Structure
 
 
