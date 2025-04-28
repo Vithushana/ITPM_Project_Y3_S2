@@ -1,151 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import styled from 'styled-components';
+import '../styles/FaqSection.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-// Styled Components
-const Section = styled.section`
-  padding: 50px 25px 100px;
-  background-color: #f1f1f1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Title = styled.h1`
-  font-size: 45px;
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-  line-height: 1;
-
-  span {
-    color: rgb(43, 83, 141);
-  }
-`;
-
-const FaqContainer = styled.div`
-  width: 82%;
-  background-color: #fff;
-  border: 2px solid #ddd;
-  border-radius: 9px;
-  overflow: hidden;
-  line-height: 1.9;
-  margin: 0 auto;
-`;
-
-const FaqItem = styled.div`
-  border-bottom: 1px solid #ddd;
-  cursor: pointer;
-  width: 100%;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const FaqQuestion = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: #fff;
-  font-weight: bold;
-  font-size: 20px;
-  color: #333;
-
-  &:hover {
-    background-color: #f1f1f1;
-  }
-`;
-
-const FaqAnswer = styled.div`
-  padding: 0 20px 20px;
-  background-color: #fff;
-  color: #555;
-  font-size: 19px;
-  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
-`;
-
-const Icon = styled.span`
-  font-size: 28px;
-  color: #333;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-`;
-
-const ActionButton = styled.button`
-  background-color: ${({ type }) => (type === 'edit' ? '#4caf50' : '#f44336')};
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const Form = styled.form`
-  margin-bottom: 30px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-size: 16px;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-size: 16px;
-`;
-
-const SubmitButton = styled.button`
-  background-color: #2b5395;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  border-radius: 8px;
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
 
 // FAQ Component
 const FAQ = ({ index, question, answer, isOpen, onClick, onEdit, onDelete }) => {
   return (
-    <FaqItem>
-      <FaqQuestion onClick={() => onClick(index)}>
+    <div className="faq-item">
+      <div className="faq-question" onClick={() => onClick(index)}>
         {question}
-        <Icon>{isOpen ? '-' : '+'}</Icon>
-      </FaqQuestion>
-      <FaqAnswer isOpen={isOpen}>
+        <span className="icon">{isOpen ? '-' : '+'}</span>
+      </div>
+      <div className={`faq-answer ${isOpen ? 'open' : ''}`}>
         {answer}
-        <ButtonGroup>
-          <ActionButton type="edit" onClick={() => onEdit(index)}>Edit</ActionButton>
-          <ActionButton type="delete" onClick={() => onDelete(index)}>Delete</ActionButton>
-        </ButtonGroup>
-      </FaqAnswer>
-    </FaqItem>
+        <div className="button-group">
+          <button className="action-button edit" onClick={() => onEdit(index)}>Edit</button>
+          <button className="action-button delete" onClick={() => onDelete(index)}>Delete</button>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -184,7 +58,6 @@ const FaqSection = () => {
     }
 
     if (editId) {
-      // Update existing FAQ
       axios.put(`http://localhost:8080/api/faqs/${editId}`, {
         question: formQuestion,
         answer: formAnswer
@@ -197,7 +70,6 @@ const FaqSection = () => {
         toast.error('Failed to Update FAQ');
       });
     } else {
-      // Add new FAQ
       axios.post('http://localhost:8080/api/faqs', {
         question: formQuestion,
         answer: formAnswer
@@ -242,32 +114,32 @@ const FaqSection = () => {
   };
 
   return (
-    <Section>
-      <Title>
+    <section className="section">
+      <h1 className="title">
         Frequently Asked Questions<br /> about <span>HomeStock Management System</span>
-      </Title>
+      </h1>
 
-      {/* Form to Add/Edit FAQ */}
-      <Form onSubmit={handleFormSubmit}>
-        <Input
+      <form className="form" onSubmit={handleFormSubmit}>
+        <input
           type="text"
           placeholder="Enter FAQ Question"
           value={formQuestion}
           onChange={(e) => setFormQuestion(e.target.value)}
+          className="input"
         />
-        <TextArea
+        <textarea
           rows="4"
           placeholder="Enter FAQ Answer"
           value={formAnswer}
           onChange={(e) => setFormAnswer(e.target.value)}
+          className="textarea"
         />
-        <SubmitButton type="submit">
+        <button type="submit" className="submit-button">
           {editId ? "Update FAQ" : "Add FAQ"}
-        </SubmitButton>
-      </Form>
+        </button>
+      </form>
 
-      {/* FAQ List */}
-      <FaqContainer>
+      <div className="faq-container">
         {faqData.length > 0 ? (
           faqData.map((faq, index) => (
             <FAQ
@@ -284,9 +156,8 @@ const FaqSection = () => {
         ) : (
           <p style={{ textAlign: "center", padding: "20px" }}>No FAQs found...</p>
         )}
-      </FaqContainer>
+      </div>
 
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -295,7 +166,7 @@ const FaqSection = () => {
         closeOnClick
         pauseOnHover
       />
-    </Section>
+    </section>
   );
 };
 

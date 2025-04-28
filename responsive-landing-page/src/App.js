@@ -19,6 +19,7 @@ import UpdateItemModal from './inventory/UpdateItemModal';
 import ShoppingList from "./exp_date/shoppinglist";
 import SiderChatBot from './voice_control/siderchatbot';
 import FoodRecipe from './inventory/recipe';
+import FeedbackPage from './voice_control/FeedbackPage';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -79,6 +80,8 @@ const App = () => {
           <Route path="/ShoppingList" element={<PrivateRoute isLoggedIn={isLoggedIn}><ShoppingList /></PrivateRoute>} />
           <Route path="/SiderChatBot" element={<PrivateRoute isLoggedIn={isLoggedIn}><SiderChatBot /></PrivateRoute>} />
           <Route path="/FoodRecipe" element={<PrivateRoute isLoggedIn={isLoggedIn}><FoodRecipe /></PrivateRoute>} />
+          <Route path="/feedback" element={<PrivateRoute isLoggedIn={isLoggedIn}><FeedbackPage /></PrivateRoute>} />
+
 
           {/* Redirect unknown routes */}
           <Route path="*" element={<Navigate to="/home" replace />} />
@@ -109,7 +112,7 @@ const LocationBasedContent = ({ isLoggedIn }) => {
   const location = useLocation();
   const hideContentOnPaths = [
     '/inventory', '/medicine', '/electronics', '/budget',
-    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe'
+    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe', '/feedback'
   ];
 
   if (!isLoggedIn || hideContentOnPaths.includes(location.pathname)) {

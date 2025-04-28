@@ -4,7 +4,7 @@ import "./SiderChatBot.css";
 
 // Icons (using emojis as placeholders)
 const ChatIcon = () => <span>💬</span>;
-const FeedbackIcon = () => <span>📢</span>;
+const FeedbackPage = () => <span>📢</span>;
 const SavesIcon = () => <span>🔖</span>;
 const FavoriteIcon = () => <span>❤️</span>;
 const HistoryIcon = () => <span>⏳</span>;
@@ -142,8 +142,12 @@ const SiderChatBot = () => {
             <ChatIcon /> <span>Chat Generator</span>
           </li>
 
-          <li className="menu-item">
-            <FeedbackIcon /> <span>Feedback</span>
+          <li 
+            className={`menu-item ${active === "FeedbackPage" ? "active" : ""}`} 
+            onClick={() => handleNavigation("FeedbackPage", "/feedback")}
+            style={{ cursor: "pointer" }}
+          >
+            <SavesIcon /> <span>FeedBack</span>
           </li>
 
           <li 
