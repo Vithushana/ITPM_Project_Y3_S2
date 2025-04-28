@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class EmailService {
-
     @Autowired
     private JavaMailSender mailSender;
-
     public void sendResetPasswordEmail(String email, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
