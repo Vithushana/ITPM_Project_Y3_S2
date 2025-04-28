@@ -65,6 +65,7 @@ const SiderChatBot = () => {
     };
   }, []);
 
+  // FETCH METHOD
   const fetchData = (transcript, category) => {
     fetch("http://localhost:8080/nlp-query", {
       method: "POST",
