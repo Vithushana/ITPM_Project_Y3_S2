@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/shopping.css";
+import Swal from 'sweetalert2';
+
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -71,6 +73,13 @@ const ShoppingList = () => {
     const { date, count, amount } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
+  const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
+    requiredFields.forEach(field => {
+    if (!formData[field] || formData[field].toString().trim() === "") {
+      errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
+    }
+  });
+
     if (selectedCategory === "ELECTRONICS" && date && !datePattern.test(date)) {
       errors.date = "Date must be in the format YYYY-MM-DD.";
     }
@@ -116,7 +125,7 @@ const ShoppingList = () => {
 
         const updateList = (list, setList) => {
           if (isEditing) {
-            setList(list.map((item) => (item._id === data.id ? data : item)));
+            setList(list.map((item) => (item.id === data.id ? data : item)));
           } else {
             setList([...list, data]);
           }
@@ -144,37 +153,49 @@ const ShoppingList = () => {
   };
 
   const handleDelete = (id, categoryName) => {
-    console.log("Categorygjgjgjg",categoryName, id)
-    fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) {
-          toast.success("Item deleted!");
-          const updateList = (list, setList) =>
-            setList(list.filter((item) => item.id !== id));
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",   // Red
+      cancelButtonColor: "#3085d6", // Blue
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => {
+            if (res.ok) {
+              toast.success("Item deleted!");
+              const updateList = (list, setList) =>
+                setList(list.filter((item) => item.id !== id));
 
-          switch (categoryName) {
-            case "ELECTRONICS":
-              updateList(electronicsList, setElectronicsList);
-              break;
-            case "GROCERIES":
-              updateList(groceriesList, setGroceriesList);
-              break;
-            case "MEDICINE":
-              updateList(medicinesList, setMedicinesList);
-              break;
-            case "BALANCEMONEY":
-              updateList(moneyBalanceList, setMoneyBalanceList);
-              break;
-            default:
-              break;
-          }
-        } else {
-          toast.error("Delete failed.");
-        }
-      })
-      .catch(() => toast.error("Server error during delete."));
+              switch (categoryName) {
+                case "ELECTRONICS":
+                  updateList(electronicsList, setElectronicsList);
+                  break;
+                case "GROCERIES":
+                  updateList(groceriesList, setGroceriesList);
+                  break;
+                case "MEDICINE":
+                  updateList(medicinesList, setMedicinesList);
+                  break;
+                case "BALANCEMONEY":
+                  updateList(moneyBalanceList, setMoneyBalanceList);
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              toast.error("Delete failed.");
+            }
+          })
+          .catch(() => toast.error("Server error during delete."));
+       }
+     });
   };
 
   const handleDownloadReport = () => {
@@ -271,21 +292,23 @@ const ShoppingList = () => {
                       {category.fields.map((field, i) => (
                         <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
                       ))}
-                      <th>Actions</th>
+                      {filteredList.length > 0 && <th>Actions</th>}  {/* Only show "Actions" header if there are items */}
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredList.map((item, i) => (
-                      <tr key={i} className="fade-in">
-                        {category.fields.map((field, j) => (
-                          <td key={j}>{item[field]}</td>
-                        ))}
-                        <td>
-                          <button onClick={() => togglePopup(category.name, item)}>✏️</button>
-                          <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredList.length > 0 && (  // Check if there are items in the filtered list
+                      filteredList.map((item, i) => (
+                        <tr key={i} className="fade-in">
+                          {category.fields.map((field, j) => (
+                            <td key={j}>{item[field]}</td>
+                          ))}
+                          <td>
+                            <button onClick={() => togglePopup(category.name, item)}>✏️</button>
+                            <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -303,7 +326,7 @@ const ShoppingList = () => {
               ?.fields.map((field, index) => (
                 <div key={index}>
                   <input
-                    type="text"
+                    type={field === "date" ? "date" : "text"}
                     placeholder={`Enter ${field}`}
                     value={formData[field] || ""}
                     onChange={(e) => handleChange(e, field)}
