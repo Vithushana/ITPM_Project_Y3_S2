@@ -14,11 +14,12 @@ const SendIcon = () => <span>📩</span>;
 
 const API_KEYWORDS = ["budget", "electronics", "inventory", "medicine", "reminders"];
 
+//SidebarChatBot
 const SiderChatBot = () => {
   const navigate = useNavigate(); // Initialize useNavigate
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [isListening, setIsListening] = useState(false); // Initialize setIsListening
+  const [transcript, setTranscript] = useState(""); // Initialize setTranscript
+  const [messages, setMessages] = useState([]); // Initialize setMessages
   let recognition = null;
 
   if (window.SpeechRecognition || window.webkitSpeechRecognition) {
