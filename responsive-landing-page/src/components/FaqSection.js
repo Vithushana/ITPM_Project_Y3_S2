@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 
+// Styled Components
 const Section = styled.section`
   padding: 50px 25px 100px;
-  background-color: #ffrgb(209, 210, 211)f;
+  background-color: #f1f1f1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,7 +16,7 @@ const Title = styled.h1`
   text-align: center;
   margin-bottom: 30px;
   color: #333;
-  line-height: 1; // Adjust this value as needed
+  line-height: 1;
 
   span {
     color: rgb(43, 83, 141);
@@ -27,7 +29,7 @@ const FaqContainer = styled.div`
   border: 2px solid #ddd;
   border-radius: 9px;
   overflow: hidden;
-  line-height: 1.9; 
+  line-height: 1.9;
   margin: 0 auto;
 `;
 
@@ -71,7 +73,6 @@ const Icon = styled.span`
 
 const FAQ = ({ index, question, answer, isOpen, onClick }) => {
   return (
-    
     <FaqItem onClick={() => onClick(index)}>
       <FaqQuestion>
         {question}
@@ -84,63 +85,46 @@ const FAQ = ({ index, question, answer, isOpen, onClick }) => {
 
 const FaqSection = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const [faqData, setFaqData] = useState([]); // ❗Dynamic from backend
 
-  const faqData = [
-    {
-      question: 'What is the purpose of the HomeStock Inventory Management System?',
-      answer: 'The HomeStock system helps users manage household inventory efficiently by tracking items like groceries, cleaning supplies, and other home essentials. It ensures that users never run out of important items and can plan their shopping better.',
-    },
-    {
-      question: 'How does the HomeStock system keep track of inventory?',
-      answer: 'The system uses real-time updates to monitor the quantity of items in stock. Users can add, update, or delete items manually, or use voice commands and barcode scanning to streamline the process.',
-    },
-    {
-      question: 'What types of items does the HomeStock system manage?',
-      answer: 'The system is flexible and can manage a wide range of household items, including groceries, cleaning supplies, home appliances, furniture, and other essential goods. Users can categorize items for easy tracking.',
-    },
-    {
-      question: 'Can I track expired items with the HomeStock system?',
-      answer: 'Yes, HomeStock allows users to input expiration dates for perishable goods. The system will notify users when an item is approaching its expiration date, helping to reduce waste.',
-    },
-    {
-      question: 'How do I update or delete items from my inventory?',
-      answer: 'You can easily update or delete items using the app’s interface. Simply find the item in your inventory list, edit its details, or remove it completely from the list if no longer needed.',
-    },
-    {
-      question: 'Is there a mobile app for the HomeStock system?',
-      answer: 'Yes, HomeStock has a mobile app that allows users to manage their inventory on the go. You can add, update, or delete items and receive notifications for low stock or upcoming expiration dates.',
-    },
-    {
-      question: 'Does the system support voice commands?',
-      answer: 'Yes, HomeStock has a voice command feature that allows users to add, update, or remove items simply by speaking. This feature makes managing your inventory hands-free and more convenient.',
-    },
-  ];
-  
+  // Fetch FAQs from backend
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/faqs')
+      .then((response) => {
+        setFaqData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching FAQ data:", error);
+      });
+  }, []);
 
   const handleFaqClick = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    
     <Section>
       <Title>
-      Frequently Asked Questions<br /> about <span>HomeStock Management System</span>
+        Frequently Asked Questions<br /> about <span>HomeStock Management System</span>
       </Title>
+
       <FaqContainer>
-        {faqData.map((faq, index) => (
-          <FAQ
-            key={index}
-            index={index}
-            question={faq.question}
-            answer={faq.answer}
-            isOpen={openIndex === index}
-            onClick={handleFaqClick}
-          />
-        ))}
+        {faqData.length > 0 ? (
+          faqData.map((faq, index) => (
+            <FAQ
+              key={faq.id}
+              index={index}
+              question={faq.question}
+              answer={faq.answer}
+              isOpen={openIndex === index}
+              onClick={handleFaqClick}
+            />
+          ))
+        ) : (
+          <p style={{ textAlign: "center", padding: "20px" }}>No FAQs found...</p>
+        )}
       </FaqContainer>
     </Section>
-    
   );
 };
 
