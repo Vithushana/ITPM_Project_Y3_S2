@@ -23,28 +23,29 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class ReminderController {
     @Autowired
     private ReminderService reminderService;
-
+    
     @PostMapping
     public Reminder addReminder(@RequestBody Reminder reminder) {
         return reminderService.addReminder(reminder);
     }
-
+    
     @GetMapping
     public List<Reminder> getAllReminders() {
         return reminderService.getAllReminders();
     }
-
+     //email reminder to all users
     @PostMapping("/send-email")
     public String sendEmail() {
         reminderService.sendEmailForReminders();
         return "Emails sent successfully!";
     }
-
+    // delete reminder by id
     @DeleteMapping("/{id}")
     public void deleteReminder(@PathVariable String id) {
         reminderService.deleteReminder(id);
     }
-
+    
+    // update reminder by id
     @PutMapping("/{id}")
     public Reminder updateReminder(@PathVariable String id, @RequestBody Reminder reminder){
         return reminderService.updateReminder(id, reminder);

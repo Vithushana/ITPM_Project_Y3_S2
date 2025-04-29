@@ -48,9 +48,11 @@
 
 .no-data {
   text-align: center;
-  padding: 10px;
+  padding: 20px;
   font-size: 18px;
   color: #888;
+  background-color: #f5f5f5;
+  border-radius: 8px;
 }
 
 .update-btn,
@@ -59,6 +61,7 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 
 .update-btn {
@@ -71,21 +74,35 @@
   color: white;
 }
 
-.add-button {
+.update-btn:hover {
+  background-color: #1e3888;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.floating-buttons-1 {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 36px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 10px;
+}
+
+.add-button-1, .sync-button-1 {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  border-radius: 50%;
+  border: none;
+  background-color: #2196F3;
+  color: white;
   cursor: pointer;
+}
+
+.sync-button-1 {
+  background-color: #45a049;
 }
 
 .popup-overlay {
@@ -101,23 +118,30 @@
 }
 
 .popup-content {
+  padding: 0;
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 400px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
+
+/* h2 {
+  text-align: center;
+  margin-bottom: 20px;
+} */
 
 .popup-content input {
   width: 100%;
-  padding: 10px;
   margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
 }
 
 .popup-content button {
-  width: 100%;
-  padding: 10px;
+  padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
   border: none;
@@ -125,10 +149,124 @@
   cursor: pointer;
 }
 
-.close-btn {
+.popup-content .close-btn {
   background-color: #f44336;
 }
 
-.close-btn:hover {
-  background-color: #d32f2f;
+.popup-content .close-btn:hover {
+  background-color: #e53935;
+}
+
+.popup-content button:hover {
+  background-color: #45a049;
+}
+
+.shopping-list {
+  margin-top: 20px;
+}
+
+.shopping-item {
+  background-color: #f1f1f1;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.shopping-item p {
+  margin: 5px 0;
+}
+
+.shopping-item strong {
+  color: #2196F3;
+}
+
+.shopping-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shopping-table th,
+.shopping-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.shopping-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.shopping-table td {
+  font-size: 14px;
+}
+
+.add-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.add-btn:hover {
+  background-color: #45a049;
+}
+
+.add-btn:focus {
+  outline: none;
+}
+
+.category-dropdown {
+  width: 97%; 
+  padding: 10px;
+  font-size: 14px; 
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.category-dropdown:focus {
+  border-color: #007bff; 
+}
+
+@media (max-width: 768px) {
+  .medicine-box {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .popup-content {
+    width: 90%;
+  }
+
+  .floating-buttons-1 {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .floating-buttons-2 {
+    bottom: 70px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .floating-buttons-1, .floating-buttons-2 {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .shopping-table th, .shopping-table td {
+    padding: 8px;
+  }
+
+  .popup-content {
+    width: 90%;
+  }
 }

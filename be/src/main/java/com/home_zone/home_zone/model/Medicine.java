@@ -1,5 +1,4 @@
 package com.home_zone.home_zone.model;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,7 +12,7 @@ public class Medicine {
     private String expirationDate;
     private String illnessType;
     private boolean available;
-
+    
     public String getId() {
         return id;
     }    

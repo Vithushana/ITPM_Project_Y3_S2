@@ -2,7 +2,6 @@ package com.home_zone.home_zone.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 @Document(collection = "electronics")
 public class Electronics {
     @Id
@@ -13,11 +12,9 @@ public class Electronics {
     private Integer price;
     private String expirationDate;
     private String imageUrl;
-
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -53,7 +50,6 @@ public class Electronics {
     public void setPrice(Integer price) {
         this.price = price;
     }
-
     public String getExpirationDate() {
         return expirationDate;
     }
@@ -61,7 +57,6 @@ public class Electronics {
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
-
     public String getImageUrl() {
         return imageUrl;
     }

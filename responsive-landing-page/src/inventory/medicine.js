@@ -23,6 +23,22 @@ const MedicinePage = () => {
     expirationDate: "",
   });
 
+  const [isAddingBySync, setIsAddingBySync] = useState(false);
+  const [itemAddingBySync, setItemAddingBySync] = useState(null);
+
+  const [shoppingData, setShoppingData] = useState([]);
+  const [showSyncPopup, setShowSyncPopup] = useState(false);
+
+  const categories = [
+    "Antihistamine", 
+    "Pain Reliever", 
+    "Antibiotic", 
+    "Oral Hypoglycemic", 
+    "Vitamins", 
+    "Cough & Cold", 
+    "Antacids"
+  ];
+
   useEffect(() => {
     fetch("http://localhost:8080/api/medicine")
       .then((response) => response.json())
@@ -64,6 +80,23 @@ const MedicinePage = () => {
         setShowPopup(false);
         setNewMedicine({ name: "", quantity: "", category: "", expirationDate: "" });
         toast.success("Medicine added successfully.");
+        if(isAddingBySync){
+          setShowSyncPopup(true);
+          
+          fetch(`http://localhost:8080/api/shopping/delete/${itemAddingBySync.id}`, {
+                method: "DELETE",
+              })
+                .then((res) => {
+                  if (res.ok) {
+                    toast.success("Item deleted in Shopping also!");
+                    setShoppingData(prevData => prevData.filter(item => item.id !== itemAddingBySync.id));
+                  } else {
+                    toast.error("Delete failed in Shopping");
+                  }
+                })
+                .catch(() => toast.error("Server error during delete."));
+        }
+        setIsAddingBySync(false);
       })
       .catch((error) => {
         console.error("Error adding medicine:", error);
@@ -133,6 +166,19 @@ const MedicinePage = () => {
     toast.success("Report downloaded successfully.");
   };
 
+  const handleSyncItem = (item) => {
+    console.log(item);
+    setShowSyncPopup(false);
+    setShowPopup(true);
+    const quantity = item.quantity ? parseInt(item.quantity.split(' ')[0], 10) : 0;
+    setNewMedicine({
+      name: item.name || "",
+      quantity: quantity,
+    });
+    setIsAddingBySync(true);
+    setItemAddingBySync(item);
+  };
+
   return (
     <div className="inventory-container">
       <Sidebar />
@@ -181,12 +227,35 @@ const MedicinePage = () => {
           )}
         </div>
 
-        <button className="add-button" onClick={() => {
-          setShowPopup(true);
-          setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "" });
-        }}>
-          +
-        </button>
+        <div className="floating-buttons-1">
+          <button
+            className="add-button-1"
+            onClick={() => {
+              setShowPopup(true);
+              setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "" });
+            }}
+          >
+            +
+          </button>
+
+          <button
+            className="sync-button-1"
+            onClick={async () => {
+              try {
+                const response = await fetch("http://localhost:8080/api/shopping/MEDICINE");
+                const data = await response.json();
+                setShoppingData(data);
+                setShowSyncPopup(true);
+                // toast.success("Shopping data fetched successfully.");
+              } catch (error) {
+                console.error("Error fetching shopping data:", error);
+                toast.error("Failed to fetch shopping data.");
+              }
+            }}
+          >
+            ⟳
+          </button>
+        </div>
 
         {showPopup && (
           <div className="popup-overlay">
@@ -212,16 +281,22 @@ const MedicinePage = () => {
                     : setNewMedicine({ ...newMedicine, quantity: e.target.value })
                 }
               />
-              <input
-                type="text"
-                placeholder="Category"
+              <select
+                className="category-dropdown"
                 value={updateMedicine.id ? updateMedicine.category : newMedicine.category}
                 onChange={(e) =>
                   updateMedicine.id
                     ? setUpdateMedicine({ ...updateMedicine, category: e.target.value })
                     : setNewMedicine({ ...newMedicine, category: e.target.value })
                 }
-              />
+              >
+                <option value="">Select Category</option>
+                {categories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
               <input
                 type="date"
                 placeholder="Expiration Date"
@@ -236,6 +311,43 @@ const MedicinePage = () => {
                 {updateMedicine.id ? "Update" : "Add"}
               </button>
               <button className="close-btn" onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
+          </div>
+        )}
+
+        {showSyncPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h2>Shopping Medicine List</h2>
+              {shoppingData.length === 0 ? (
+                <p>No shopping data available.</p>
+              ) : (
+                <table className="shopping-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Category</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shoppingData.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.name}</td>
+                        <td>{item.category}</td>
+                        <td>
+                          <button 
+                            className="add-btn" 
+                            onClick={() => handleSyncItem(item)}>
+                            Add
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              <button className="close-btn" onClick={() => setShowSyncPopup(false)}>Close</button>
             </div>
           </div>
         )}
