@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker"
 import "../styles/shopping.css"; // This is your CSS
 import Swal from "sweetalert2";
-import { FaHeart, FaRegHeart, FaEdit, FaTrashAlt } from "react-icons/fa";
+import { Pencil, Trash2, Heart, HeartOff } from "lucide-react";
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -69,13 +71,19 @@ const ShoppingList = () => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
+  const handleDateChange = (dateValue) => {
+    if (!dateValue) return;
+    const formatted = dateValue.toISOString().split("T")[0]; // yyyy-mm-dd
+    setFormData({ ...formData, date: formatted });
+  };
+
   const handleQuantityTypeChange = (e) => {
     setFormData({ ...formData, quantity: `${formData.quantity?.split(' ')[0] || ''} ${e.target.value}` });
   };
 
   const validateFormData = () => {
     let errors = {};
-    const {date, count, quantity, amount } = formData;
+    const { date, count, quantity, amount } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
     const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
@@ -293,11 +301,32 @@ const ShoppingList = () => {
       {/* CATEGORY BUTTONS */}
       <h2 className="h2-b">Category</h2>
       <div className="category-buttons-b">
-        <button onClick={() => handleCategoryClick("ELECTRONICS")}>Electronics</button>
-        <button onClick={() => handleCategoryClick("GROCERIES")}>Groceries</button>
-        <button onClick={() => handleCategoryClick("MEDICINE")}>Medicine</button>
-        <button onClick={() => handleCategoryClick("BALANCEMONEY")}>Balance Money</button>
+        <button
+          className={selectedCategory === "ELECTRONICS" ? "active" : ""}
+          onClick={() => handleCategoryClick("ELECTRONICS")}
+        >
+          Electronics
+        </button>
+        <button
+          className={selectedCategory === "GROCERIES" ? "active" : ""}
+          onClick={() => handleCategoryClick("GROCERIES")}
+        >
+          Groceries
+        </button>
+        <button
+          className={selectedCategory === "MEDICINE" ? "active" : ""}
+          onClick={() => handleCategoryClick("MEDICINE")}
+        >
+          Medicine
+        </button>
+        <button
+          className={selectedCategory === "BALANCEMONEY" ? "active" : ""}
+          onClick={() => handleCategoryClick("BALANCEMONEY")}
+        >
+          Balance Money
+        </button>
       </div>
+
 
       {/* CATEGORY TABLES */}
       {selectedCategory && (
@@ -306,9 +335,9 @@ const ShoppingList = () => {
             if (category.name === selectedCategory) {
               const list =
                 category.name === "ELECTRONICS" ? electronicsList :
-                category.name === "GROCERIES" ? groceriesList :
-                category.name === "MEDICINE" ? medicinesList :
-                moneyBalanceList;
+                  category.name === "GROCERIES" ? groceriesList :
+                    category.name === "MEDICINE" ? medicinesList :
+                      moneyBalanceList;
 
               const filteredList = list.filter((item) =>
                 category.fields.some((field) =>
@@ -337,13 +366,17 @@ const ShoppingList = () => {
                             <td key={j}>{item[field]}</td>
                           ))}
                           <td>
-                            <button onClick={() => togglePopup(category.name, item)}><FaEdit /></button>
-                            <button onClick={() => handleDelete(item.id, category.name)}><FaTrashAlt /></button>
+                            <button onClick={() => togglePopup(category.name, item)}><Pencil size={20} color="#1f1682df" /></button>
+                            <button onClick={() => handleDelete(item.id, category.name)}><Trash2 size={20} color="#1f1682df" /></button>
                             <button
                               onClick={() => handleToggleFavorite(item)}
                               style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
                             >
-                              {favoritesList.some(fav => fav.id === item.id) ? <FaHeart color="red" size={24} /> : <FaRegHeart color="gray" size={24} />}
+                              {favoritesList.some(fav => fav.id === item.id) ? (
+                                <Heart color="red" size={20} fill="red" />
+                              ) : (
+                                <HeartOff color="#1f1682df" size={20} />
+                              )}
                             </button>
                           </td>
                         </tr>
@@ -358,7 +391,7 @@ const ShoppingList = () => {
         </div>
       )}
 
-      {/* POPUP */}
+      {/* POPUP FORM */}
       {showPopup && selectedCategory && (
         <div className="popup-overlay-b">
           <div className="popup-container-b">
@@ -367,7 +400,19 @@ const ShoppingList = () => {
               {getCategories().find(c => c.name === selectedCategory)?.fields.map((field, idx) => (
                 <div key={idx} className="popup-form-field">
                   <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-                  {field === "quantity" && (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") ? (
+
+                  {field === "date" ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+                      <DatePicker
+                        selected={formData.date ? new Date(formData.date) : null}
+                        onChange={handleDateChange}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select a date"
+                        className="form-control"
+                      />
+                    </div>
+
+                  ) : field === "quantity" && (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") ? (
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <input
                         type="text"
@@ -399,12 +444,22 @@ const ShoppingList = () => {
               ))}
               <div className="popup-actions-b">
                 <button className="save-btn-b" onClick={handleSave}>Save</button>
-                <button className="cancel-btn-b" onClick={() => togglePopup()}>Cancel</button>
+                <button
+                  className="cancel-btn-b"
+                  onClick={() => {
+                    setShowPopup(false);
+                    setFormData({});
+                    setFormErrors({});
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
 
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
