@@ -75,7 +75,7 @@ const ShoppingList = () => {
 
   const validateFormData = () => {
     let errors = {};
-    const { name, date, count, quantity, amount, type } = formData;
+    const {date, count, quantity, amount } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
     const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
