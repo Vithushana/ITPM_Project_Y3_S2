@@ -1,13 +1,21 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import styled from 'styled-components';
+
 import "./SiderChatBot.css";
+import logo from '../images/logo.png';
 
 // Icons
+const Logo = styled.img`
+  margin-left: 30px;
+  width: 140px; 
+  height: auto; 
+`;
 const ChatIcon = () => <span>💬</span>;
 const FeedbackIcon = () => <span>📢</span>;
 const SavesIcon = () => <span>🔖</span>;
 const FavIcon = () => <span>❤️</span>;
-const LoadingIcon = () => <span>🔄</span>;
+// const LoadingIcon = () => <span>🔄</span>;
 const FavoriteIcon = ({ isFavorite, onClick }) => (
   <span
     style={{ cursor: "pointer", marginLeft: "8px" }}
@@ -37,7 +45,7 @@ const SiderChatBot = () => {
   const [isFavoriteView, setIsFavoriteView] = useState(false);
   const [selectedHistoryId, setSelectedHistoryId] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (window.SpeechRecognition || window.webkitSpeechRecognition) {
@@ -291,6 +299,7 @@ const SiderChatBot = () => {
     <div className="chat-container">
       <div className="sider-chatbot">
         <ul className="sider-chatbot-menu">
+        <Logo src={logo} alt="Logo" />
           <li
             className={`menu-item ${activeMenu === "Chat Generator" ? "active" : ""}`}
             onClick={() => handleMenuClick("Chat Generator")}
