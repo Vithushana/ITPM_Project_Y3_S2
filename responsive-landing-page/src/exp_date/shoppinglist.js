@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/shopping.css";
+import Swal from 'sweetalert2';
+import { FaHeart, FaRegHeart, FaEdit, FaTrashAlt } from 'react-icons/fa';
+
+
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -18,6 +22,7 @@ const ShoppingList = () => {
   const [groceriesList, setGroceriesList] = useState([]);
   const [medicinesList, setMedicinesList] = useState([]);
   const [moneyBalanceList, setMoneyBalanceList] = useState([]);
+  const [favoritesList, setFavoritesList] = useState(JSON.parse(localStorage.getItem("favorites")) || []);
 
   const getCategories = () => [
     { name: "ELECTRONICS", fields: ["name", "date", "count"] },
@@ -75,6 +80,12 @@ const ShoppingList = () => {
     const { name, date, count, quantity, amount, type } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
+    const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
+    requiredFields.forEach(field => {
+      if (!formData[field] || formData[field].toString().trim() === "") {
+        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
+      }
+    });
     if (selectedCategory === "ELECTRONICS" && !name?.trim()) {
       errors.name = "Name is required.";
     }
@@ -173,6 +184,65 @@ const ShoppingList = () => {
   };
 
   const handleDelete = (id, categoryName) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => {
+            if (res.ok) {
+              toast.success("Item deleted!");
+              const updateList = (list, setList) =>
+                setList(list.filter((item) => item.id !== id));
+
+              switch (categoryName) {
+                case "ELECTRONICS":
+                  updateList(electronicsList, setElectronicsList);
+                  break;
+                case "GROCERIES":
+                  updateList(groceriesList, setGroceriesList);
+                  break;
+                case "MEDICINE":
+                  updateList(medicinesList, setMedicinesList);
+                  break;
+                case "BALANCEMONEY":
+                  updateList(moneyBalanceList, setMoneyBalanceList);
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              toast.error("Delete failed.");
+            }
+          })
+          .catch(() => toast.error("Server error during delete."));
+      }
+    });
+  };
+
+  const handleToggleFavorite = (item) => {
+    const alreadyFavorite = favoritesList.some(fav => fav.id === item.id);
+
+    if (alreadyFavorite) {
+      const updatedFavorites = favoritesList.filter(fav => fav.id !== item.id);
+      setFavoritesList(updatedFavorites);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+      toast.info("Item removed from Favorites.");
+    } else {
+      const newFavoritesList = [...favoritesList, item];
+      setFavoritesList(newFavoritesList);
+      localStorage.setItem("favorites", JSON.stringify(newFavoritesList));
+      toast.success("Item added to Favorites!");
+    }
     fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
       method: "DELETE",
     })
@@ -203,6 +273,7 @@ const ShoppingList = () => {
         }
       })
       .catch(() => toast.error("Server error during delete."));
+
   };
 
   const handleDownloadReport = () => {
@@ -244,35 +315,105 @@ const ShoppingList = () => {
     document.body.removeChild(link);
   };
 
+  const handleCategoryClick = (categoryName) => {
+    setSelectedCategory(categoryName);
+  };
+
   return (
     <div className="App">
-      <div className="back-button-container">
-        <button className="back-button" onClick={handleBack}>← Back Home</button>
+      <div className="bback-button-container">
+        <button className="bback-button" onClick={handleBack}>← Back Home</button>
       </div>
 
-      <div className="banner">
-        <div className="banner-text">
-          <h1>Make Your Card Lists</h1>
-          <p>🛒 Effortless Shopping, Smart Choices!</p>
-          <div className="search">
-            <input
-              type="text"
-              placeholder="Search List..."
-              className="search-bar"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-            />
-            <button className="download-report" onClick={handleDownloadReport}>
-              Download Report
-            </button>
-          </div>
+      <div className="banner-container-b">
+        <div className="banner-text-b">
+          <section className="banner-b">
+            <h1 className="shopping-heading">Make Your Shopping Lists</h1>
+            <p className="p-b">🛒 Effortless Shopping, Smart Choices!</p>
+            <div className="search-b">
+              <input
+                type="text"
+                placeholder="Search List..."
+                className="search-bar-b"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+              />
+              <button className="download-report-b" onClick={handleDownloadReport}>
+                Download Report
+              </button>
+            </div>
+          </section>
         </div>
+        <div className="banner-img-b"></div>
       </div>
 
-      <div className="category-section">
-        <h2>Category</h2>
-        <div className="category-grid">
+      <h2 className="h2-b">Category</h2>
+      <div className="category-buttons-b">
+        <button onClick={() => handleCategoryClick("ELECTRONICS")}>Electronics</button>
+        <button onClick={() => handleCategoryClick("GROCERIES")}>Groceries</button>
+        <button onClick={() => handleCategoryClick("MEDICINE")}>Medicine</button>
+        <button onClick={() => handleCategoryClick("BALANCEMONEY")}>Balance Money</button>
+      </div>
+
+      {selectedCategory && (
+        <div className="category-grid-b">
           {getCategories().map((category, index) => {
+            if (category.name === selectedCategory) {
+              const list =
+                category.name === "ELECTRONICS"
+                  ? electronicsList
+                  : category.name === "GROCERIES"
+                    ? groceriesList
+                    : category.name === "MEDICINE"
+                      ? medicinesList
+                      : moneyBalanceList;
+
+              const filteredList = list.filter((item) =>
+                category.fields.some((field) =>
+                  String(item[field] || "").toLowerCase().includes(searchTerm)
+                )
+              );
+
+              return (
+                <div key={index} className="category-item-b">
+                  <h3>🛒 {category.name.charAt(0).toUpperCase() + category.name.slice(1).toLowerCase()}</h3>
+                  <button className="add-btn-b" onClick={() => togglePopup(category.name)}>Add Item</button>
+
+                  <table className="category-table-b">
+                    <thead>
+                      <tr>
+                        {category.fields.map((field, i) => (
+                          <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
+                        ))}
+                        {filteredList.length > 0 && <th>Actions</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredList.length > 0 && (
+                        filteredList.map((item, i) => (
+                          <tr key={i}>
+                            {category.fields.map((field, j) => (
+                              <td key={j}>{item[field]}</td>
+                            ))}
+                            <td>
+                              <button onClick={() => togglePopup(category.name, item)}><FaEdit /></button>
+                              <button onClick={() => handleDelete(item.id, category.name)}><FaTrashAlt /></button>
+                              <button
+                                onClick={() => handleToggleFavorite(item)}
+                                style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                              >
+                                {favoritesList.some(fav => fav.id === item.id) ? <FaHeart color="red" size={24} /> : <FaRegHeart color="gray" size={24} />}
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            }
+            return null;
             const list =
               category.name === "ELECTRONICS"
                 ? electronicsList
@@ -318,13 +459,14 @@ const ShoppingList = () => {
                 </table>
               </div>
             );
+
           })}
         </div>
-      </div>
+      )}
 
       {showPopup && selectedCategory && (
-        <div className="popup-overlay">
-          <div className="popup-container">
+        <div className="popup-overlay-b">
+          <div className="popup-container-b">
             <h2>{formData.id ? "Edit" : "Add"} {selectedCategory} Item</h2>
             <div className="popup-form">
               {getCategories().find(c => c.name === selectedCategory)?.fields.map((field, idx) => (
@@ -363,16 +505,24 @@ const ShoppingList = () => {
                   )}
                 </div>
               ))}
+            <div className="popup-actions-b">
+              <button className="save-btn-b" onClick={handleSave}>Save</button>
+              <button className="cancel-btn-b" onClick={() => togglePopup()}>Cancel</button>
             </div>
             <div className="popup-actions">
               <button onClick={handleSave} className="save-btn">Save</button>
               <button onClick={togglePopup} className="cancel-btn">Cancel</button>
+
             </div>
           </div>
         </div>
       )}
 
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <ToastContainer position="bottom-right" />
+
     </div>
   );
 };
