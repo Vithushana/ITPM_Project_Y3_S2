@@ -26,7 +26,7 @@
   background-color: #7c8691;
 }
 
-/* Banner */
+/* Banner Section*/
 .banner-container-b {
   display: flex;
   align-items: center;
@@ -47,31 +47,35 @@
   height: 300px;
   background: url('../exp_img/banner1.jpg') center center/cover no-repeat;
   border-radius: 20px;
-  animation: floatUpDown 3s ease-in-out infinite;
+  animation: floatUpDown 5s ease-in-out infinite;
   max-width: 400px;
   margin-right: 320px;
 }
 
-/* New Animation */
+/* Float animation for banner image */
 @keyframes floatUpDown {
   0% {
     transform: translateY(0px);
   }
+
   50% {
-    transform: translateY(-20px); /* Move up */
+    transform: translateY(-20px);
+    /* Move up */
   }
+
   100% {
-    transform: translateY(0px); /* Come back down */
+    transform: translateY(0px);
+    /* Come back down */
   }
 }
 
 .shopping-heading {
-  font-size:55px;
+  font-size: 55px;
   margin-left: 300px;
   margin-top: -40px;
 }
 
-.p-b{
+.p-b {
   margin-left: 310px;
 }
 
@@ -80,11 +84,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px; /* space between input and button */
+  gap: 15px;
   margin-bottom: 20px;
   margin-left: 300px;
 }
-
 
 /* Category Section */
 .category-section {
@@ -93,7 +96,6 @@
   border-radius: 15px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Search Bar */
 .search-bar-b {
@@ -109,13 +111,13 @@
 .search-bar-b:focus {
   outline: none;
   border-color: #3289a8;
-
 }
 
 /* Download Report Button */
 .download-report-b {
   padding: 10px 20px;
-  background-color: #1f1682df; /* green */
+  background-color: #1f1682df;
+  /* green */
   color: white;
   border: none;
   border-radius: 8px;
@@ -125,17 +127,15 @@
 }
 
 .download-report-b:hover {
-  background-color: #1f1682d6; /* darker green on hover */
+  background-color: #1f1682d6;
+  /* darker green on hover */
 }
-
-
 
 .category-section h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Heading */
 /* Heading */
 .h2-b {
   text-align: center;
@@ -174,12 +174,10 @@
 
 /* Category Main Grid */
 .category-grid-b {
-  
-    max-width: 1200px;
-    margin: 30px auto;
-  }
-  
 
+  max-width: 1200px;
+  margin: 30px auto;
+}
 
 /* Each Category Box */
 .category-item-b {
@@ -191,7 +189,8 @@
 }
 
 .category-buttons-b button.active {
-  background-color: #1f1682df; /* your desired highlight color */
+  background-color: #1f1682df;
+  /* your desired highlight color */
   color: white;
   border: 2px solid #1f1682df;
   font-weight: bold;
@@ -214,15 +213,14 @@ select {
 }
 
 select:focus {
-  border-color: #4f46e5; /* Tailwind indigo-600 */
+  border-color: #4f46e5;
+  /* Tailwind indigo-600 */
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 option {
   padding: 10px;
 }
-
-
 
 /* Category Name */
 .category-item-b h3 {
@@ -308,10 +306,6 @@ option {
   background-color: #e53935;
 }
 
-
-
-
-
 /* Popup Overlay */
 .popup-overlay-b {
   position: fixed;
@@ -319,7 +313,7 @@ option {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -332,7 +326,7 @@ option {
   border-radius: 15px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
   padding-right: 50px;
 }
 
@@ -382,14 +376,13 @@ option {
   font-size: 12px;
 }
 
-
-
 /* Animation */
 @keyframes slideInRightToLeft {
   0% {
     transform: translateX(100%);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -401,16 +394,17 @@ option {
   .banner-container-b {
     flex-direction: column;
   }
-  
+
   .banner-img-b {
     max-width: 100%;
     height: 200px;
   }
-  
+
   .category-buttons {
     flex-direction: column;
   }
 }
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .category-grid-b {
@@ -430,4 +424,3 @@ option {
     padding: 8px 16px;
   }
 }
-
