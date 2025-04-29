@@ -18,6 +18,13 @@
   animation: slideIn 0.5s ease-in-out;
 }
 
+.sider-chatbot-menu .menu-item.active {
+  background-color: #5c82cc; /* Example: Light gray background */
+  color: #0a1725; /* Example: Blue text */
+  font-weight: bold; /* Example: Bold text */
+  /* Add any other styles you want to indicate the active state */
+}
+
 /* Sidebar Slide-In Animation */
 @keyframes slideIn {
   from {
@@ -193,4 +200,30 @@
   color: #666;
   text-align: center;
   padding: 20px;
+}
+
+.history-details {
+  margin-top: 20px;
+  margin-left: 40px; /* Shift content to the right */
+  padding: 15px; /* Add some padding inside the box */
+  border: 1px solid #ccc; /* Add a light gray border */
+  border-radius: 5px; /* Slightly round the corners */
+  background-color: #f9f9f9; /* Light background color */
+}
+
+.history-details strong {
+  font-weight: bold; /* Make labels bold */
+}
+
+.history-details ul {
+  list-style-type: none; /* Remove bullet points from the list */
+  padding: 0;
+}
+
+.history-details li {
+  margin-bottom: 10px; /* Add some space between list items */
+  padding: 10px;
+  border: 1px solid #eee; /* Add a very light gray border around list items */
+  border-radius: 3px;
+  background-color: #fff; /* White background for list items */
 }

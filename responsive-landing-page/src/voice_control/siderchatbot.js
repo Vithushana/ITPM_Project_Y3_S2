@@ -1,12 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./SiderChatBot.css";
 
 // Icons
 const ChatIcon = () => <span>💬</span>;
 const FeedbackIcon = () => <span>📢</span>;
 const SavesIcon = () => <span>🔖</span>;
-const FavoriteIcon = () => <span>❤️</span>;
+const FavIcon = () => <span>❤️</span>;
+const LoadingIcon = () => <span>🔄</span>;
+const FavoriteIcon = ({ isFavorite, onClick }) => (
+  <span
+    style={{ cursor: "pointer", marginLeft: "8px" }}
+    onClick={onClick}
+  >
+    {isFavorite ? "❤️" : "🤍"}
+  </span>
+);
 const HistoryIcon = () => <span>⏳</span>;
 const LogoutIcon = () => <span>🚪</span>;
 const MicIcon = () => <span>🎤</span>;
@@ -16,10 +25,19 @@ const API_KEYWORDS = ["budget", "electronics", "inventory", "medicine", "reminde
 
 const SiderChatBot = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [messages, setMessages] = useState([]);
   const [recognition, setRecognition] = useState(null);
+  const [activeMenu, setActiveMenu] = useState("Chat Generator");
+
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isHistoryView, setIsHistoryView] = useState(false);
+  const [isFavoriteView, setIsFavoriteView] = useState(false);
+  const [selectedHistoryId, setSelectedHistoryId] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (window.SpeechRecognition || window.webkitSpeechRecognition) {
@@ -27,6 +45,24 @@ const SiderChatBot = () => {
       setRecognition(recog);
     }
   }, []);
+
+  const fetchChatHistory = useCallback(() => {
+    fetch("http://localhost:8080/api/chat-history")
+      .then((res) => res.json())
+      .then((data) => {
+        setChatHistory(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching history:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (activeMenu === "History" || activeMenu === "Favorite") {
+      fetchChatHistory();
+      setSelectedHistoryId(null); // Reset selection when viewing history or favorites
+    }
+  }, [activeMenu, fetchChatHistory]);
 
   useEffect(() => {
     if (!recognition) return;
@@ -102,7 +138,7 @@ const SiderChatBot = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
         addMessage("Error fetching data. Please try again.", "Bot");
-      });
+      })
   };
 
   const addMessage = (text, sender) => {
@@ -112,51 +148,192 @@ const SiderChatBot = () => {
   const handleNavigate = (page) => {
     if (page === "Feedback") {
       navigate("/feedback");
-    }
-    if (page === "FoodRecipe") {
+    } else if (page === "FoodRecipe") {
       navigate("/FoodRecipe");
-    }
-    if (page === "Home") {
+    } else if (page === "Home") {
       navigate("/home");
     }
   };
 
+  const handleMenuClick = (menu) => {
+    setActiveMenu(menu);
+    setIsHistoryView(menu === "History");
+    setIsFavoriteView(menu === "Favorite");
+    setSelectedHistoryId(null); // Reset selected history when changing menu
+    if (menu === "Feedback" || menu === "FoodRecipe" || menu === "Back Home") {
+      handleNavigate(menu);
+    }
+  };
+
+  const handleFavoriteClick = (id, currentFavorite) => {
+
+    fetch(`http://localhost:8080/api/chat-history/${id}?favorite=${!currentFavorite}`, {
+      method: "PUT",
+    })
+      .then((response) => {
+        if (response.ok) {
+          setChatHistory((prevHistory) =>
+            prevHistory.map((item) =>
+              item.id === id ? { ...item, favorite: !currentFavorite } : item
+            )
+          );
+        } else {
+          console.error("Failed to update favorite status");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating favorite status:", error);
+      })
+  };
+
+  const handleHistoryItemClick = (id) => {
+    setSelectedHistoryId(selectedHistoryId === id ? null : id); // Toggle selection
+  };
+
+  useEffect(() => {
+    if (location.pathname === "/feedback") {
+      setActiveMenu("Feedback");
+    } else if (location.pathname === "/FoodRecipe") {
+      setActiveMenu("My Recipe");
+    } else if (location.pathname === "/home") {
+      setActiveMenu("Back Home");
+    } else {
+      setActiveMenu("Chat Generator");
+    }
+  }, [location.pathname]);
+
+  const renderHistoryItem = (historyItem) => (
+    <div
+      key={historyItem.id}
+      className={`message history-item ${selectedHistoryId === historyItem.id ? "selected" : ""}`}
+      onClick={() => handleHistoryItemClick(historyItem.id)}
+    >
+      <span>{historyItem.sentence}</span>
+      <FavoriteIcon
+        isFavorite={historyItem.favorite}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleFavoriteClick(historyItem.id, historyItem.favorite);
+        }}
+      />
+      {/* {isLoading && <LoadingIcon/>} */}
+      {selectedHistoryId === historyItem.id && (
+        <div className="history-details">
+          <p><strong>Asked Question:</strong> {historyItem.sentence}</p>
+          <p><strong>Generated Query:</strong> {historyItem.query}</p>
+          {historyItem.response && historyItem.response.length > 0 ? (
+            <div>
+              <strong>Response:</strong>
+              <ul>
+                {historyItem.response.map((item) => (
+                  <li key={item.id}>
+                    {item.name && <p><strong>Name:</strong> {item.name}</p>}
+                    {item.category && <p><strong>Category:</strong> {item.category}</p>}
+                    {item.quantity !== undefined && <p><strong>Quantity:</strong> {item.quantity}</p>}
+                    {item.expirationDate && <p><strong>Expiration Date:</strong> {item.expirationDate}</p>}
+                    {item.illnessType && <p><strong>Illness Type:</strong> {item.illnessType}</p>}
+                    {item.available !== undefined && <p><strong>Available:</strong> {item.available ? "Yes" : "No"}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p><strong>Response:</strong> No response</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderFavoriteItem = (favoriteItem) => (
+    <div
+      key={favoriteItem.id}
+      className={`message history-item ${selectedHistoryId === favoriteItem.id ? "selected" : ""}`}
+      onClick={() => handleHistoryItemClick(favoriteItem.id)}
+    >
+      <span>{favoriteItem.sentence}</span>
+      <FavoriteIcon
+        isFavorite={favoriteItem.favorite}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent click from toggling details in favorite view
+          handleFavoriteClick(favoriteItem.id, favoriteItem.favorite);
+        }}
+      />
+      {selectedHistoryId === favoriteItem.id && (
+        <div className="history-details">
+          <p><strong>Full Sentence:</strong> {favoriteItem.sentence}</p>
+          <p><strong>Generated Query:</strong> {favoriteItem.query}</p>
+          {favoriteItem.response && favoriteItem.response.length > 0 ? (
+            <div>
+              <strong>Response:</strong>
+              <ul>
+                {favoriteItem.response.map((item) => (
+                  <li key={item.id}>
+                    {item.name && <p><strong>Name:</strong> {item.name}</p>}
+                    {item.category && <p><strong>Category:</strong> {item.category}</p>}
+                    {item.quantity !== undefined && <p><strong>Quantity:</strong> {item.quantity}</p>}
+                    {item.expirationDate && <p><strong>Expiration Date:</strong> {item.expirationDate}</p>}
+                    {item.illnessType && <p><strong>Illness Type:</strong> {item.illnessType}</p>}
+                    {item.available !== undefined && <p><strong>Available:</strong> {item.available ? "Yes" : "No"}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p><strong>Response:</strong> No response</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="chat-container">
-      {/* Sidebar */}
       <div className="sider-chatbot">
-        <div className="sider-chatbot-header">
-          <h2>CHAT BOT</h2>
-        </div>
-
-        {/* Menu Items */}
         <ul className="sider-chatbot-menu">
-          <li className="menu-item">
+          <li
+            className={`menu-item ${activeMenu === "Chat Generator" ? "active" : ""}`}
+            onClick={() => handleMenuClick("Chat Generator")}
+          >
             <ChatIcon /> <span>Chat Generator</span>
           </li>
 
-          <li className="menu-item" onClick={() => handleNavigate("Feedback")}>
-            <FeedbackIcon /> <span>Feedback</span>
+          <li
+            className={`menu-item ${activeMenu === "Favorite" ? "active" : ""}`}
+            onClick={() => handleMenuClick("Favorite")}
+          >
+            <FavIcon /> <span>Favorite</span>
           </li>
 
-          <li className="menu-item" onClick={() => handleNavigate("FoodRecipe")}>
-            <SavesIcon /> <span>My Recipe</span>
-          </li>
-
-          <li className="menu-item">
-            <FavoriteIcon /> <span>Favorite</span>
-          </li>
-
-          <li className="menu-item">
+          <li
+            className={`menu-item ${activeMenu === "History" ? "active" : ""}`}
+            onClick={() => handleMenuClick("History")}
+          >
             <HistoryIcon /> <span>History</span>
           </li>
 
-          <li className="menu-item" onClick={() => handleNavigate("Home")}>
+          <li
+            className={`menu-item ${activeMenu === "Feedback" ? "active" : ""}`}
+            onClick={() => handleNavigate("Feedback")}
+          >
+            <FeedbackIcon /> <span>Feedback</span>
+          </li>
+
+          <li
+            className={`menu-item ${activeMenu === "My Recipe" ? "active" : ""}`}
+            onClick={() => handleNavigate("FoodRecipe")}
+          >
+            <SavesIcon /> <span>My Recipe</span>
+          </li>
+
+          <li
+            className={`menu-item ${activeMenu === "Back Home" ? "active" : ""}`}
+            onClick={() => handleNavigate("Home")}
+          >
             <LogoutIcon /> <span>Back Home</span>
           </li>
         </ul>
 
-        {/* Voice Assistant */}
         <div className="voice-assist">
           <h3>Voice Assistant</h3>
           <button
@@ -172,19 +349,46 @@ const SiderChatBot = () => {
         </div>
       </div>
 
-      {/* Chat Display */}
       <div className="chat-box">
-        <h3>Chat Messages</h3>
+        <h3>
+          {isHistoryView
+            ? "History Messages"
+            : isFavoriteView
+            ? "Favorite Messages"
+            : "Chat Messages"}
+        </h3>
         <div className="chat-messages">
-          {messages.length > 0 ? (
-            messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender === "User" ? "user-message" : "bot-message"}`}>
-                <span>{msg.text}</span>
-              </div>
-            ))
-          ) : (
-            <p className="no-messages">No messages yet...</p>
-          )}
+          {(() => {
+            let displayMessages = [];
+            if (isHistoryView) {
+              displayMessages = chatHistory;
+            } else if (isFavoriteView) {
+              displayMessages = chatHistory.filter((msg) => msg.favorite);
+            } else {
+              displayMessages = messages;
+            }
+
+            return displayMessages.length > 0 ? (
+              displayMessages.map((msg, index) => {
+                if (isHistoryView) {
+                  return renderHistoryItem(msg);
+                } else if (isFavoriteView) {
+                  return renderFavoriteItem(msg);
+                } else {
+                  return (
+                    <div
+                      key={index}
+                      className={`message ${msg.sender === "User" ? "user-message" : "bot-message"}`}
+                    >
+                      <span>{msg.text || msg.sentence}</span>
+                    </div>
+                  );
+                }
+              })
+            ) : (
+              <p className="no-messages">No messages yet...</p>
+            );
+          })()}
         </div>
       </div>
     </div>
