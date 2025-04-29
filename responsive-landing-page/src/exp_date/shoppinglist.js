@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../styles/shopping.css";
-import Swal from 'sweetalert2';
-import { FaHeart, FaRegHeart, FaEdit, FaTrashAlt } from 'react-icons/fa';
-
-
+import "../styles/shopping.css"; // This is your CSS
+import Swal from "sweetalert2";
+import { FaHeart, FaRegHeart, FaEdit, FaTrashAlt } from "react-icons/fa";
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -86,44 +84,21 @@ const ShoppingList = () => {
         errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
       }
     });
-    if (selectedCategory === "ELECTRONICS" && !name?.trim()) {
-      errors.name = "Name is required.";
-    }
+
     if (selectedCategory === "ELECTRONICS" && date && !datePattern.test(date)) {
-      errors.date = "Date must be in the format<\ctrl98>-MM-DD.";
+      errors.date = "Date must be in the format YYYY-MM-DD.";
     }
     if (selectedCategory === "ELECTRONICS" && (isNaN(count) || Number(count) <= 0)) {
       errors.count = "Count must be a valid number greater than 0.";
     }
-
-    if (selectedCategory === "GROCERIES" && !name?.trim()) {
-      errors.name = "Name is required.";
-    }
-    if (selectedCategory === "GROCERIES") {
+    if (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") {
       const quantityParts = quantity?.split(' ');
       if (!quantity?.trim() || isNaN(quantityParts?.[0]) || Number(quantityParts?.[0]) <= 0 || !quantityParts?.[1]?.trim()) {
-        errors.quantity = "Quantity must be a valid number followed by a unit (e.g., '1 kg').";
+        errors.quantity = "Quantity must be a valid number followed by a unit.";
       }
     }
-
-    if (selectedCategory === "MEDICINE" && !name?.trim()) {
-      errors.name = "Name is required.";
-    }
-    if (selectedCategory === "MEDICINE") {
-      const quantityParts = quantity?.split(' ');
-      if (!quantity?.trim() || isNaN(quantityParts?.[0]) || Number(quantityParts?.[0]) <= 0 || !quantityParts?.[1]?.trim()) {
-        errors.quantity = "Quantity must be a valid number followed by a unit (e.g., '10 tablets').";
-      }
-    }
-    if (selectedCategory === "MEDICINE" && !type?.trim()) {
-      errors.type = "Type is required.";
-    }
-
-    if (selectedCategory === "BALANCEMONEY" && (isNaN(amount))) {
+    if (selectedCategory === "BALANCEMONEY" && isNaN(amount)) {
       errors.amount = "Amount must be a valid number.";
-    }
-    if (selectedCategory === "BALANCEMONEY" && !date) {
-      errors.date = "Date is required.";
     }
 
     setFormErrors(errors);
@@ -132,7 +107,6 @@ const ShoppingList = () => {
       toast.warn("Please fix form errors before saving.");
       return false;
     }
-
     return true;
   };
 
@@ -243,37 +217,6 @@ const ShoppingList = () => {
       localStorage.setItem("favorites", JSON.stringify(newFavoritesList));
       toast.success("Item added to Favorites!");
     }
-    fetch(`http://localhost:8080/api/shopping/delete/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) {
-          toast.success("Item deleted!");
-          const updateList = (list, setList) =>
-            setList(list.filter((item) => item.id !== id));
-
-          switch (categoryName) {
-            case "ELECTRONICS":
-              updateList(electronicsList, setElectronicsList);
-              break;
-            case "GROCERIES":
-              updateList(groceriesList, setGroceriesList);
-              break;
-            case "MEDICINE":
-              updateList(medicinesList, setMedicinesList);
-              break;
-            case "BALANCEMONEY":
-              updateList(moneyBalanceList, setMoneyBalanceList);
-              break;
-            default:
-              break;
-          }
-        } else {
-          toast.error("Delete failed.");
-        }
-      })
-      .catch(() => toast.error("Server error during delete."));
-
   };
 
   const handleDownloadReport = () => {
@@ -285,7 +228,6 @@ const ShoppingList = () => {
     ];
 
     let csv = "Category,";
-
     const uniqueHeaders = new Set();
     allData.forEach((cat) => cat.fields.forEach((f) => uniqueHeaders.add(f)));
     const headers = ["Category", ...Array.from(uniqueHeaders)];
@@ -297,7 +239,6 @@ const ShoppingList = () => {
           String(item[field] || "").toLowerCase().includes(searchTerm)
         )
       );
-
       filtered.forEach((item) => {
         const row = headers.map((field) =>
           field === "Category" ? name : item[field] || ""
@@ -321,10 +262,12 @@ const ShoppingList = () => {
 
   return (
     <div className="App">
+      {/* BACK BUTTON */}
       <div className="bback-button-container">
         <button className="bback-button" onClick={handleBack}>← Back Home</button>
       </div>
 
+      {/* BANNER */}
       <div className="banner-container-b">
         <div className="banner-text-b">
           <section className="banner-b">
@@ -347,6 +290,7 @@ const ShoppingList = () => {
         <div className="banner-img-b"></div>
       </div>
 
+      {/* CATEGORY BUTTONS */}
       <h2 className="h2-b">Category</h2>
       <div className="category-buttons-b">
         <button onClick={() => handleCategoryClick("ELECTRONICS")}>Electronics</button>
@@ -355,18 +299,16 @@ const ShoppingList = () => {
         <button onClick={() => handleCategoryClick("BALANCEMONEY")}>Balance Money</button>
       </div>
 
+      {/* CATEGORY TABLES */}
       {selectedCategory && (
         <div className="category-grid-b">
           {getCategories().map((category, index) => {
             if (category.name === selectedCategory) {
               const list =
-                category.name === "ELECTRONICS"
-                  ? electronicsList
-                  : category.name === "GROCERIES"
-                    ? groceriesList
-                    : category.name === "MEDICINE"
-                      ? medicinesList
-                      : moneyBalanceList;
+                category.name === "ELECTRONICS" ? electronicsList :
+                category.name === "GROCERIES" ? groceriesList :
+                category.name === "MEDICINE" ? medicinesList :
+                moneyBalanceList;
 
               const filteredList = list.filter((item) =>
                 category.fields.some((field) =>
@@ -385,85 +327,38 @@ const ShoppingList = () => {
                         {category.fields.map((field, i) => (
                           <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
                         ))}
-                        {filteredList.length > 0 && <th>Actions</th>}
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredList.length > 0 && (
-                        filteredList.map((item, i) => (
-                          <tr key={i}>
-                            {category.fields.map((field, j) => (
-                              <td key={j}>{item[field]}</td>
-                            ))}
-                            <td>
-                              <button onClick={() => togglePopup(category.name, item)}><FaEdit /></button>
-                              <button onClick={() => handleDelete(item.id, category.name)}><FaTrashAlt /></button>
-                              <button
-                                onClick={() => handleToggleFavorite(item)}
-                                style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                              >
-                                {favoritesList.some(fav => fav.id === item.id) ? <FaHeart color="red" size={24} /> : <FaRegHeart color="gray" size={24} />}
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
+                      {filteredList.map((item, i) => (
+                        <tr key={i}>
+                          {category.fields.map((field, j) => (
+                            <td key={j}>{item[field]}</td>
+                          ))}
+                          <td>
+                            <button onClick={() => togglePopup(category.name, item)}><FaEdit /></button>
+                            <button onClick={() => handleDelete(item.id, category.name)}><FaTrashAlt /></button>
+                            <button
+                              onClick={() => handleToggleFavorite(item)}
+                              style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                            >
+                              {favoritesList.some(fav => fav.id === item.id) ? <FaHeart color="red" size={24} /> : <FaRegHeart color="gray" size={24} />}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               );
             }
             return null;
-            const list =
-              category.name === "ELECTRONICS"
-                ? electronicsList
-                : category.name === "GROCERIES"
-                ? groceriesList
-                : category.name === "MEDICINE"
-                ? medicinesList
-                : moneyBalanceList;
-
-            const filteredList = list.filter((item) =>
-              category.fields.some((field) =>
-                String(item[field] || "").toLowerCase().includes(searchTerm)
-              )
-            );
-
-            return (
-              <div key={index} className="category-item">
-                <h3>🛒{category.name}</h3>
-                <button className="add-btn" onClick={() => togglePopup(category.name)}>➕ Add Item</button>
-
-                <table className="category-table">
-                  <thead>
-                    <tr>
-                      {category.fields.map((field, i) => (
-                        <th key={i}>{field.charAt(0).toUpperCase() + field.slice(1)}</th>
-                      ))}
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredList.map((item, i) => (
-                      <tr key={i} className="fade-in">
-                        {category.fields.map((field, j) => (
-                          <td key={j}>{item[field]}</td>
-                        ))}
-                        <td>
-                          <button onClick={() => togglePopup(category.name, item)}>✏️</button>
-                          <button onClick={() => handleDelete(item.id, category.name)}>🗑️</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            );
-
           })}
         </div>
       )}
 
+      {/* POPUP */}
       {showPopup && selectedCategory && (
         <div className="popup-overlay-b">
           <div className="popup-container-b">
@@ -473,13 +368,13 @@ const ShoppingList = () => {
                 <div key={idx} className="popup-form-field">
                   <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
                   {field === "quantity" && (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") ? (
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
                       <input
                         type="text"
-                        style={{ flexGrow: 1, marginRight: '8px' }}
+                        style={{ flexGrow: 1, marginRight: "8px" }}
                         value={formData[field]?.split(' ')[0] || ""}
                         onChange={(e) => handleChange(e, field)}
-                        placeholder={`Enter quantity`}
+                        placeholder="Enter quantity"
                       />
                       <select
                         value={formData[field]?.split(' ')[1] || ""}
@@ -490,39 +385,28 @@ const ShoppingList = () => {
                           <option key={i} value={type}>{type}</option>
                         ))}
                       </select>
-                      {formErrors[field] && <span className="error" style={{ color: 'red' }}>{formErrors[field]}</span>}
                     </div>
                   ) : (
-                    <>
-                      <input
-                        type="text"
-                        value={formData[field] || ""}
-                        onChange={(e) => handleChange(e, field)}
-                        placeholder={`Enter ${field}`}
-                      />
-                      {formErrors[field] && <span className="error" style={{ color: 'red' }}>{formErrors[field]}</span>}
-                    </>
+                    <input
+                      type="text"
+                      value={formData[field] || ""}
+                      onChange={(e) => handleChange(e, field)}
+                      placeholder={`Enter ${field}`}
+                    />
                   )}
+                  {formErrors[field] && <span className="error" style={{ color: "red" }}>{formErrors[field]}</span>}
                 </div>
               ))}
-            <div className="popup-actions-b">
-              <button className="save-btn-b" onClick={handleSave}>Save</button>
-              <button className="cancel-btn-b" onClick={() => togglePopup()}>Cancel</button>
-            </div>
-            <div className="popup-actions">
-              <button onClick={handleSave} className="save-btn">Save</button>
-              <button onClick={togglePopup} className="cancel-btn">Cancel</button>
-
+              <div className="popup-actions-b">
+                <button className="save-btn-b" onClick={handleSave}>Save</button>
+                <button className="cancel-btn-b" onClick={() => togglePopup()}>Cancel</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-
       <ToastContainer position="top-right" autoClose={3000} />
-
-      <ToastContainer position="bottom-right" />
-
     </div>
   );
 };

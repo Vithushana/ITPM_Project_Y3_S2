@@ -68,6 +68,7 @@
 .shopping-heading {
   font-size:55px;
   margin-left: 300px;
+  margin-top: -40px;
 }
 
 .p-b{
@@ -140,8 +141,9 @@
   text-align: center;
   font-size: 36px;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-weight: 700;
+  margin-top: -40px;
 }
 
 /* Category Buttons */
