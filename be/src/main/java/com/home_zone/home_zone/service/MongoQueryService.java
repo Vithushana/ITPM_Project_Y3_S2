@@ -1,5 +1,7 @@
 package com.home_zone.home_zone.service;
 
+import com.home_zone.home_zone.model.ChatHistory;
+import com.home_zone.home_zone.repository.ChatHistoryRepository;
 import com.home_zone.home_zone.repository.ElectronicsRepository;
 import com.home_zone.home_zone.repository.MedicineRepository;
 import org.bson.Document;
@@ -23,6 +25,9 @@ public class MongoQueryService {
     @Autowired
     private MedicineRepository medicineRepository;
 
+    @Autowired
+    private ChatHistoryRepository chatHistoryRepository;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     public List<?> handleSentence(String sentence) {
@@ -31,10 +36,30 @@ public class MongoQueryService {
         System.out.println("Generated Query: " + query);
 
         if (query.startsWith("Electronics")) {
-            return handleElectronicsQuery(query);
+            List<?> res = handleElectronicsQuery(query);
+            ChatHistory chatHistory = new ChatHistory();
+            chatHistory.setSentence(sentence);
+            chatHistory.setQuery(query);
+            chatHistory.setResponse(res);
+            chatHistory.setFavorite(false);
+            chatHistoryRepository.save(chatHistory);
+            return res;
         } else if (query.startsWith("Medicine")) {
-            return handleMedicineQuery(query);
+            List<?> res = handleMedicineQuery(query);
+            ChatHistory chatHistory = new ChatHistory();
+            chatHistory.setSentence(sentence);
+            chatHistory.setQuery(query);
+            chatHistory.setResponse(res);
+            chatHistory.setFavorite(false);
+            chatHistoryRepository.save(chatHistory);
+            return res;
         } else {
+            ChatHistory chatHistory = new ChatHistory();
+            chatHistory.setSentence(sentence);
+            chatHistory.setQuery(query);
+            chatHistory.setResponse(null);
+            chatHistory.setFavorite(false);
+            chatHistoryRepository.save(chatHistory);
             throw new RuntimeException("Unknown entity in query: " + query);
         }
     }

@@ -1,24 +1,29 @@
 .chat-container {
   display: flex;
   height: 100vh;
-  border-radius: 10px;
+  border-radius: 0;
 }
 
-/* Sidebar */
 .sider-chatbot {
-  width: 300px;
-  background: #374f80;
-  color: white;
-  padding: 20px;
-  border-right: 2px solid #444;
+  width: 320px;
+  background: #264462;
+  color: #ecf0f1;
+  padding: 30px;
+  border-right: 1px solid #34495e;
   display: flex;
   flex-direction: column;
-  border-radius: 55px;
-  margin: 10px;
-  animation: slideIn 0.5s ease-in-out;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
 }
 
-/* Sidebar Slide-In Animation */
+.sider-chatbot-menu .menu-item.active {
+  background-color: #3498db;
+  color: #ffffff;
+  font-weight: 500;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
@@ -31,11 +36,21 @@
 }
 
 .sider-chatbot-header {
-  text-align: center;
-  margin-bottom: 20px;
+  text-align: left;
+  margin-bottom: 30px;
 }
 
-/* Menu Items */
+.sider-chatbot-header h2 {
+  font-size: 24px;
+  font-weight: 300;
+  margin-bottom: 5px;
+}
+
+.sider-chatbot-header p {
+  font-size: 14px;
+  color: #bdc3c7;
+}
+
 .sider-chatbot-menu {
   list-style: none;
   padding: 0;
@@ -44,153 +59,201 @@
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 12px 15px;
   cursor: pointer;
   position: relative;
-  transition: all 0.3s ease-in-out;
-  color: black;
-  border-radius: 8px;
+  transition: background-color 0.2s ease-in-out;
+  color: #ecf0f1;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.menu-item:last-child {
+  margin-bottom: 0;
 }
 
 .menu-item:hover {
-  transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: none;
+  box-shadow: none;
 }
 
-/* Underline Animation */
-.menu-item::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background: white;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease-in-out;
+.menu-item span {
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 300;
 }
 
-.menu-item:hover::after {
-  transform: scaleX(1);
-}
-
-/* Voice Assistant */
 .voice-assist {
   margin-top: auto;
-  padding: 15px;
-  border: 1px solid #555;
-  border-radius: 15px;
-  text-align: center;
-  background: #333;
+  padding: 20px;
+  border-top: 1px solid #b0b0b0;
+  border-radius: 0;
+  text-align: left;
+  background: transparent;
 }
 
-/* Mic Button with Pulse Effect */
+.voice-assist h3 {
+  font-size: 18px;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+
 .mic-button {
-  background: #007bff;
+  background: #3498db;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 12px 18px;
   font-size: 16px;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .mic-button.listening {
-  background: red;
-  animation: pulse 1s infinite alternate;
+  background: #e74c3c;
+  animation: none;
 }
 
-/* Pulsating Effect */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
-  }
-  100% {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
-  }
+.mic-button:hover {
+  background-color: #2980b9;
 }
 
-/* Finish Button */
+.voice-assist p.transcript {
+  color: #bdc3c7;
+  font-size: 14px;
+  margin-bottom: 15px;
+  min-height: 30px;
+}
+
 .finish-button {
-  background: green;
+  background: #2ecc71;
   color: white;
   border: none;
-  padding: 10px;
-  margin-top: 10px;
-  font-size: 14px;
+  padding: 12px 18px;
+  font-size: 16px;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.3s ease-in-out;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
 }
 
 .finish-button:hover {
-  background: #008000;
+  background-color: #27ae60;
 }
 
-/* Chat Box */
 .chat-box {
   flex-grow: 1;
-  background: white;
-  padding: 20px;
+  background: #f5f5f5;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
-  margin-left: 10px;
+  border-radius: 0;
+  margin-left: 0;
 }
 
-/* Chat Messages */
+.chat-box h3 {
+  font-size: 22px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 15px;
+}
+
 .chat-messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 10px;
-  background: rgb(186, 202, 226);
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
   display: flex;
   flex-direction: column;
 }
 
-/* Message Animation */
 .message {
-  padding: 10px;
-  border-radius: 5px;
-  margin: 5px;
-  max-width: 70%;
-  animation: fadeInScale 0.3s ease-in-out;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin: 8px;
+  max-width: 75%;
+  animation: fadeIn 0.2s ease-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Fade-In & Scale Animation */
-@keyframes fadeInScale {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
   }
   to {
     opacity: 1;
-    transform: scale(1);
   }
 }
 
-/* User & Bot Message Styling */
 .user-message {
-  background: #007bff;
+  background: #3498db;
   color: white;
   align-self: flex-end;
 }
 
 .bot-message {
-  background: #444;
-  color: white;
+  background: #e0e0e0;
+  color: #333;
   align-self: flex-start;
 }
 
 .no-messages {
-  color: #666;
+  color: #777;
   text-align: center;
   padding: 20px;
+  font-style: italic;
+}
+
+.history-details {
+  margin-top: 15px;
+  margin-left: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+.history-details strong {
+  font-weight: 500;
+  color: #555;
+}
+
+.history-details ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.history-details li {
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid #f0f0f0;
+  border-radius: 3px;
+  background-color: #fff;
+}
+
+.favorite-icon {
+  font-size: 1.2em;
+}
+
+.history-item {
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 15px;
+}
+
+.history-item span {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+.history-item.selected {
+  background-color: #f0f0f0;
 }

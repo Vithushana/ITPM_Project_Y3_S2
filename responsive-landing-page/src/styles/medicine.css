@@ -113,31 +113,36 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Attempt vertical centering */
+  overflow: auto; /* Enable scrolling for the overlay */
 }
 
 .popup-content {
-  padding: 0;
   background-color: white;
-  padding: 20px;
   border-radius: 10px;
   max-width: 600px;
-  width: 100%;
+  overflow-y: auto;
   text-align: center;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 0%);
 }
 
-/* h2 {
-  text-align: center;
-  margin-bottom: 20px;
-} */
+.popup-content h2 {
+  margin-top: 0; /* Adjust top margin as needed */
+}
 
 .popup-content input {
-  width: 100%;
+  width: calc(100% - 20px); /* Adjust for padding */
   margin: 10px 0;
   padding: 10px;
   font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .popup-content button {
@@ -147,6 +152,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin: 5px; /* Add some spacing between buttons */
 }
 
 .popup-content .close-btn {
@@ -159,6 +165,34 @@
 
 .popup-content button:hover {
   background-color: #45a049;
+}
+
+.shopping-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.shopping-table th, .shopping-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.shopping-table th {
+  background-color: #f2f2f2;
+}
+
+.shopping-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.add-btn {
+  background-color: #007bff;
+}
+
+.add-btn:hover {
+  background-color: #0056b3;
 }
 
 .shopping-list {
