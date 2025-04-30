@@ -1,21 +1,14 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import styled from 'styled-components';
-
 import "./SiderChatBot.css";
-import logo from '../images/logo.png';
 
 // Icons
-const Logo = styled.img`
-  margin-left: 30px;
-  width: 140px; 
-  height: auto; 
-`;
 const ChatIcon = () => <span>💬</span>;
 const FeedbackIcon = () => <span>📢</span>;
 const SavesIcon = () => <span>🔖</span>;
 const FavIcon = () => <span>❤️</span>;
-// const LoadingIcon = () => <span>🔄</span>;
+const LoadingIcon = () => <span>🔄</span>;
+const ExpandIcon = () => <span>🔽</span>;
 const FavoriteIcon = ({ isFavorite, onClick }) => (
   <span
     style={{ cursor: "pointer", marginLeft: "8px" }}
@@ -45,7 +38,7 @@ const SiderChatBot = () => {
   const [isFavoriteView, setIsFavoriteView] = useState(false);
   const [selectedHistoryId, setSelectedHistoryId] = useState(null);
 
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (window.SpeechRecognition || window.webkitSpeechRecognition) {
@@ -137,16 +130,19 @@ const SiderChatBot = () => {
       .then((data) => {
         if (data && Array.isArray(data)) {
           const itemNames = data.map((item) => item.name || item.category);
-          addMessage(`Items in ${category}:`, "Bot");
-          itemNames.forEach((name) => addMessage(name, "Bot"));
+          let message = `${category} in storage:\n`;
+          itemNames.forEach((name) => {
+            message += `${name}\n`;
+          });
+          addMessage(message.trim(), "Bot");
         } else {
-          addMessage(`No items found for ${category}`, "Bot");
+          addMessage(`As ${category}, nothing found, as you asked.`, "Bot");
         }
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         addMessage("Error fetching data. Please try again.", "Bot");
-      })
+      });
   };
 
   const addMessage = (text, sender) => {
@@ -167,7 +163,7 @@ const SiderChatBot = () => {
     setActiveMenu(menu);
     setIsHistoryView(menu === "History");
     setIsFavoriteView(menu === "Favorite");
-    setSelectedHistoryId(null); // Reset selected history when changing menu
+    setSelectedHistoryId(null);
     if (menu === "Feedback" || menu === "FoodRecipe" || menu === "Back Home") {
       handleNavigate(menu);
     }
@@ -214,9 +210,8 @@ const SiderChatBot = () => {
     <div
       key={historyItem.id}
       className={`message history-item ${selectedHistoryId === historyItem.id ? "selected" : ""}`}
-      onClick={() => handleHistoryItemClick(historyItem.id)}
     >
-      <span>{historyItem.sentence}</span>
+      <span onClick={() => handleHistoryItemClick(historyItem.id)}>{historyItem.sentence}</span>
       <FavoriteIcon
         isFavorite={historyItem.favorite}
         onClick={(e) => {
@@ -257,9 +252,8 @@ const SiderChatBot = () => {
     <div
       key={favoriteItem.id}
       className={`message history-item ${selectedHistoryId === favoriteItem.id ? "selected" : ""}`}
-      onClick={() => handleHistoryItemClick(favoriteItem.id)}
     >
-      <span>{favoriteItem.sentence}</span>
+      <span onClick={() => handleHistoryItemClick(favoriteItem.id)}>{favoriteItem.sentence}</span>
       <FavoriteIcon
         isFavorite={favoriteItem.favorite}
         onClick={(e) => {
@@ -299,7 +293,6 @@ const SiderChatBot = () => {
     <div className="chat-container">
       <div className="sider-chatbot">
         <ul className="sider-chatbot-menu">
-        <Logo src={logo} alt="Logo" />
           <li
             className={`menu-item ${activeMenu === "Chat Generator" ? "active" : ""}`}
             onClick={() => handleMenuClick("Chat Generator")}
@@ -343,7 +336,7 @@ const SiderChatBot = () => {
           </li>
         </ul>
 
-        <div className="voice-assist">
+        {activeMenu === "Chat Generator" && <div className="voice-assist">
           <h3>Voice Assistant</h3>
           <button
             className={`mic-button ${isListening ? "listening" : ""}`}
@@ -355,7 +348,7 @@ const SiderChatBot = () => {
           <button className="finish-button" onClick={finishChat}>
             <SendIcon /> Finish Chat
           </button>
-        </div>
+        </div>}
       </div>
 
       <div className="chat-box">
@@ -389,7 +382,13 @@ const SiderChatBot = () => {
                       key={index}
                       className={`message ${msg.sender === "User" ? "user-message" : "bot-message"}`}
                     >
-                      <span>{msg.text || msg.sentence}</span>
+                      <span>
+                        {(msg.text || msg.sentence).split('\n').map((line, idx) => (
+                          <div key={idx} style={{ fontWeight: idx === 0 ? 'bold' : 'normal' }}>
+                            {idx === 0 ? line : `${idx}. ${line}`}
+                          </div>
+                        ))}
+                      </span>
                     </div>
                   );
                 }

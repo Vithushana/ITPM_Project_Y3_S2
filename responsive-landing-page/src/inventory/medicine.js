@@ -14,6 +14,8 @@ const MedicinePage = () => {
     quantity: "",
     category: "",
     expirationDate: "",
+    illnessType: "",
+    available: true,
   });
   const [updateMedicine, setUpdateMedicine] = useState({
     id: "",
@@ -21,6 +23,7 @@ const MedicinePage = () => {
     quantity: "",
     category: "",
     expirationDate: "",
+    available: true,
   });
 
   const [isAddingBySync, setIsAddingBySync] = useState(false);
@@ -38,6 +41,29 @@ const MedicinePage = () => {
     "Cough & Cold", 
     "Antacids"
   ];
+
+  const illnessTypes = [
+    "Fever",
+    "Pain",
+    "Bacterial Infection",
+    "Cough",
+    "Diabetes",
+    "Cold",
+    "Flu",
+    "Headache",
+    "Asthma",
+    "Hypertension",
+    "Allergy",
+    "Stomach Ache",
+    "Skin Rash",
+    "COVID-19",
+    "Migraines",
+    "Pneumonia",
+    "Arthritis",
+    "Anxiety",
+    "Depression"
+  ];
+  
 
   useEffect(() => {
     fetch("http://localhost:8080/api/medicine")
@@ -78,7 +104,7 @@ const MedicinePage = () => {
         setMedicineItems(updated);
         setFilteredMedicine(updated);
         setShowPopup(false);
-        setNewMedicine({ name: "", quantity: "", category: "", expirationDate: "" });
+        setNewMedicine({ name: "", quantity: "", category: "", expirationDate: "", illnessType: "" });
         toast.success("Medicine added successfully.");
         if(isAddingBySync){
           setShowSyncPopup(true);
@@ -118,7 +144,7 @@ const MedicinePage = () => {
         setMedicineItems(updatedItems);
         setFilteredMedicine(updatedItems);
         setShowPopup(false);
-        setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "" });
+        setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "", illnessType: "" });
         toast.success("Medicine updated successfully.");
       })
       .catch((error) => {
@@ -207,6 +233,8 @@ const MedicinePage = () => {
                   <p><strong>Quantity:</strong> {medicine.quantity}</p>
                   <p><strong>Category:</strong> {medicine.category}</p>
                   <p><strong>Expiration Date:</strong> {medicine.expirationDate}</p>
+                  <p><strong>IllnessType:</strong> {medicine.expirationDate}</p>
+                  <p><strong>Available:</strong> {medicine.expirationDate}</p>
                 </div>
                 <div className="medicine-actions">
                   <button
@@ -232,7 +260,7 @@ const MedicinePage = () => {
             className="add-button-1"
             onClick={() => {
               setShowPopup(true);
-              setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "" });
+              setUpdateMedicine({ id: "", name: "", quantity: "", category: "", expirationDate: "", illnessType: "" });
             }}
           >
             +
@@ -261,52 +289,94 @@ const MedicinePage = () => {
           <div className="popup-overlay">
             <div className="popup-content">
               <h2>{updateMedicine.id ? "Update Medicine" : "Add New Medicine"}</h2>
-              <input
-                type="text"
-                placeholder="Name"
-                value={updateMedicine.id ? updateMedicine.name : newMedicine.name}
-                onChange={(e) =>
-                  updateMedicine.id
-                    ? setUpdateMedicine({ ...updateMedicine, name: e.target.value })
-                    : setNewMedicine({ ...newMedicine, name: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                placeholder="Quantity"
-                value={updateMedicine.id ? updateMedicine.quantity : newMedicine.quantity}
-                onChange={(e) =>
-                  updateMedicine.id
-                    ? setUpdateMedicine({ ...updateMedicine, quantity: e.target.value })
-                    : setNewMedicine({ ...newMedicine, quantity: e.target.value })
-                }
-              />
-              <select
-                className="category-dropdown"
-                value={updateMedicine.id ? updateMedicine.category : newMedicine.category}
-                onChange={(e) =>
-                  updateMedicine.id
-                    ? setUpdateMedicine({ ...updateMedicine, category: e.target.value })
-                    : setNewMedicine({ ...newMedicine, category: e.target.value })
-                }
-              >
-                <option value="">Select Category</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="date"
-                placeholder="Expiration Date"
-                value={updateMedicine.id ? updateMedicine.expirationDate : newMedicine.expirationDate}
-                onChange={(e) =>
-                  updateMedicine.id
-                    ? setUpdateMedicine({ ...updateMedicine, expirationDate: e.target.value })
-                    : setNewMedicine({ ...newMedicine, expirationDate: e.target.value })
-                }
-              />
+
+              <div className="form-group">
+                <label htmlFor="name">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Name"
+                  value={updateMedicine.id ? updateMedicine.name : newMedicine.name}
+                  onChange={(e) =>
+                    updateMedicine.id
+                      ? setUpdateMedicine({ ...updateMedicine, name: e.target.value })
+                      : setNewMedicine({ ...newMedicine, name: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="quantity">Quantity</label>
+                <input
+                  id="quantity"
+                  type="number"
+                  placeholder="Quantity"
+                  value={updateMedicine.id ? updateMedicine.quantity : newMedicine.quantity}
+                  onChange={(e) =>
+                    updateMedicine.id
+                      ? setUpdateMedicine({ ...updateMedicine, quantity: e.target.value })
+                      : setNewMedicine({ ...newMedicine, quantity: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="category">Category</label>
+                <select
+                  id="category"
+                  className="category-dropdown"
+                  value={updateMedicine.id ? updateMedicine.category : newMedicine.category}
+                  onChange={(e) =>
+                    updateMedicine.id
+                      ? setUpdateMedicine({ ...updateMedicine, category: e.target.value })
+                      : setNewMedicine({ ...newMedicine, category: e.target.value })
+                  }
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="expirationDate">Expiration Date</label>
+                <input
+                  id="expirationDate"
+                  type="date"
+                  placeholder="Expiration Date"
+                  value={updateMedicine.id ? updateMedicine.expirationDate : newMedicine.expirationDate}
+                  onChange={(e) =>
+                    updateMedicine.id
+                      ? setUpdateMedicine({ ...updateMedicine, expirationDate: e.target.value })
+                      : setNewMedicine({ ...newMedicine, expirationDate: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="illnessType">Illness Type</label>
+                <select
+                  id="illnessType"
+                  className="illnessType-dropdown"
+                  value={updateMedicine.id ? updateMedicine.illnessType : newMedicine.illnessType}
+                  onChange={(e) =>
+                    updateMedicine.id
+                      ? setUpdateMedicine({ ...updateMedicine, illnessType: e.target.value })
+                      : setNewMedicine({ ...newMedicine, illnessType: e.target.value })
+                  }
+                >
+                  <option value="">Select Category</option>
+                  {illnessTypes.map((illnessType, index) => (
+                    <option key={index} value={illnessType}>
+                      {illnessType}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <button onClick={updateMedicine.id ? handleUpdateMedicine : handleAddNewMedicine}>
                 {updateMedicine.id ? "Update" : "Add"}
               </button>
