@@ -1,47 +1,120 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
-import email from '../images/email.png';  // Replace with a relevant email icon
-import call from '../images/call.png';    // Replace with a relevant phone icon
-import location from '../images/location.png';  // Replace with a relevant location icon
+import email from '../images/email.png';
+import call from '../images/call.png';
+import location from '../images/location.png';
 
 const ContactSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:8080/api/contact', formData);
+      alert('Message sent successfully!');
+      setFormData({ name: '', email: '', message: '' });
+      closeModal();
+    } catch (error) {
+      alert('Failed to send message. Please try again.');
+      console.error(error);
+    }
+  };
+
   return (
-    <Container>
-      <Title>Contact Us for 
-        <br></br>
-        Home-Zone Reforms Queries</Title>
-      <Description>
-        If you have any questions or need more information on the reforms in Home-Zone legal system, feel free to reach out to our team.
-      </Description>
-      <ContactOptions>
-        <ContactOption>
-          <Icon><Image src={email} alt="email" /></Icon>
-          <Info>
-            <Label>Email address</Label>
-            <Value>homezone2gmail.com</Value> {/* Example contact email */}
-          </Info>
-        </ContactOption>
-        <ContactOption>
-          <Icon><Image src={call} alt="phone" /></Icon>
-          <Info>
-            <Label>Get in touch</Label>
-            <Value>+94 76 342 5210</Value> {/* Example contact number */}
-          </Info>
-        </ContactOption>
-        <ContactOption>
-          <Icon><Image src={location} alt="location" /></Icon>
-          <Info>
-            <Label>Office Location</Label>
-            <Value>Colombo, Sri Lanka</Value> {/* Example location */}
-          </Info>
-        </ContactOption>
-      </ContactOptions>
-    </Container>
+    <>
+      <Container>
+        <Title>
+          Contact Us for 
+          <br />
+          Home-Zone Reforms Queries
+        </Title>
+        <Description>
+          If you have any questions or need more information on the reforms in Home-Zone legal system, feel free to reach out to our team.
+        </Description>
+
+        <ContactOptions>
+          <ContactOption>
+            <Icon><Image src={email} alt="email" /></Icon>
+            <Info>
+              <Label>Email address</Label>
+              <Value>homezone2@gmail.com</Value>
+            </Info>
+          </ContactOption>
+          <ContactOption>
+            <Icon><Image src={call} alt="phone" /></Icon>
+            <Info>
+              <Label>Get in touch</Label>
+              <Value>+94 76 342 5210</Value>
+            </Info>
+          </ContactOption>
+          <ContactOption>
+            <Icon><Image src={location} alt="location" /></Icon>
+            <Info>
+              <Label>Office Location</Label>
+              <Value>Colombo, Sri Lanka</Value>
+            </Info>
+          </ContactOption>
+        </ContactOptions>
+
+        <ContactButton onClick={openModal}>Contact Us</ContactButton>
+      </Container>
+
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <CloseButton onClick={closeModal}>×</CloseButton>
+            <h3>Send Us a Message</h3>
+            <Form onSubmit={handleSubmit}>
+              <Input
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                type="email"
+                name="email"
+                placeholder="Your Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <Textarea
+                name="message"
+                rows="4"
+                placeholder="Your Message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+              />
+              <SubmitButton type="submit">Send</SubmitButton>
+            </Form>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </>
   );
 };
 
 export default ContactSection;
+
+// Styled Components
 
 const Container = styled.div`
   text-align: center;
@@ -68,12 +141,14 @@ const Description = styled.p`
 const ContactOptions = styled.div`
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
 `;
 
 const ContactOption = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin: 1rem;
 `;
 
 const Icon = styled.div`
@@ -82,8 +157,8 @@ const Icon = styled.div`
 `;
 
 const Image = styled.img`
-  width: 60px;  /* Ensure all icons have a consistent width */
-  height: 60px; /* Ensure all icons have a consistent height */
+  width: 60px;
+  height: 60px;
   object-fit: contain;
 `;
 
@@ -100,4 +175,84 @@ const Label = styled.div`
 const Value = styled.div`
   font-size: 1rem;
   font-weight: bold;
+`;
+
+const ContactButton = styled.button`
+  margin-top: 2rem;
+  background-color: rgb(28, 59, 120);
+  color: white;
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: rgb(22, 46, 92);
+  }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background-color: #fff;
+  width: 90%;
+  max-width: 500px;
+  margin: 5% auto;
+  padding: 2rem;
+  border-radius: 8px;
+  position: relative;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Input = styled.input`
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+`;
+
+const Textarea = styled.textarea`
+  padding: 0.8rem;
+  margin: 0.5rem 0 1rem 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  resize: vertical;
+`;
+
+const SubmitButton = styled.button`
+  background-color: rgb(28, 59, 120);
+  color: white;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(22, 46, 92);
+  }
 `;
