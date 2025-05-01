@@ -8,6 +8,7 @@ import location from '../images/location.png';
 
 const ContactSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,6 +17,9 @@ const ContactSection = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const openMapModal = () => setIsMapOpen(true);
+  const closeMapModal = () => setIsMapOpen(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,7 +65,7 @@ const ContactSection = () => {
               <Value>+94 76 342 5210</Value>
             </Info>
           </ContactOption>
-          <ContactOption>
+          <ContactOption onClick={openMapModal} style={{ cursor: 'pointer' }}>
             <Icon><Image src={location} alt="location" /></Icon>
             <Info>
               <Label>Office Location</Label>
@@ -73,6 +77,7 @@ const ContactSection = () => {
         <ContactButton onClick={openModal}>Contact Us</ContactButton>
       </Container>
 
+      {/* Message Form Modal */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
@@ -105,6 +110,26 @@ const ContactSection = () => {
               />
               <SubmitButton type="submit">Send</SubmitButton>
             </Form>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Map Modal */}
+      {isMapOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <CloseButton onClick={closeMapModal}>×</CloseButton>
+            <h3>Our Location</h3>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126745.38038457436!2d79.77384272776874!3d6.921838469020928!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2595a1c18809f%3A0x49e7f16a1187c7d7!2sColombo!5e0!3m2!1sen!2slk!4v1681676429804!5m2!1sen!2slk"
+              width="100%"
+              height="350"
+              style={{ border: 0, marginTop: "1rem" }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Colombo Location"
+            />
           </ModalContent>
         </ModalOverlay>
       )}
