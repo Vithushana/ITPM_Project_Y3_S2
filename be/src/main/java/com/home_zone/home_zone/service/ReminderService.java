@@ -9,7 +9,6 @@ import com.home_zone.home_zone.repository.ReminderRepository;
 public class ReminderService {
     @Autowired
     private ReminderRepository reminderRepository;
-
     public Reminder addReminder(Reminder reminder) {
         return reminderRepository.save(reminder);
     }
