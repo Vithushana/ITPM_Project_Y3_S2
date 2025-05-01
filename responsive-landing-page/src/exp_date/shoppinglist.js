@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../styles/shopping.css"; // This is your CSS
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker"
+import "../styles/shopping.css";
 import Swal from "sweetalert2";
-import { FaHeart, FaRegHeart, FaEdit, FaTrashAlt } from "react-icons/fa";
+import { Pencil, Trash2, Heart, HeartOff } from "lucide-react";
 
 const ShoppingList = () => {
   const navigate = useNavigate();
@@ -29,6 +31,7 @@ const ShoppingList = () => {
     { name: "BALANCEMONEY", fields: ["amount", "date", "note"] },
   ];
 
+  // Load all category data on component mount
   useEffect(() => {
     getCategories().forEach((category) => {
       fetch(`http://localhost:8080/api/shopping/${category.name}`)
@@ -57,6 +60,7 @@ const ShoppingList = () => {
 
   const handleBack = () => navigate("/home");
 
+  // Show/hide popup and initialize form
   const togglePopup = (category = null, item = null) => {
     setShowPopup(!showPopup);
     setSelectedCategory(category);
@@ -66,7 +70,31 @@ const ShoppingList = () => {
   };
 
   const handleChange = (e, field) => {
-    setFormData({ ...formData, [field]: e.target.value });
+    if (field === "amount") {
+      // Remove any "Rs." if it exists and set the value directly
+      setFormData({ ...formData, [field]: e.target.value.replace(/^Rs\.?\s*/, '') });
+    } else {
+      setFormData({ ...formData, [field]: e.target.value });
+    }
+  };
+
+
+
+  // Format for displaying category name
+  const formatCategoryName = (name) => {
+    const map = {
+      ELECTRONICS: "Electronics",
+      GROCERIES: "Groceries",
+      MEDICINE: "Medicine",
+      BALANCEMONEY: "Balance Money",
+    };
+    return map[name] || name;
+  };
+
+  const handleDateChange = (dateValue) => {
+    if (!dateValue) return;
+    const formatted = dateValue.toISOString().split("T")[0];
+    setFormData({ ...formData, date: formatted });
   };
 
   const handleQuantityTypeChange = (e) => {
@@ -75,7 +103,7 @@ const ShoppingList = () => {
 
   const validateFormData = () => {
     let errors = {};
-    const {date, count, quantity, amount } = formData;
+    const { date, count, quantity, amount } = formData;
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
     const requiredFields = getCategories().find(cat => cat.name === selectedCategory)?.fields || [];
@@ -85,6 +113,7 @@ const ShoppingList = () => {
       }
     });
 
+    // Field-specific validations
     if (selectedCategory === "ELECTRONICS" && date && !datePattern.test(date)) {
       errors.date = "Date must be in the format YYYY-MM-DD.";
     }
@@ -128,6 +157,7 @@ const ShoppingList = () => {
       .then((data) => {
         toast.success(isEditing ? "Item updated!" : "Item added!");
 
+        // Update the list based on category
         const updateList = (list, setList) => {
           if (isEditing) {
             setList(list.map((item) => (item.id === data.id ? data : item)));
@@ -159,13 +189,12 @@ const ShoppingList = () => {
 
   const handleDelete = (id, categoryName) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
+      title: "Are you sure to delete this item?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes",
       cancelButtonText: "Cancel"
     }).then((result) => {
       if (result.isConfirmed) {
@@ -293,10 +322,30 @@ const ShoppingList = () => {
       {/* CATEGORY BUTTONS */}
       <h2 className="h2-b">Category</h2>
       <div className="category-buttons-b">
-        <button onClick={() => handleCategoryClick("ELECTRONICS")}>Electronics</button>
-        <button onClick={() => handleCategoryClick("GROCERIES")}>Groceries</button>
-        <button onClick={() => handleCategoryClick("MEDICINE")}>Medicine</button>
-        <button onClick={() => handleCategoryClick("BALANCEMONEY")}>Balance Money</button>
+        <button
+          className={selectedCategory === "ELECTRONICS" ? "active" : ""}
+          onClick={() => handleCategoryClick("ELECTRONICS")}
+        >
+          Electronics
+        </button>
+        <button
+          className={selectedCategory === "GROCERIES" ? "active" : ""}
+          onClick={() => handleCategoryClick("GROCERIES")}
+        >
+          Groceries
+        </button>
+        <button
+          className={selectedCategory === "MEDICINE" ? "active" : ""}
+          onClick={() => handleCategoryClick("MEDICINE")}
+        >
+          Medicine
+        </button>
+        <button
+          className={selectedCategory === "BALANCEMONEY" ? "active" : ""}
+          onClick={() => handleCategoryClick("BALANCEMONEY")}
+        >
+          Balance Money
+        </button>
       </div>
 
       {/* CATEGORY TABLES */}
@@ -306,9 +355,9 @@ const ShoppingList = () => {
             if (category.name === selectedCategory) {
               const list =
                 category.name === "ELECTRONICS" ? electronicsList :
-                category.name === "GROCERIES" ? groceriesList :
-                category.name === "MEDICINE" ? medicinesList :
-                moneyBalanceList;
+                  category.name === "GROCERIES" ? groceriesList :
+                    category.name === "MEDICINE" ? medicinesList :
+                      moneyBalanceList;
 
               const filteredList = list.filter((item) =>
                 category.fields.some((field) =>
@@ -318,7 +367,7 @@ const ShoppingList = () => {
 
               return (
                 <div key={index} className="category-item-b">
-                  <h3>🛒 {category.name.charAt(0).toUpperCase() + category.name.slice(1).toLowerCase()}</h3>
+                  <h3>🛒 {formatCategoryName(category.name)}</h3>
                   <button className="add-btn-b" onClick={() => togglePopup(category.name)}>Add Item</button>
 
                   <table className="category-table-b">
@@ -334,16 +383,27 @@ const ShoppingList = () => {
                       {filteredList.map((item, i) => (
                         <tr key={i}>
                           {category.fields.map((field, j) => (
-                            <td key={j}>{item[field]}</td>
+                            <td key={j}>
+                              {/* If the category is BALANCEMONEY and field is "amount", prepend "Rs." */}
+                              {category.name === "BALANCEMONEY" && field === "amount" ? (
+                                `Rs. ${item[field]?.replace('Rs. ', '')}`
+                              ) : (
+                                item[field]
+                              )}
+                            </td>
                           ))}
                           <td>
-                            <button onClick={() => togglePopup(category.name, item)}><FaEdit /></button>
-                            <button onClick={() => handleDelete(item.id, category.name)}><FaTrashAlt /></button>
+                            <button onClick={() => togglePopup(category.name, item)}><Pencil size={20} color="#1f1682df" /></button>
+                            <button onClick={() => handleDelete(item.id, category.name)}><Trash2 size={20} color="#1f1682df" /></button>
                             <button
                               onClick={() => handleToggleFavorite(item)}
                               style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
                             >
-                              {favoritesList.some(fav => fav.id === item.id) ? <FaHeart color="red" size={24} /> : <FaRegHeart color="gray" size={24} />}
+                              {favoritesList.some(fav => fav.id === item.id) ? (
+                                <Heart color="red" size={20} fill="red" />
+                              ) : (
+                                <HeartOff color="#1f1682df" size={20} />
+                              )}
                             </button>
                           </td>
                         </tr>
@@ -358,16 +418,34 @@ const ShoppingList = () => {
         </div>
       )}
 
-      {/* POPUP */}
+      {/* POPUP FORM */}
       {showPopup && selectedCategory && (
         <div className="popup-overlay-b">
           <div className="popup-container-b">
-            <h2>{formData.id ? "Edit" : "Add"} {selectedCategory} Item</h2>
+            <h2>
+              {formData.id ? "Edit" : "Add"}{" "}
+              {selectedCategory === "BALANCEMONEY"
+                ? "Balance Money"
+                : selectedCategory.charAt(0) + selectedCategory.slice(1).toLowerCase()}{" "}
+              Item
+            </h2>
             <div className="popup-form">
               {getCategories().find(c => c.name === selectedCategory)?.fields.map((field, idx) => (
                 <div key={idx} className="popup-form-field">
                   <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-                  {field === "quantity" && (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") ? (
+
+                  {/* Conditional rendering for specific field types */}
+                  {field === "date" ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+                      <DatePicker
+                        selected={formData.date ? new Date(formData.date) : null}
+                        onChange={handleDateChange}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select a date"
+                        className="form-control"
+                      />
+                    </div>
+                  ) : field === "quantity" && (selectedCategory === "GROCERIES" || selectedCategory === "MEDICINE") ? (
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <input
                         type="text"
@@ -386,6 +464,16 @@ const ShoppingList = () => {
                         ))}
                       </select>
                     </div>
+                  ) : field === "amount" ? (
+                    <input
+                      type="text"
+                      value={formData[field] || ""}
+                      onChange={(e) => {
+                        handleChange({ target: { value: e.target.value } }, field);
+                      }}
+                      placeholder="Enter amount"
+                    />
+
                   ) : (
                     <input
                       type="text"
@@ -394,12 +482,26 @@ const ShoppingList = () => {
                       placeholder={`Enter ${field}`}
                     />
                   )}
-                  {formErrors[field] && <span className="error" style={{ color: "red" }}>{formErrors[field]}</span>}
+
+                  {formErrors[field] && (
+                    <span className="error" style={{ color: "red" }}>
+                      {formErrors[field]}
+                    </span>
+                  )}
                 </div>
               ))}
               <div className="popup-actions-b">
                 <button className="save-btn-b" onClick={handleSave}>Save</button>
-                <button className="cancel-btn-b" onClick={() => togglePopup()}>Cancel</button>
+                <button
+                  className="cancel-btn-b"
+                  onClick={() => {
+                    setShowPopup(false);
+                    setFormData({});
+                    setFormErrors({});
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
