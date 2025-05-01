@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import logo from '../images/logo.png';
 
+import DemoVideoModal from './DemoVideoModal'; // Adjust path if needed
+
 // Styled Components (unchanged)
 const HeaderContainer = styled.header`
   position: fixed;
@@ -144,6 +146,7 @@ const HamburgerMenu = styled.div`
 // Header Component
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
   const navigate = useNavigate();
 
   // Logout function
@@ -182,7 +185,9 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       </div>
       <div>
         <ButtonContainer>
-          <ReportIssueButton href="#demo">Request a Demo</ReportIssueButton>
+        <ReportIssueButton as="button" onClick={() => setShowDemo(true)}>
+          Request a Demo
+        </ReportIssueButton>
           {isLoggedIn ? (
             <AuthButton as="button" onClick={handleLogout}>Logout</AuthButton>
           ) : (
@@ -190,6 +195,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
           )}
         </ButtonContainer>
       </div>
+      <DemoVideoModal show={showDemo} onClose={() => setShowDemo(false)} />
     </HeaderContainer>
   );
 };
