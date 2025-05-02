@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
-import { FaAppleAlt, FaLaptop, FaPills, FaChartPie, FaSignOutAlt, FaUtensils  } from "react-icons/fa";
+import { FaAppleAlt, FaLaptop, FaPills, FaPumpSoap, FaSignOutAlt, FaChartPie  } from "react-icons/fa";
 import logo from '../images/logo.png';
 import "../styles/Sidebar.css";
 
@@ -52,12 +52,12 @@ const Sidebar = () => {
           <FaPills className="icon" /> Medicines
         </div>
 
-        <div 
+        {/* <div 
           className={`menu-item1 ${active === "FoodRecipe" ? "active" : ""}`} 
           onClick={() => handleNavigation("FoodRecipe", "/FoodRecipe")}
         >
           <FaUtensils  className="icon" /> Recipe
-        </div>
+        </div> */}
 
         <div 
           className={`menu-item1 ${active === "Budgets" ? "active" : ""}`} 
@@ -67,10 +67,10 @@ const Sidebar = () => {
         </div>
 
         <div 
-          className={`menu-item1 ${active === "Budgets" ? "active" : ""}`} 
-          onClick={() => handleNavigation("Budgets", "/cleaning")}
+          className={`menu-item1 ${active === "Cleaning" ? "active" : ""}`} 
+          onClick={() => handleNavigation("Cleaning", "/cleaning")}
         >
-          <FaChartPie className="icon" /> Cleaning Supplies
+          <FaPumpSoap className="icon" /> Cleaning Supplies
         </div>
 
       </div>
