@@ -89,6 +89,43 @@ const FoodRecipe = () => {
     }
   };
 
+  async function generateRecipeSteps(recipeName) {
+    try {
+      const response = await fetch(
+        "https://chatappsenzmatica.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-01",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "api-key": "4735909e02ac4ed9ac299b2338656ed0", // ⚠️ Exposed key (not recommended)
+          },
+          body: JSON.stringify({
+            messages: [
+              {
+                role: "system",
+                content: "You are a helpful assistant, writing short sentences based on user input.",
+              },
+              {
+                role: "user",
+                content: recipeName,
+              },
+            ],
+          }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to get response from Azure OpenAI");
+      }
+  
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || "No response";
+    } catch (error) {
+      console.error("Error generating recipe steps:", error);
+      return "Error generating recipe steps.";
+    }
+  };    
+
   return (
     <div className="recipe-page-wrapper">
       <Sidebar />
@@ -189,6 +226,23 @@ const FoodRecipe = () => {
               onChange={(e) => setNewRecipe({ ...newRecipe, steps: e.target.value })}
               className="recipe-modal-steps"
             />
+
+            <input
+              type="text"
+              placeholder="Describe the dish or search a recipe (e.g., 'How to make Pancakes')"
+              value={newRecipe.query || ""}
+              onChange={(e) => setNewRecipe({ ...newRecipe, query: e.target.value })}
+            />
+            <button
+              className="recipe-generate-btn"
+              onClick={async () => {
+                const generatedSteps = await generateRecipeSteps(newRecipe.query);
+                setNewRecipe({ ...newRecipe, steps: generatedSteps });
+              }}
+            >
+              Generate Steps 🔍
+            </button>
+
             <div className="recipe-modal-actions">
               <button onClick={handleAddOrUpdate}>
                 {editingRecipe ? "Update" : "Add"}

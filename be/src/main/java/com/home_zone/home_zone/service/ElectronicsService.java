@@ -27,11 +27,15 @@ public class ElectronicsService {
     }
 
     public Electronics updateElectronics(String id, Electronics electronics) {
-        if (repository.existsById(id)) {
-            electronics.setId(id);
-            return repository.save(electronics);
-        }
-        return null;
+        return repository.findById(id).map(existingItem -> {
+            // existingItem.setName(electronics.getName());
+            existingItem.setQuantity(electronics.getQuantity());
+            existingItem.setCategory(electronics.getCategory());
+            existingItem.setPrice(electronics.getPrice());
+            existingItem.setExpirationDate(electronics.getExpirationDate());
+            existingItem.setImageUrl(electronics.getImageUrl());
+            return repository.save(existingItem);
+        }).orElseThrow(() -> new RuntimeException("Electronics item not found with id: " + id));
     }
 
     public void deleteElectronics(String id) {

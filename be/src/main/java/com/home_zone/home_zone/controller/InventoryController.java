@@ -36,8 +36,8 @@ public class InventoryController {
         inventoryService.deleteItem(id);
     }
 
-    @PutMapping("/update")
-    public InventoryItem updateItem(@RequestBody InventoryItem updatedItem) {
-        return inventoryService.updateItem(updatedItem);
+    @PutMapping("/{id}")
+    public InventoryItem updateItem(@PathVariable String id, @RequestBody InventoryItem updatedItem) {
+        return inventoryService.updateItem(updatedItem, id);
     }
 }

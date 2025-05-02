@@ -192,6 +192,12 @@ const ElectronicsPage = () => {
             <h2>{isEditing ? "Edit Electronic" : "Add New Electronic"}</h2>
             <input
               type="text"
+              placeholder="Name"
+              value={newItem.name}
+              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+            />
+            <input
+              type="text"
               placeholder="Image URL"
               value={newItem.imageUrl}
               onChange={(e) => setNewItem({ ...newItem, imageUrl: e.target.value })}

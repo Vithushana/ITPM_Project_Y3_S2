@@ -4,6 +4,7 @@ import "../styles/Modal.css";
 
 const UpdateItemModal = ({ showModal, closeModal, item, setInventoryItems }) => {
   const [updatedItem, setUpdatedItem] = useState({
+    id: item.id,
     name: item.name,
     quantity: item.quantity,
     category: item.category,
@@ -15,7 +16,7 @@ const UpdateItemModal = ({ showModal, closeModal, item, setInventoryItems }) => 
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); axios.put(`http://localhost:8080/api/inventory/update`, updatedItem)
+    e.preventDefault(); axios.put(`http://localhost:8080/api/inventory/${updatedItem.id}`, updatedItem)
       .then((response) => {
         setInventoryItems((prevItems) =>
           prevItems.map((i) => (i.id === item.id ? response.data : i))

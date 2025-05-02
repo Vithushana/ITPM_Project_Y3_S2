@@ -21,10 +21,15 @@ public class InventoryService {
         inventoryRepository.deleteById(id);
     }
 
-    public InventoryItem updateItem(InventoryItem updatedItem) {
-        return inventoryRepository.save(updatedItem);
-
-    }
+    public InventoryItem updateItem(InventoryItem updatedItem, String id) {
+        return inventoryRepository.findById(id).map(existingItem -> {
+            existingItem.setName(updatedItem.getName());
+            existingItem.setQuantity(updatedItem.getQuantity());
+            existingItem.setCategory(updatedItem.getCategory());
+            existingItem.setExpirationDate(updatedItem.getExpirationDate());
+            return inventoryRepository.save(existingItem);
+        }).orElseThrow(() -> new RuntimeException("Inventory item not found with id: " + id));
+    }    
 
     public InventoryItem createItem(InventoryItem newItem) {
         return inventoryRepository.save(newItem);
