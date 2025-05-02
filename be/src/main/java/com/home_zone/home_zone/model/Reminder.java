@@ -1,5 +1,4 @@
 package com.home_zone.home_zone.model;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,7 +14,9 @@ public class Reminder {
     private Category category;
 
     public enum Category {
-        ELECTRONICS, MEDICINE, GROCERIES;
+        ELECTRONICS,
+        MEDICINE, 
+        GROCERIES;
     }
 
     public Reminder(String name, String description, String reminderDate, boolean emailSent, Category category, String purchasingDate) {
