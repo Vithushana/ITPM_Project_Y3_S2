@@ -1,7 +1,6 @@
 package com.home_zone.home_zone.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.home_zone.home_zone.model.Reminder;
 import com.home_zone.home_zone.service.ReminderService;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,7 +26,6 @@ public class ReminderController {
     public Reminder addReminder(@RequestBody Reminder reminder) {
         return reminderService.addReminder(reminder);
     }
-    
     @GetMapping
     public List<Reminder> getAllReminders() {
         return reminderService.getAllReminders();
@@ -44,7 +41,6 @@ public class ReminderController {
     public void deleteReminder(@PathVariable String id) {
         reminderService.deleteReminder(id);
     }
-    
     // update reminder by id
     @PutMapping("/{id}")
     public Reminder updateReminder(@PathVariable String id, @RequestBody Reminder reminder){
@@ -52,3 +48,5 @@ public class ReminderController {
     }
     
 }
+
+
