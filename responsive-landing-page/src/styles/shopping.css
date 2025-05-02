@@ -12,10 +12,12 @@
 }
 
 .bback-button {
-  background-color: #9da0a4;
-  color: white;
+  background-color: #f7f8fa;
+  color: rgb(5, 5, 5);
   padding: 10px 20px;
-  border: none;
+  border: #1f1682df;
+  border-style: solid;
+  border-width: 2px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
@@ -23,7 +25,7 @@
 }
 
 .bback-button:hover {
-  background-color: #7c8691;
+  background-color: #5149abd6;
 }
 
 /* Banner Section*/
