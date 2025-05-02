@@ -227,7 +227,7 @@ h1 {
 }
 
 .search-bar {
-  flex: 1;
+  /* flex: 1; */
   padding: 8px;
   border: 2px solid #4a78e4;
   border-radius: 16px;

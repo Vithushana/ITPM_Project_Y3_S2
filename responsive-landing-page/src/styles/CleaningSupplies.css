@@ -19,11 +19,8 @@
   .search-bar {
     display: block;
     margin: 0 auto 20px auto;
-    padding: 10px;
     width: 60%;
     font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
   }
   
   .electronics-grid {
