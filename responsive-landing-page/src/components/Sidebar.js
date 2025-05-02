@@ -66,6 +66,13 @@ const Sidebar = () => {
           <FaChartPie className="icon" /> Budgets
         </div>
 
+        <div 
+          className={`menu-item1 ${active === "Budgets" ? "active" : ""}`} 
+          onClick={() => handleNavigation("Budgets", "/cleaning")}
+        >
+          <FaChartPie className="icon" /> Cleaning Supplies
+        </div>
+
       </div>
       <div className="logout" onClick={handleLogout}>
         <FaSignOutAlt className="icon" /> Back To Home

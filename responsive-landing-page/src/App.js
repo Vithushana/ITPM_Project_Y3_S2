@@ -20,6 +20,7 @@ import ShoppingList from "./exp_date/shoppinglist";
 import SiderChatBot from './voice_control/siderchatbot';
 import FoodRecipe from './inventory/recipe';
 import FeedbackPage from './voice_control/FeedbackPage';
+import CleaningSuppliesPage from './inventory/CleaningSuppliesPage';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -81,6 +82,7 @@ const App = () => {
           <Route path="/SiderChatBot" element={<PrivateRoute isLoggedIn={isLoggedIn}><SiderChatBot /></PrivateRoute>} />
           <Route path="/FoodRecipe" element={<PrivateRoute isLoggedIn={isLoggedIn}><FoodRecipe /></PrivateRoute>} />
           <Route path="/feedback" element={<PrivateRoute isLoggedIn={isLoggedIn}><FeedbackPage /></PrivateRoute>} />
+          <Route path="/cleaning" element={<PrivateRoute isLoggedIn={isLoggedIn}><CleaningSuppliesPage /></PrivateRoute>} />
 
 
           {/* Redirect unknown routes */}
@@ -97,7 +99,7 @@ const HeaderBasedOnLocation = ({ isLoggedIn, setIsLoggedIn }) => {
   const location = useLocation();
   const hideHeaderOnPaths = [
     '/inventory', '/medicine', '/electronics', '/budget',
-    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe'
+    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe' , '/cleaning'
   ];
 
   if (hideHeaderOnPaths.includes(location.pathname)) {
@@ -112,7 +114,7 @@ const LocationBasedContent = ({ isLoggedIn }) => {
   const location = useLocation();
   const hideContentOnPaths = [
     '/inventory', '/medicine', '/electronics', '/budget',
-    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe', '/feedback'
+    '/AlertPage', '/ShoppingList', '/SiderChatBot', '/FoodRecipe', '/feedback' , '/cleaning'
   ];
 
   if (!isLoggedIn || hideContentOnPaths.includes(location.pathname)) {
