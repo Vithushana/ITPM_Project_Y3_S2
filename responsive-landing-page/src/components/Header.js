@@ -5,9 +5,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import logo from '../images/logo.png';
 
-import DemoVideoModal from './DemoVideoModal'; // Adjust path if needed
+import DemoVideoModal from './DemoVideoModal';
+import NotificationModal from './NotificationModal';
+import './NotificationModal.css';
 
-// Styled Components (unchanged)
 const HeaderContainer = styled.header`
   position: fixed;
   width: 100%;
@@ -71,6 +72,22 @@ const NavLink = styled(ScrollLink)`
 
   &:hover::after {
     width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    text-align: center;
+  }
+`;
+
+const NavButton = styled.div`
+  cursor: pointer;
+  padding: 5px 0;
+  font-size: 19px;
+  color: black;
+
+  &:hover {
+    color: rgb(43, 83, 141);
   }
 
   @media (max-width: 768px) {
@@ -143,32 +160,32 @@ const HamburgerMenu = styled.div`
   }
 `;
 
-// Header Component
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [allReminders, setAllReminders] = useState([]);
   const navigate = useNavigate();
 
-  // Logout function
-  const handleLogout = () => {
-    if (typeof setIsLoggedIn === 'function') {
-      setIsLoggedIn(false); // Update the login state
-      localStorage.removeItem('loggedIn'); // Remove the login status from localStorage
-      navigate('/'); // Redirect to the home page
-    } else {
-      console.error('setIsLoggedIn is not a function');
-    }
-  };
-
-  // Persist login state on page refresh
   useEffect(() => {
     const loggedInStatus = localStorage.getItem('loggedIn') === 'true';
     if (typeof setIsLoggedIn === 'function') {
       setIsLoggedIn(loggedInStatus);
-    } else {
-      console.error('setIsLoggedIn is not a function');
     }
+
+    fetch("http://localhost:8080/api/reminders")
+      .then((res) => res.json())
+      .then((data) => setAllReminders(data))
+      .catch((err) => console.error("Failed to fetch reminders:", err));
   }, [setIsLoggedIn]);
+
+  const handleLogout = () => {
+    if (typeof setIsLoggedIn === 'function') {
+      setIsLoggedIn(false);
+      localStorage.removeItem('loggedIn');
+      navigate('/');
+    }
+  };
 
   return (
     <HeaderContainer>
@@ -181,13 +198,15 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
           <NavLink to="features" smooth={true} duration={500} onClick={() => setIsOpen(false)}>Home</NavLink>
           <NavLink to="faqSection" smooth={true} duration={500} onClick={() => setIsOpen(false)}>FAQ</NavLink>
           <NavLink to="resources" smooth={true} duration={500} onClick={() => setIsOpen(false)}>Contact Us</NavLink>
+          <NavButton onClick={() => {
+            setShowNotification(true);
+            setIsOpen(false);
+          }}>Notification</NavButton>
         </NavLinks>
       </div>
       <div>
         <ButtonContainer>
-        <ReportIssueButton as="button" onClick={() => setShowDemo(true)}>
-          Request a Demo
-        </ReportIssueButton>
+          <ReportIssueButton as="button" onClick={() => setShowDemo(true)}>Request a Demo</ReportIssueButton>
           {isLoggedIn ? (
             <AuthButton as="button" onClick={handleLogout}>Logout</AuthButton>
           ) : (
@@ -196,6 +215,11 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         </ButtonContainer>
       </div>
       <DemoVideoModal show={showDemo} onClose={() => setShowDemo(false)} />
+      <NotificationModal
+        show={showNotification}
+        onClose={() => setShowNotification(false)}
+        reminders={allReminders}
+      />
     </HeaderContainer>
   );
 };

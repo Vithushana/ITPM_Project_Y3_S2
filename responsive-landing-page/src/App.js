@@ -21,6 +21,7 @@ import SiderChatBot from './voice_control/siderchatbot';
 import FoodRecipe from './inventory/recipe';
 import FeedbackPage from './voice_control/FeedbackPage';
 import CleaningSuppliesPage from './inventory/CleaningSuppliesPage';
+import NotificationModal from './components/NotificationModal';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -83,6 +84,7 @@ const App = () => {
           <Route path="/FoodRecipe" element={<PrivateRoute isLoggedIn={isLoggedIn}><FoodRecipe /></PrivateRoute>} />
           <Route path="/feedback" element={<PrivateRoute isLoggedIn={isLoggedIn}><FeedbackPage /></PrivateRoute>} />
           <Route path="/cleaning" element={<PrivateRoute isLoggedIn={isLoggedIn}><CleaningSuppliesPage /></PrivateRoute>} />
+          <Route path="/notification" element={<PrivateRoute isLoggedIn={isLoggedIn}><NotificationModal /></PrivateRoute>} />
 
 
           {/* Redirect unknown routes */}
